@@ -93,7 +93,8 @@
     "role": "Rol",
     "outcome": "Resultado",
     "backToWork": "Volver al trabajo",
-    "read": "Leer el caso de estudio"
+    "read": "Leer el caso de estudio",
+    "detail": "En detalle"
   },
   "devlog": {
     "title": "Construyendo en público",

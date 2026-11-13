@@ -93,7 +93,8 @@
     "role": "Role",
     "outcome": "Outcome",
     "backToWork": "Back to work",
-    "read": "Read the case study"
+    "read": "Read the case study",
+    "detail": "The detail"
   },
   "devlog": {
     "title": "Building in public",

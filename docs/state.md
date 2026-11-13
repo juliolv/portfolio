@@ -30,7 +30,8 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 ## Milestone
 
 **Done:** design-system port, motion/interaction handoff, GitHub Pages deploy,
-/work/[slug] case studies with linked cards and a generated sitemap.
+/work/[slug] case studies with linked cards, a generated sitemap and
+per-language markdown bodies.
 **Now:** the devlog mirroring real GitHub issues.
 **Then:** real content (blocked on the owner), then launch polish.
 
@@ -39,11 +40,8 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 1. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
 2. Open issues #1–#4 so the devlog has something to mirror (owner approval).
-3. Case-study body copy: the pages currently render the card summary only; a
-   markdown body would render under Overview (content collection already
-   supports it, the route does not read `item.body` yet).
-4. Design pass on hero density and affordances (Designer agent, one batch).
-5. Replace placeholder content — **needs the owner**: city, contact email, CV
+3. Design pass on hero density and affordances (Designer agent, one batch).
+4. Replace placeholder content — **needs the owner**: city, contact email, CV
    PDF, one metric per project.
 
 ## Decisions

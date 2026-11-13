@@ -125,3 +125,39 @@ button.motion-row {
   padding-top: var(--sp-5);
   border-top: var(--bw) solid var(--border);
 }
+
+/* Markdown bodies inside .prose: design.css only lays out the column, so the
+   rendered headings, lists and inline code need the token treatment. */
+.case__body h3 {
+  font-size: var(--fs-4);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-tight);
+  margin: var(--sp-4) 0 0;
+}
+
+.case__body h3:first-child {
+  margin-top: 0;
+}
+
+.case__body ul {
+  margin: 0;
+  padding-left: var(--sp-5);
+  /* design.css resets ul/ol to list-style:none; markdown bodies need markers. */
+  list-style: disc;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.case__body li::marker {
+  color: var(--text-muted);
+}
+
+.case__body code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--surface-raised);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r-1);
+  padding: 0 4px;
+}

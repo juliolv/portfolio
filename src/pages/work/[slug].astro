@@ -1,5 +1,5 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Bi from '../../components/Bi.astro';
 import { s, url } from '../../lib/i18n';
@@ -16,6 +16,16 @@ interface Props {
 
 const { item } = Astro.props as Props;
 const { data } = item;
+
+/* Long-form bodies live in their own collection, one file per language. */
+const bodies = await getCollection('workBodies');
+const bodyFor = (lang: 'en' | 'es') =>
+  bodies.find((entry) => entry.data.slug === item.id && entry.data.lang === lang);
+
+const enBody = bodyFor('en');
+const esBody = bodyFor('es');
+const EnBody = enBody ? (await render(enBody)).Content : null;
+const EsBody = esBody ? (await render(esBody)).Content : null;
 
 const STATUS_CLASS: Record<string, string> = {
   done: 'status--done',
@@ -93,6 +103,16 @@ const description =
               <p><Bi en={data.outcome} es={data.outcomeEs} /></p>
             </div>
           </div>
+
+          {(EnBody || EsBody) && (
+            <div class="case__block">
+              <h2 class="eyebrow"><Bi en={s('en', 'case.detail')} es={s('es', 'case.detail')} /></h2>
+              <div class="prose case__body">
+                {EnBody && <div data-lang-block="en"><EnBody /></div>}
+                {EsBody && <div data-lang-block="es" lang="es"><EsBody /></div>}
+              </div>
+            </div>
+          )}
 
           <p class="case__foot">
             <a class="link link--mono" href={url('/#work')}>
