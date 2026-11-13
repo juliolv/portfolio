@@ -48,10 +48,10 @@ Levers, in order of effect:
    scale with scope. "Audit the whole repo" costs 10× "check these 7 files".
 2. **Cap concurrency.** Dispatch 3–4 children, not 10. Parallel children each
    carry their own context; ten of them is ten times the input tokens.
-3. **Free tiers for read-only scraps.** `longcat-2.5-free`, `beam-free` and
-   `iceman-contributor-free` exist on this sub. Use them for mechanical reads
-   (greps, link checks) only, and benchmark one before trusting a writer to
-   them. Unverified quality is not a saving.
+3. **No free models.** Ruled out by the owner: unpredictable quality, rate
+   limits and no support path are not worth the saving. Every child runs a paid
+   model, and the cheap tier is the floor: `deepseek-v4.1-flash` (default),
+   `glm-5.3-flash`, `mimo-v2.6-flash`, `qwen3.8-flash`, `claude-haiku-5-5`.
 4. **Pin children cheaper than the parent** when the parent does the thinking:
 
    ```sh

@@ -53,6 +53,7 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 | 2026-11-13 | `/design-system/` is a route, not a JS view | Real URL, indexable, works without JS (deviation from handoff §7, documented in client.ts) |
 | 2026-11-13 | Boot steps each run in a guard | One throwing step used to kill scroll tracking and nav handlers |
 | 2026-11-13 | Placeholder content only | Public repo; real employers/projects must never enter history |
+| 2026-11-13 | No free models in the fleet | Owner ruled them out: predictable quality beats marginal savings |
 
 ## Known issues
 
@@ -62,7 +63,7 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 | 2 | major | `SITE.links.cv` points at `/portfolio/cv.pdf`, which does not exist | ship the PDF or hide the button until it exists |
 | 3 | minor | `.tabs` shows scrollbar stepper arrows in headless Chrome when it overflows | cosmetic; only reproducible with overlay scrollbars disabled |
 | 4 | minor | Every work/experience record is a marked placeholder | content debt, tracked by issue #3 |
-| 5 | info | Free/cheap model tiers on the sub are unbenchmarked for code edits | benchmark before routing writers to them |
+| 5 | info | Cheap paid tiers beyond `deepseek-v4.1-flash` are unbenchmarked for code edits (free tiers are ruled out) | benchmark before routing writers to them |
 
 ## Verification
 
