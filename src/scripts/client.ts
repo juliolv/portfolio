@@ -41,7 +41,8 @@ const config = (() => {
 })();
 
 const ui = { en: config.en as UiCopy, es: config.es as UiCopy };
-const SITE = config.site as { email: string; links: Record<string, string> };
+const SITE = config.site as { email: string; links: Record<string, string>; base: string };
+const BASE = (SITE.base || '/').replace(/\/$/, '');
 
 const store = {
   get(key: string): string | null {
@@ -397,7 +398,7 @@ function paletteCommands(): Cmd[] {
     label: navLabel('design-system'),
     hint: '/design-system/',
     run: () => {
-      window.location.href = '/design-system/';
+      window.location.href = `${BASE}/design-system/`;
     },
   });
 
@@ -662,8 +663,8 @@ function boot() {
   step('nav links', () =>
     navLinks.forEach((link) => {
       link.addEventListener('click', (event) => {
-        const hash = (link.getAttribute('href') ?? '').replace(/^\//, '');
-        if (!hash.startsWith('#') || hash !== window.location.hash) return;
+        const hash = link.hash; // '#work', independent of the deploy base
+        if (!hash || hash !== window.location.hash) return;
         event.preventDefault();
         goTo(hash); // clicking the current section re-scrolls it
       });

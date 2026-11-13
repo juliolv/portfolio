@@ -28,6 +28,10 @@ export const SITE = {
     linkedin: 'https://www.linkedin.com/in/your-handle',
     cv: '/cv.pdf',
     repo: 'https://github.com/juliolv/portfolio',
-    pages: 'https://juliolv.github.io',
+    pages: 'https://juliolv.github.io/portfolio/',
   },
 };
+
+/** Prefix a site-absolute path with the deploy base ('' locally, '/portfolio' on Pages). */
+const BASE = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+export const url = (path: string): string => `${BASE}${path.startsWith('/') ? path : `/${path}`}`;

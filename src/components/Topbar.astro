@@ -1,24 +1,25 @@
 ---
 import Bi from './Bi.astro';
+import { url } from '../lib/i18n';
 import { s, SITE } from '../lib/i18n';
 
 const L = 'en' as const;
 const { active = '' } = Astro.props;
 
 const links = [
-  { id: 'work', href: '/#work', key: 'nav.work' },
-  { id: 'devlog', href: '/#devlog', key: 'nav.devlog' },
-  { id: 'experience', href: '/#experience', key: 'nav.experience' },
-  { id: 'stack', href: '/#stack', key: 'nav.stack' },
-  { id: 'about', href: '/#about', key: 'nav.about' },
-  { id: 'contact', href: '/#contact', key: 'nav.contact' },
-  { id: 'design-system', href: '/design-system/', key: 'nav.system' },
+  { id: 'work', href: url('/#work'), key: 'nav.work' },
+  { id: 'devlog', href: url('/#devlog'), key: 'nav.devlog' },
+  { id: 'experience', href: url('/#experience'), key: 'nav.experience' },
+  { id: 'stack', href: url('/#stack'), key: 'nav.stack' },
+  { id: 'about', href: url('/#about'), key: 'nav.about' },
+  { id: 'contact', href: url('/#contact'), key: 'nav.contact' },
+  { id: 'design-system', href: url('/design-system/'), key: 'nav.system' },
 ];
 ---
 
 <header class="topbar">
   <div class="wrap topbar__row">
-    <a class="brand" href="/#top" aria-label={s(L, 'a11y.home')}>
+    <a class="brand" href={url('/#top')} aria-label={s(L, 'a11y.home')}>
       <span class="brand__glyph">~/</span>{SITE.brand}<span class="brand__crumb" id="crumb" aria-hidden="true"></span>
     </a>
 

@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import Bi from '../components/Bi.astro';
+import { s, url } from '../lib/i18n';
+---
+
+<Base title="404 — Julio López" description="That path does not exist." path="~/julio/404">
+  <main class="view" id="view-home">
+    <div class="wrap">
+      <section class="hero" id="top">
+        <div class="hero__main">
+          <p class="prompt"><span class="prompt__glyph">›</span><span class="prompt__cmd">cat "$(wrong-path)"</span></p>
+          <h1 class="hero__name">404</h1>
+          <p class="hero__pitch">
+            <Bi
+              en="No file at that path. The page you asked for is not here — the links below do exist."
+              es="No hay ningún archivo en esa ruta. La página que buscabas no está aquí; los enlaces de abajo sí existen."
+            />
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href={url('/')}><span class="btn__glyph" aria-hidden="true">←</span>{s('en', 'palette.top')}</a>
+            <a class="btn" href={url('/#work')}>{s('en', 'nav.work')}</a>
+            <a class="btn" href={url('/design-system/')}>{s('en', 'nav.system')}</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</Base>

@@ -1,7 +1,7 @@
 ---
 import '../styles/design.css';
 import '../styles/app.css';
-import { SITE, t } from '../lib/i18n';
+import { SITE, t, url } from '../lib/i18n';
 import Topbar from '../components/Topbar.astro';
 import StatusBar from '../components/StatusBar.astro';
 import Palette from '../components/Palette.astro';
@@ -25,7 +25,7 @@ const {
 /* Client-side UI copy (status messages, theme names, palette labels).
    Content strings stay server-rendered — this is only what JS needs. */
 const ui = {
-  site: { email: SITE.email, links: SITE.links },
+  site: { email: SITE.email, links: SITE.links, base: import.meta.env.BASE_URL },
   en: { status: t('en', 'status'), theme: t('en', 'theme'), palette: t('en', 'palette') },
   es: { status: t('es', 'status'), theme: t('es', 'theme'), palette: t('es', 'palette') },
 };
@@ -39,7 +39,7 @@ const ui = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
     <script is:inline>
       /* Theme and language boot — runs before first paint so nothing flashes.
          Keys: pf.theme (light | dark | system), pf.lang (en | es). */
