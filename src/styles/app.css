@@ -69,3 +69,19 @@ button.motion-row {
 .palette__field:focus-within {
   border-color: var(--accent);
 }
+
+/* Hierarchy fix from the design review: card titles were the same size as
+   section titles (both --fs-5), so a card read like a section. One step down. */
+.card__name {
+  font-size: var(--fs-4);
+}
+
+/* The work cards lift and shadow on hover, which promises a click — but they
+   carry no link until /work/[slug] exists. Only lift when the card actually
+   has somewhere to go, so the affordance tells the truth either way. */
+.card:hover:not(:has(a)),
+.card:focus-within:not(:has(a)) {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border);
+}

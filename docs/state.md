@@ -78,6 +78,23 @@ canonical + OG/Twitter + 1200×630 `og.png`, `robots.txt`, `sitemap.xml`, ES
 counterparts for experience `when`/`org` and work `period` (schema now requires
 them), single live region in the status bar, palette CV command now base-prefixed.
 
+## Design backlog
+
+Review by the **Designer** agent (`gpt-6-luna`, 11 calls, 151s — this run also
+proved the design tier resolves for delegation). Dispositions are the
+orchestrator's call; taste belongs to the owner.
+
+| Finding | Disposition |
+|---|---|
+| Hero lacks a proof line; "10+ years" is buried in the summary card | **defer** — strongest suggestion, but it reorders the owner's designed hierarchy and needs real numbers |
+| Work section padding 72→48px, card gaps 16→12px | **defer** — `--sp-8` is the site-wide section rhythm; revisit once real copy replaces the placeholder rows and cards get shorter naturally |
+| Cards lift on hover but contain no link | **fixed** — `.card:hover:not(:has(a))` neutralises the lift/shadow until `/work/[slug]` exists, and restores it automatically when a card gains a link |
+| Faux command lines and 28px status bar read as control, not content | **rejected as intent** — the terminal metaphor is the identity, and the same review credits the paths with wayfinding |
+| Section headings and card titles both `--fs-5` | **fixed** — card titles now `--fs-4` (17px vs 22px, verified in the browser) |
+
+Both fixes live in `src/styles/app.css`; `design.css` stays the untouched
+reference implementation.
+
 ## Verification
 
 ```sh
