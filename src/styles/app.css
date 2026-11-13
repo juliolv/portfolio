@@ -85,3 +85,51 @@ button.motion-row {
   box-shadow: none;
   border-color: var(--border);
 }
+
+/* --- work cards link to their case study ---
+   The title anchor is the link; the foot carries a quieter repeat of it so the
+   whole card reads as one destination. Two links, one target. */
+.card__link {
+  text-decoration: none;
+}
+.card__link:hover {
+  color: var(--accent);
+}
+
+.card__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2) var(--sp-3);
+  /* The rule above spans the card; the content lines up with the body text. */
+  padding-inline: var(--sp-4);
+}
+
+/* --- case study page (/work/[slug]) ---
+   One column: the section rail is too narrow for a page headline, so the head
+   stops being a sticky sidebar and the title spans the measure. */
+.case.section {
+  grid-template-columns: minmax(0, 1fr);
+}
+.case .section__head {
+  position: static;
+}
+.case__title {
+  font-size: var(--fs-6);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-tight);
+}
+.case__block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.case__block + .case__block {
+  padding-top: var(--sp-5);
+  border-top: var(--bw) solid var(--border);
+}
+.case__foot {
+  padding-top: var(--sp-5);
+  border-top: var(--bw) solid var(--border);
+}

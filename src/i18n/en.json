@@ -71,7 +71,7 @@
   },
   "work": {
     "title": "Selected work",
-    "note": "Summaries from my CV. Full case studies are in progress.",
+    "note": "Summaries from my CV. Each card opens its case study.",
     "count": "4 items",
     "view": "View the repo",
     "soon": "case study in progress",
@@ -81,6 +81,18 @@
       "stack": "Stack",
       "outcome": "Outcome"
     }
+  },
+  "case": {
+    "caseStudy": "case study",
+    "overview": "Overview",
+    "period": "Period",
+    "status": "Status",
+    "stack": "Stack",
+    "problem": "Problem",
+    "role": "Role",
+    "outcome": "Outcome",
+    "backToWork": "Back to work",
+    "read": "Read the case study"
   },
   "devlog": {
     "title": "Building in public",

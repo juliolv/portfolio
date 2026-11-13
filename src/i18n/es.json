@@ -71,7 +71,7 @@
   },
   "work": {
     "title": "Trabajo seleccionado",
-    "note": "Resúmenes de mi CV. Los casos de estudio completos están en proceso.",
+    "note": "Resúmenes de mi CV. Cada tarjeta abre su caso de estudio.",
     "count": "4 elementos",
     "view": "Ver el repositorio",
     "soon": "caso de estudio en proceso",
@@ -81,6 +81,18 @@
       "stack": "Stack",
       "outcome": "Resultado"
     }
+  },
+  "case": {
+    "caseStudy": "caso de estudio",
+    "overview": "Resumen",
+    "period": "Periodo",
+    "status": "Estado",
+    "stack": "Stack",
+    "problem": "Problema",
+    "role": "Rol",
+    "outcome": "Resultado",
+    "backToWork": "Volver al trabajo",
+    "read": "Leer el caso de estudio"
   },
   "devlog": {
     "title": "Construyendo en público",
