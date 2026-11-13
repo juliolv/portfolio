@@ -12,7 +12,8 @@
     "astro": "astro",
     "guard": "node scripts/guard-secrets.mjs",
     "guard:all": "node scripts/guard-secrets.mjs --all",
-    "check": "astro check"
+    "check": "astro check",
+    "state": "node scripts/state.mjs"
   },
   "dependencies": {
     "astro": "^7.4.11"

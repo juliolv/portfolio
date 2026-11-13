@@ -21,6 +21,14 @@ Consult these guides before working on related tasks:
 - [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
 - [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
 
+## Read this first
+
+1. `docs/state.md` — the living handoff: milestone, next action, decisions, known issues.
+2. `docs/orchestration.md` — how work is split between the orchestrator and a cheap subagent fleet.
+3. Run `pnpm state` — it prints both the summary and whether the handoff file is stale.
+
+A session that ends without updating `docs/state.md` is unfinished, even if the code works.
+
 ## Project rules
 
 **This repo is public and its git history is permanent.**
