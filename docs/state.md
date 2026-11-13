@@ -55,7 +55,7 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 | 2026-11-13 | Boot steps each run in a guard | One throwing step used to kill scroll tracking and nav handlers |
 | 2026-11-13 | Placeholder content only | Public repo; real employers/projects must never enter history |
 | 2026-11-13 | No free models in the fleet | Owner ruled them out: predictable quality beats marginal savings |
-| 2026-11-13 | Designer on gpt-6-luna, tier-switched per batch | `delegation.model` is global, so design batches run separately from code batches |
+| 2026-11-13 | Per-role model tiers | `delegation.model` is global: one role per batch (build → audit → review). Builder `deepseek-v4.1-flash`, Auditor `qwen3.8-flash`, Reviewer **`glm-5.3-flash`** (mandated), Designer `gpt-6-luna` |
 
 ## Known issues
 

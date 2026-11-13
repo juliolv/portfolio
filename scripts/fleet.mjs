@@ -1,33 +1,50 @@
 #!/usr/bin/env node
 /**
- * The fleet roster and its model tiers.
+ * Fleet roster and per-role model tiers.
  *
- *   node scripts/fleet.mjs            # show the roster and the current child model
- *   node scripts/fleet.mjs design     # children run on the design tier
- *   node scripts/fleet.mjs code       # children run on the code tier
+ *   node scripts/fleet.mjs            # roster + what children resolve to now
+ *   node scripts/fleet.mjs build      # switch children to the Builder model
+ *   node scripts/fleet.mjs audit      # ... Auditor model
+ *   node scripts/fleet.mjs review     # ... Reviewer model
+ *   node scripts/fleet.mjs design     # ... Designer model
  *
  * Why a switch and not a mapping: Hermes pins ALL delegated children to
- * `delegation.model`; there is no per-task model in `delegate_task`. So tiers
- * are per BATCH. Parallel mixed models would need the community
- * `delegation-model-map` plugin (model_map backend), which is deliberately not
- * installed — ask the owner before adding it.
+ * `delegation.model`; there is no per-task model in `delegate_task`. The
+ * pipeline is sequential (build -> audit -> review), so one role per batch
+ * gives each agent its own model without the community model_map plugin.
  */
 
 import { execSync } from 'node:child_process';
 
-const TIERS = {
-  code: { model: 'deepseek-v4.1-flash', why: 'cheap, fast, good enough for edits and audits' },
-  design: { model: 'gpt-6-luna', why: 'taste, hierarchy, UX critique' },
+const ROLES = {
+  build: {
+    agent: 'Builder',
+    model: 'deepseek-v4.1-flash',
+    why: 'cheap, fast, writes the slice',
+    writes: 'its own files only',
+  },
+  audit: {
+    agent: 'Auditor',
+    model: 'qwen3.8-flash',
+    why: 'different family from the Builder and Reviewer, so it fails differently',
+    writes: 'no — read-only',
+  },
+  review: {
+    agent: 'Reviewer',
+    model: 'glm-5.3-flash',
+    why: 'owner-mandated reviewer model',
+    writes: 'no — read-only',
+  },
+  design: {
+    agent: 'Designer',
+    model: 'gpt-6-luna',
+    why: 'taste, hierarchy and UX critique',
+    writes: 'no — read-only',
+  },
 };
 
-const ROLE_TIER = {
-  Orchestrator: 'parent',
-  Builder: 'code',
-  Auditor: 'code',
-  Reviewer: 'code',
-  Researcher: 'code',
-  Designer: 'design',
-};
+const PARENT = 'deepseek-v4.1-flash';
+const ALIAS = { code: 'build' };
 
 function run(cmd) {
   try {
@@ -38,37 +55,42 @@ function run(cmd) {
 }
 
 const arg = (process.argv[2] ?? 'status').toLowerCase();
+const role = ALIAS[arg] ?? arg;
 
-if (arg in TIERS) {
-  run(`hermes config set delegation.model ${TIERS[arg].model}`);
-  console.log(`children now run on the ${arg} tier: ${TIERS[arg].model} — ${TIERS[arg].why}`);
+if (role in ROLES) {
+  run(`hermes config set delegation.model ${ROLES[role].model}`);
+  console.log(`children now resolve to the ${role} tier: ${ROLES[role].model}`);
+  console.log(`(${ROLES[role].agent}; ${ROLES[role].why})`);
 } else if (arg !== 'status') {
-  console.error(`unknown tier "${arg}" — use: status | ${Object.keys(TIERS).join(' | ')}`);
+  console.error(`unknown role "${arg}" — use: status | ${Object.keys(ROLES).join(' | ')}`);
   process.exit(1);
 }
 
 const current = run('hermes config get delegation.model') || '(inherits parent)';
-const parent = run('hermes config get model.default') || '(unknown)';
+const parentModel = run('hermes config get model.default') || PARENT;
 
-const rows = Object.entries(ROLE_TIER).map(([role, tier]) => {
-  if (tier === 'parent') return [role, 'main session', parent];
-  const model = TIERS[tier].model;
-  const active = model === current ? 'now' : 'when active';
-  return [role, tier, `${model}  (${active})`];
-});
+const pad = (s, n) => String(s).padEnd(n);
+const rows = Object.entries(ROLES).map(([key, r]) => ({
+  key,
+  ...r,
+  active: r.model === current,
+}));
 
-const width = (i) => Math.max(...rows.map((r) => r[i].length), 12);
-const pad = (s, n) => s.padEnd(n);
+const w = (f) => Math.max(...rows.map((r) => String(f(r)).length), 12);
 
 console.log('');
-console.log('portfolio fleet');
-console.log('─'.repeat(74));
-console.log(`${pad('agent', width(0))}  ${pad('tier', width(1))}  model`);
-console.log('─'.repeat(74));
-for (const [role, tier, model] of rows) console.log(`${pad(role, width(0))}  ${pad(tier, width(1))}  ${model}`);
-console.log('─'.repeat(74));
-console.log(`children currently resolve to: ${current}`);
-console.log(`max parallel children: 4 (cap in docs/orchestration.md; runtime default 10)`);
+console.log('portfolio fleet — per-role model tiers');
+console.log('─'.repeat(88));
+console.log(`${pad('batch', w((r) => r.key))}  ${pad('agent', w((r) => r.agent))}  ${pad('model', w((r) => r.model))}  writes`);
+console.log('─'.repeat(88));
+for (const r of rows) {
+  const mark = r.active ? ' ← active' : '';
+  console.log(`${pad(r.key, w((x) => x.key))}  ${pad(r.agent, w((x) => x.agent))}  ${pad(r.model, w((x) => x.model))}  ${r.writes}${mark}`);
+}
+console.log('─'.repeat(88));
+console.log(`orchestrator (this session): ${parentModel}`);
+console.log(`children resolve to:        ${current}`);
+console.log('max parallel children:     4');
 console.log('');
-console.log('Reminder: tiers are per batch. Design and code batches run one after');
-console.log('another, not side by side, unless the model_map plugin is installed.');
+console.log('Run one role per batch: build -> audit -> review. Design is its own batch.');
+console.log('The orchestrator implements; no child ever ships.');

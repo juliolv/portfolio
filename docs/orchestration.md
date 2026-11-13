@@ -40,31 +40,40 @@ conflict on disk, and their output is short.
 ## Model tiers
 
 `delegation.model` pins **all** children at once, so models are assigned per
-**batch**, not per agent. `node scripts/fleet.mjs` switches the tier:
+**role batch**, not per agent:
 
-| Agent | Tier | Model |
-|---|---|---|
-| Orchestrator | main session | whatever the session runs (currently `deepseek-v4.1-flash`) |
-| Builder | code | `deepseek-v4.1-flash` |
-| Auditor | code | `deepseek-v4.1-flash` |
-| Reviewer | code | `deepseek-v4.1-flash` |
-| Researcher | code | `deepseek-v4.1-flash` |
-| Designer | design | `gpt-6-luna` |
+| Batch | Agent | Model | Why |
+|---|---|---|---|
+| `build` | Builder | `deepseek-v4.1-flash` | cheap, fast, writes the slice |
+| `audit` | Auditor | `qwen3.8-flash` | different family from Builder and Reviewer, so it fails differently |
+| `review` | Reviewer | `glm-5.3-flash` | owner-mandated reviewer model |
+| `design` | Designer | `gpt-6-luna` | taste, hierarchy, UX critique |
 
 ```sh
-node scripts/fleet.mjs design   # children -> gpt-6-luna (design batch)
-node scripts/fleet.mjs code     # children -> deepseek-v4.1-flash (work batch)
-node scripts/fleet.mjs          # print the roster and what children resolve to
+node scripts/fleet.mjs build    # then dispatch the build tasks
+node scripts/fleet.mjs audit    # then the audits
+node scripts/fleet.mjs review   # then the review
+node scripts/fleet.mjs          # roster + what children resolve to right now
 ```
 
-**The limitation, stated plainly:** the Designer cannot run on `gpt-6-luna` in
-the same batch as builders on `deepseek-v4.1-flash`. Design critiques therefore
-run as their own batch (usually one child), and their findings come back to the
-orchestrator, which implements them. Per-agent parallel models need the
-community `delegation-model-map` plugin (`delegation.backends.model_map`);
-it is not installed — ask the owner first.
+The orchestrator stays on the session model (`deepseek-v4.1-flash`).
 
-## Cost model
+**Why batches and not a map:** the pipeline is sequential anyway — build, then
+audit, then review — and a role's children all need the same model. Running one
+role per batch gives each agent its own model without a dependency. Mixed models
+*within* one batch would need the community `delegation-model-map` plugin
+(`delegation.backends.model_map`); it is not installed, ask the owner first.
+
+**Diversity is deliberate:** the Auditor is a different model family from both
+the Builder that wrote the code and the Reviewer that argues with it. Three
+different models catch three different classes of mistake; one model reviewing
+itself mostly agrees with itself.
+
+**Always flip back.** Switching tiers is global and does not expire. Run
+`node scripts/fleet.mjs build` before an implementation batch, or the next
+children inherit the last role's (possibly expensive) model.
+
+## Cost model## Cost model
 
 All children inherit the parent model unless pinned. The parent runs
 `deepseek-v4.1-flash` on `opencode-go`, which is already the cheap tier, so the
