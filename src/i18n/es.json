@@ -80,7 +80,8 @@
       "role": "Rol",
       "stack": "Stack",
       "outcome": "Resultado"
-    }
+    },
+    "items": "elementos"
   },
   "case": {
     "caseStudy": "caso de estudio",

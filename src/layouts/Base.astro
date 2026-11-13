@@ -23,7 +23,7 @@ const {
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://juliolv.github.io').href;
-const ogImage = new URL('og.png', canonical).href;
+const ogImage = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/og.png`, Astro.site ?? 'https://juliolv.github.io').href;
 
 /* Client-side UI copy (status messages, theme names, palette labels).
    Content strings stay server-rendered — this is only what JS needs. */
@@ -43,8 +43,6 @@ const ui = {
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="en" href={canonical} />
-    <link rel="alternate" hreflang="es" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Julio López" />
     <meta property="og:title" content={title} />

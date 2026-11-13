@@ -24,7 +24,8 @@ const items = (await getCollection('work')).sort((a, b) => a.data.order - b.data
   <div class="section__body">
     <p class="prompt">
       <span class="prompt__glyph">›</span><span class="prompt__cmd">ls -l work/</span>
-      <span>{items.length} items</span>
+
+      <span>{items.length} <Bi en={s('en', 'work.items')} es={s('es', 'work.items')} /></span>
     </p>
 
     <div class="cards">

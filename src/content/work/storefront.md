@@ -3,7 +3,7 @@ order: 3
 name: "E-commerce storefront"
 nameEs: "Tienda en línea"
 period: "WIP"
-periodEs: "en curso"
+periodEs: "sin publicar"
 status: "planned"
 stack: ["Next.js", "Prisma", "Tailwind CSS", "shadcn/ui"]
 problem: "A small retailer needed fast pages, strong SEO, secure payments and automated inventory."

@@ -369,7 +369,11 @@ function openExternal(url: string) {
 
 function goTo(hash: string) {
   const el = document.querySelector(hash);
-  if (!el) return;
+  if (!el) {
+    // Section ids only exist on the home page; from a case study, go there.
+    window.location.href = `${BASE}/${hash}`;
+    return;
+  }
   el.scrollIntoView({ behavior: prefersReduced() ? 'auto' : 'smooth', block: 'start' });
   if (window.location.hash !== hash) history.replaceState(null, '', hash);
 }
