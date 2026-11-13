@@ -8,7 +8,7 @@ const { path = '~/julio' } = Astro.props;
   <div class="statusbar__row">
     <span class="sb sb--mode"><span aria-hidden="true">⎇</span> main</span>
     <span class="sb" id="sb-path">{path}</span>
-    <span class="sb sb--msg" id="sb-msg" role="status" aria-live="polite"></span>
+    <span class="sb sb--msg" id="sb-msg" role="status"></span>
     <span class="sb sb--right sb--wide" id="sb-lang">EN</span>
     <span class="sb sb--right sb--wide" id="sb-theme">{s(L, 'theme.system')}</span>
     <span class="sb sb--right sb--wide">UTF-8</span>

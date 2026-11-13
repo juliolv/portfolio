@@ -3,6 +3,7 @@ order: 1
 name: "Operations platform"
 nameEs: "Plataforma de operaciones"
 period: "20XX — present"
+periodEs: "20XX — actualidad"
 status: "progress"
 stack: ["TypeScript", "React", "Node.js", "AWS"]
 problem: "An enterprise operations platform outgrew its legacy framework and the web interfaces built on top of it."

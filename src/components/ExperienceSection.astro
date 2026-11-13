@@ -17,10 +17,10 @@ const L = 'en' as const;
     <ol class="tl">
       {experience.map((row) => (
         <li class="tl__item">
-          <span class="tl__when">{row.when}</span>
+          <span class="tl__when"><Bi en={row.when} es={row.whenEs} /></span>
           <div>
             <h3 class="tl__role"><Bi en={row.role} es={row.roleEs} /></h3>
-            <p class="tl__org">{row.org}</p>
+            <p class="tl__org"><Bi en={row.org} es={row.orgEs} /></p>
             <p class="tl__text"><Bi en={row.text} es={row.textEs} /></p>
           </div>
         </li>

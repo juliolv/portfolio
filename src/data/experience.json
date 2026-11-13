@@ -5,7 +5,9 @@
     "roleEs": "Ingeniero de software senior",
     "org": "Example Corp",
     "text": "Placeholder for the real role. Describe scope, the systems you owned and one measurable outcome.",
-    "textEs": "Marcador para el puesto real. Describe alcance, los sistemas que owned y un resultado medible."
+    "textEs": "Marcador para el puesto real. Describe alcance, los sistemas que owned y un resultado medible.",
+    "whenEs": "20XX — actualidad",
+    "orgEs": "Example Corp"
   },
   {
     "when": "20XX — 20XX",
@@ -13,7 +15,9 @@
     "roleEs": "Ingeniero de software",
     "org": "Example Inc",
     "text": "Placeholder for the real role. Owned features end to end and consolidated a fragmented codebase.",
-    "textEs": "Marcador para el puesto real. Funcionalidades de punta a punta y consolidación de un código fragmentado."
+    "textEs": "Marcador para el puesto real. Funcionalidades de punta a punta y consolidación de un código fragmentado.",
+    "whenEs": "20XX — 20XX",
+    "orgEs": "Example Inc"
   },
   {
     "when": "20XX — 20XX",
@@ -21,7 +25,9 @@
     "roleEs": "Ingeniero de software junior",
     "org": "Example Ltd",
     "text": "Placeholder for the real role. Built and maintained modules for business applications.",
-    "textEs": "Marcador para el puesto real. Desarrollo y mantenimiento de módulos para aplicaciones de negocio."
+    "textEs": "Marcador para el puesto real. Desarrollo y mantenimiento de módulos para aplicaciones de negocio.",
+    "whenEs": "20XX — 20XX",
+    "orgEs": "Example Ltd"
   },
   {
     "when": "20XX — 20XX",
@@ -29,6 +35,8 @@
     "roleEs": "Lic. en Ciencias de la Computación",
     "org": "Example University",
     "text": "Placeholder for education. Thesis topic and any honours go here.",
-    "textEs": "Marcador para formación académica. Tema de tesis y distinciones aquí."
+    "textEs": "Marcador para formación académica. Tema de tesis y distinciones aquí.",
+    "whenEs": "20XX — 20XX",
+    "orgEs": "Example University"
   }
 ]

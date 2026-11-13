@@ -427,7 +427,8 @@ function paletteCommands(): Cmd[] {
     run: () => openExternal(links.linkedin),
   });
   list.push({ group: p.gLinks, label: p.repo, hint: strip(links.repo), run: () => openExternal(links.repo) });
-  list.push({ group: p.gLinks, label: p.cv, hint: strip(links.cv), run: () => openExternal(links.cv) });
+  const cvHref = (links.cv ?? '').startsWith('/') ? `${BASE}${links.cv}` : links.cv;
+  list.push({ group: p.gLinks, label: p.cv, hint: strip(links.cv), run: () => openExternal(cvHref) });
 
   list.push({ group: p.gActions, label: p.copyEmail, hint: '', run: () => void copyEmail() });
 
@@ -459,6 +460,8 @@ function setupPalette() {
 
   function render() {
     list!.innerHTML = '';
+    input!.setAttribute('aria-expanded', 'true');
+
     input!.setAttribute('aria-expanded', 'true');
 
     if (!filtered.length) {
@@ -531,6 +534,7 @@ function setupPalette() {
 
   function close() {
     palette!.hidden = true;
+    input!.setAttribute('aria-expanded', 'false');
     input!.blur();
     if (returnFocus?.isConnected) returnFocus.focus();
   }

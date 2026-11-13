@@ -59,13 +59,24 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 
 ## Known issues
 
+Triaged from the first audit fleet (2026-11-13). Fixed items are gone from this
+table; they live in the git log.
+
 | # | Severity | Issue | Fix |
 |---|---|---|---|
-| 1 | major | No sitemap.xml, robots.txt, canonical, og:*/twitter:* tags | add `@astrojs/sitemap`, static robots, OG image |
-| 2 | major | `SITE.links.cv` points at `/portfolio/cv.pdf`, which does not exist | ship the PDF or hide the button until it exists |
-| 3 | minor | `.tabs` shows scrollbar stepper arrows in headless Chrome when it overflows | cosmetic; only reproducible with overlay scrollbars disabled |
-| 4 | minor | Every work/experience record is a marked placeholder | content debt, tracked by issue #3 |
-| 5 | info | Cheap paid tiers beyond `deepseek-v4.1-flash` are unbenchmarked for code edits (free tiers are ruled out) | benchmark before routing writers to them |
+| 1 | major | ~20 `s('en', …)` call sites bypass `Bi`, so the design-system page, hero `cardMeta`/kv keys, tab labels and 404 buttons stay English under `data-lang="es"` | wrap each in `Bi` (mechanical; one Builder batch) |
+| 2 | major | Palette: group headings are `role="presentation"` (grouping invisible to AT), no live region announcing filter results, no `inert`/scroll lock behind the dialog | `role="group"` + label, `aria-live` counter, `main.inert` + `html { overflow: hidden }` |
+| 3 | minor | Tabpanels lack `tabindex="0"`; motion-demo buttons misuse `aria-pressed`; decorative `›` glyphs not `aria-hidden`; palette trigger's accessible name does not start with its visible "Ctrl K" | APG fixes, one pass |
+| 4 | minor | `#ds-components` link targets a heading inside the hidden components tabpanel, so the anchor never scrolls | make the link activate the tab instead |
+| 5 | major | Contact email and LinkedIn are literal placeholders; `cv.pdf` does not exist | blocked on the owner's real data and CV |
+| 6 | info | Cheap paid tiers beyond `deepseek-v4.1-flash` are unbenchmarked for code edits (free tiers ruled out) | benchmark before routing writers to them |
+
+Fixed this session: skip-link target (focus lands on `main#top`), Spanish
+`aria-label`s on nav/brand/theme/language/skip, palette focus ring
+(`.palette__field:focus-within` → accent), `aria-expanded` true/false lifecycle,
+canonical + OG/Twitter + 1200×630 `og.png`, `robots.txt`, `sitemap.xml`, ES
+counterparts for experience `when`/`org` and work `period` (schema now requires
+them), single live region in the status bar, palette CV command now base-prefixed.
 
 ## Verification
 

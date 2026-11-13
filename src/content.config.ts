@@ -10,16 +10,17 @@ const work = defineCollection({
   schema: z.object({
     order: z.number().default(99),
     name: z.string(),
-    nameEs: z.string().optional(),
+    nameEs: z.string(),
     period: z.string(),
+    periodEs: z.string(),
     status: z.enum(['done', 'progress', 'planned']).default('planned'),
     stack: z.array(z.string()).default([]),
     problem: z.string(),
-    problemEs: z.string().optional(),
+    problemEs: z.string(),
     role: z.string(),
-    roleEs: z.string().optional(),
+    roleEs: z.string(),
     outcome: z.string(),
-    outcomeEs: z.string().optional(),
+    outcomeEs: z.string(),
   }),
 });
 

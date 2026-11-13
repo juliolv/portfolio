@@ -3,6 +3,7 @@ order: 4
 name: "This portfolio"
 nameEs: "Este portafolio"
 period: "2026"
+periodEs: "2026"
 status: "progress"
 stack: ["Astro", "CSS", "TypeScript", "Hermes Agent"]
 problem: "Wanted to learn an agent-driven workflow on a real project and show the process, not only the result."

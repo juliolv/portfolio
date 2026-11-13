@@ -64,3 +64,8 @@ button.motion-row {
     transition: none !important;
   }
 }
+
+/* The input zeroes its own outline; the field carries the focus ring instead. */
+.palette__field:focus-within {
+  border-color: var(--accent);
+}

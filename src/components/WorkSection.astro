@@ -25,7 +25,7 @@ const items = (await getCollection('work')).sort((a, b) => a.data.order - b.data
         <article class="pane card">
           <div class="pane__bar">
             <span class="pane__title">work/<b>{id}</b>.md</span>
-            <span>{data.period}</span>
+            <span><Bi en={data.period} es={data.periodEs} /></span>
           </div>
 
           <div class="card__body">

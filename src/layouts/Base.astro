@@ -22,12 +22,15 @@ const {
   active = '',
 } = Astro.props;
 
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://juliolv.github.io').href;
+const ogImage = new URL('og.png', canonical).href;
+
 /* Client-side UI copy (status messages, theme names, palette labels).
    Content strings stay server-rendered — this is only what JS needs. */
 const ui = {
   site: { email: SITE.email, links: SITE.links, base: import.meta.env.BASE_URL },
-  en: { status: t('en', 'status'), theme: t('en', 'theme'), palette: t('en', 'palette') },
-  es: { status: t('es', 'status'), theme: t('es', 'theme'), palette: t('es', 'palette') },
+  en: { status: t('en', 'status'), theme: t('en', 'theme'), palette: t('en', 'palette'), a11y: t('en', 'a11y') },
+  es: { status: t('es', 'status'), theme: t('es', 'theme'), palette: t('es', 'palette'), a11y: t('es', 'a11y') },
 };
 ---
 
@@ -39,6 +42,21 @@ const ui = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={canonical} />
+    <link rel="alternate" hreflang="es" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Julio López" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="es_ES" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
     <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
     <script is:inline>
       /* Theme and language boot — runs before first paint so nothing flashes.
@@ -71,7 +89,7 @@ const ui = {
   </head>
   <body>
     <script type="application/json" id="site-config" set:html={JSON.stringify(ui)}></script>
-    <a class="skip" href="#top">Skip to content</a>
+    <a class="skip" href="#top" data-i18n="a11y.skip">Skip to content</a>
     <Topbar active={active} />
     <slot />
     <StatusBar path={path} />

@@ -19,11 +19,11 @@ const links = [
 
 <header class="topbar">
   <div class="wrap topbar__row">
-    <a class="brand" href={url('/#top')} aria-label={s(L, 'a11y.home')}>
+    <a class="brand" href={url('/#top')} aria-label={s(L, 'a11y.home')} data-i18n-attr="aria-label:a11y.home">
       <span class="brand__glyph">~/</span>{SITE.brand}<span class="brand__crumb" id="crumb" aria-hidden="true"></span>
     </a>
 
-    <nav class="nav" id="nav" aria-label={s(L, 'a11y.sections')}>
+    <nav class="nav" id="nav" aria-label={s(L, 'a11y.sections')} data-i18n-attr="aria-label:a11y.sections">
       {links.map((link) => (
         <a class="nav__link" href={link.href} data-nav={link.id} data-i18n={link.key} aria-current={link.id === active ? 'true' : undefined}><Bi en={s(L, link.key)} es={s('es', link.key)} /></a>
       ))}
@@ -31,12 +31,12 @@ const links = [
     </nav>
 
     <div class="topbar__tools">
-      <div class="seg" role="radiogroup" data-seg="lang" aria-label={s(L, 'a11y.language')}>
+      <div class="seg" role="radiogroup" data-seg="lang" aria-label={s(L, 'a11y.language')} data-i18n-attr="aria-label:a11y.language">
         <button class="seg__opt" type="button" role="radio" data-value="en" aria-checked="true" aria-label="English">EN</button>
         <button class="seg__opt" type="button" role="radio" data-value="es" aria-checked="false" aria-label="Español">ES</button>
       </div>
 
-      <div class="seg" role="radiogroup" data-seg="theme" aria-label={s(L, 'a11y.theme')}>
+      <div class="seg" role="radiogroup" data-seg="theme" aria-label={s(L, 'a11y.theme')} data-i18n-attr="aria-label:a11y.theme">
         <button class="seg__opt" type="button" role="radio" data-value="system" aria-checked="true"
           aria-label={s(L, 'theme.system')} data-tip={s(L, 'theme.system')}>
           <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.4"></circle><path d="M8 2.5a5.5 5.5 0 0 1 0 11z" fill="currentColor"></path></svg>

@@ -14,13 +14,14 @@ const L = 'en' as const;
         id="palette-input"
         type="text"
         role="combobox"
-        aria-expanded="true"
+        aria-expanded="false"
         aria-controls="palette-list"
         aria-autocomplete="list"
         autocomplete="off"
         spellcheck="false"
         placeholder={s(L, 'palette.placeholder')}
         aria-label={s(L, 'palette.title')}
+        data-i18n-attr="placeholder:palette.placeholder;aria-label:palette.title"
       />
     </div>
     <ul class="palette__list" id="palette-list" role="listbox" aria-label={s(L, 'palette.title')}></ul>

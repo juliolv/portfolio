@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://juliolv.github.io/portfolio/sitemap.xml

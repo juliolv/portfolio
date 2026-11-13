@@ -3,6 +3,7 @@ order: 2
 name: "Booking and scheduling system"
 nameEs: "Sistema de reservas y agenda"
 period: "20XX — present"
+periodEs: "20XX — actualidad"
 status: "progress"
 stack: ["MongoDB", "Express", "React", "Node.js", "Monorepo"]
 problem: "One business needed a single system for records, scheduling and billing instead of three disconnected tools."

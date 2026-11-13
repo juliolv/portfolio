@@ -3,7 +3,8 @@
     "home": "Julio, volver al inicio",
     "sections": "Secciones",
     "language": "Idioma",
-    "theme": "Tema"
+    "theme": "Tema",
+    "skip": "Saltar al contenido"
   },
   "nav": {
     "work": "trabajo",

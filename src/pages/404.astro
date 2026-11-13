@@ -18,9 +18,9 @@ import { s, url } from '../lib/i18n';
             />
           </p>
           <div class="hero__actions">
-            <a class="btn btn--primary" href={url('/')}><span class="btn__glyph" aria-hidden="true">←</span>{s('en', 'palette.top')}</a>
-            <a class="btn" href={url('/#work')}>{s('en', 'nav.work')}</a>
-            <a class="btn" href={url('/design-system/')}>{s('en', 'nav.system')}</a>
+            <a class="btn btn--primary" href={url('/')}><span class="btn__glyph" aria-hidden="true">←</span><Bi en={s('en', 'palette.top')} es={s('es', 'palette.top')} /></a>
+            <a class="btn" href={url('/#work')}><Bi en={s('en', 'nav.work')} es={s('es', 'nav.work')} /></a>
+            <a class="btn" href={url('/design-system/')}><Bi en={s('en', 'nav.system')} es={s('es', 'nav.system')} /></a>
           </div>
         </div>
       </section>
