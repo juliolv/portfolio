@@ -1,0 +1,35 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+.env.*
+!.env.example
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# --- privacy guard (see scripts/guard-secrets.mjs) ---
+# Local denylist with real names/employers/emails. NEVER commit it.
+.guard/
+
+# Design references from Claude contain real personal data until scrubbed.
+design/
+design-refs/
+*.artifact.html

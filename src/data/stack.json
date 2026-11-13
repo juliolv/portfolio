@@ -1,0 +1,45 @@
+[
+  {
+    "dir": "languages",
+    "items": [
+      "TypeScript",
+      "JavaScript (ES6+)",
+      "HTML5 / CSS3"
+    ]
+  },
+  {
+    "dir": "frontend",
+    "items": [
+      "React",
+      "Astro",
+      "Next.js",
+      "Tailwind CSS",
+      "shadcn/ui",
+      "MUI",
+      "Zustand"
+    ]
+  },
+  {
+    "dir": "backend",
+    "items": [
+      "Node.js",
+      "REST APIs",
+      "Prisma / Drizzle",
+      "PostgreSQL / MySQL",
+      "MongoDB",
+      "Zod / Yup"
+    ]
+  },
+  {
+    "dir": "infra-tooling",
+    "items": [
+      "AWS (Amplify, Lambda, S3, SES)",
+      "Vercel",
+      "Docker",
+      "CI/CD pipelines",
+      "Monorepos",
+      "Git, WSL / Linux",
+      "Hermes Agent (learning)"
+    ]
+  }
+]

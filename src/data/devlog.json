@@ -1,0 +1,38 @@
+[
+  {
+    "issue": 1,
+    "status": "done",
+    "date": "2026-11-13",
+    "title": "Environment setup",
+    "titleEs": "Preparar el entorno",
+    "note": "Reproducible dev environment and a written record of what broke.",
+    "noteEs": "Entorno de desarrollo reproducible y registro escrito de lo que falló."
+  },
+  {
+    "issue": 2,
+    "status": "progress",
+    "date": "2026-11-13",
+    "title": "Design system",
+    "titleEs": "Sistema de diseño",
+    "note": "Tokens, themes and components for the terminal design language. This is the first pass.",
+    "noteEs": "Tokens, temas y componentes del lenguaje visual de terminal. Primera pasada."
+  },
+  {
+    "issue": 3,
+    "status": "planned",
+    "date": null,
+    "title": "Content and case studies",
+    "titleEs": "Contenido y casos de estudio",
+    "note": "Replace every placeholder with real projects, experience and a CV.",
+    "noteEs": "Reemplazar cada marcador por proyectos, experiencia y CV reales."
+  },
+  {
+    "issue": 4,
+    "status": "planned",
+    "date": null,
+    "title": "Publish",
+    "titleEs": "Publicar",
+    "note": "Ship to production and write the retrospective.",
+    "noteEs": "Publicar en producción y escribir la retrospectiva."
+  }
+]

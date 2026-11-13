@@ -1,0 +1,17 @@
+---
+import { s } from '../lib/i18n';
+const L = 'en' as const;
+const { path = '~/julio' } = Astro.props;
+---
+
+<footer class="statusbar">
+  <div class="statusbar__row">
+    <span class="sb sb--mode"><span aria-hidden="true">⎇</span> main</span>
+    <span class="sb" id="sb-path">{path}</span>
+    <span class="sb sb--msg" id="sb-msg" role="status" aria-live="polite"></span>
+    <span class="sb sb--right sb--wide" id="sb-lang">EN</span>
+    <span class="sb sb--right sb--wide" id="sb-theme">{s(L, 'theme.system')}</span>
+    <span class="sb sb--right sb--wide">UTF-8</span>
+    <span class="sb sb--right sb--pct" id="sb-pct">0%</span>
+  </div>
+</footer>

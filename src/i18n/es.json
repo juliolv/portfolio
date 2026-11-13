@@ -1,0 +1,168 @@
+{
+  "a11y": {
+    "home": "Julio, volver al inicio",
+    "sections": "Secciones",
+    "language": "Idioma",
+    "theme": "Tema"
+  },
+  "nav": {
+    "work": "trabajo",
+    "devlog": "bitácora",
+    "experience": "experiencia",
+    "stack": "stack",
+    "about": "sobre-mí",
+    "contact": "contacto",
+    "system": "sistema-de-diseño"
+  },
+  "theme": {
+    "system": "sistema",
+    "light": "claro",
+    "dark": "oscuro"
+  },
+  "status": {
+    "done": "hecho",
+    "progress": "en curso",
+    "planned": "planeado",
+    "ready": "listo",
+    "copied": "copiado",
+    "copyFailed": "selecciona la dirección para copiarla",
+    "tbd": "por definir"
+  },
+  "hero": {
+    "role": "Ingeniero de software full-stack senior",
+    "pitch": "Ingeniero senior con más de 10 años en todo el ciclo de desarrollo. Convierto sistemas heredados en plataformas web rápidas y nativas de la nube, y construyo las herramientas internas de operación y el e-commerce con los que funcionan los negocios.",
+    "cv": "Descargar CV",
+    "email": "Copiar email",
+    "available": "Disponible",
+    "availableNote": "para roles full-stack senior · [Ciudad, zona horaria] · remoto",
+    "cardLabel": "Resumen",
+    "cardMeta": "solo lectura",
+    "card": [
+      [
+        "rol",
+        "Ingeniero de software senior"
+      ],
+      [
+        "experiencia",
+        "Más de 10 años, desde 2015"
+      ],
+      [
+        "foco",
+        "Modernización de sistemas, plataformas de operación, e-commerce"
+      ],
+      [
+        "stack",
+        "TypeScript · React · Next.js · Node.js · AWS"
+      ],
+      [
+        "idiomas",
+        "Español (nativo) · Inglés (profesional)"
+      ],
+      [
+        "base",
+        "[Ciudad, país]"
+      ],
+      [
+        "contacto",
+        "your.email@example.com"
+      ]
+    ]
+  },
+  "work": {
+    "title": "Trabajo seleccionado",
+    "note": "Resúmenes de mi CV. Los casos de estudio completos están en proceso.",
+    "count": "4 elementos",
+    "view": "Ver el repositorio",
+    "soon": "caso de estudio en proceso",
+    "labels": {
+      "problem": "Problema",
+      "role": "Rol",
+      "stack": "Stack",
+      "outcome": "Resultado"
+    }
+  },
+  "devlog": {
+    "title": "Construyendo en público",
+    "note": "Entradas de ejemplo. Cada una reflejará un issue real de GitHub.",
+    "intro": "Estoy aprendiendo Hermes Agent, el agente de código abierto de Nous Research, usándolo para construir este sitio. Cada fase se registra como un issue de GitHub y esta bitácora los sigue.",
+    "repo": "Repositorio público",
+    "hosted": "El sitio se publica desde el repositorio con",
+    "issue": "issue"
+  },
+  "experience": {
+    "title": "Experiencia",
+    "note": "Más de 10 años, de 2015 a hoy."
+  },
+  "stack": {
+    "title": "Stack",
+    "note": "Lo que uso a diario, agrupado por área.",
+    "groups": [
+      "Lenguajes",
+      "Frontend",
+      "Backend y datos",
+      "Infraestructura, herramientas y flujos asistidos por IA"
+    ]
+  },
+  "about": {
+    "title": "Sobre mí",
+    "body": [
+      "Soy Julio, ingeniero de software con una década entregando productos web. Me gusta el software que resulta obvio de usar y tranquilo de mantener, y cuido los pequeños detalles que hacen posibles ambas cosas.",
+      "[Añade dos o tres frases: qué valoras en un equipo y qué haces lejos del teclado.]"
+    ]
+  },
+  "contact": {
+    "title": "Contacto",
+    "lede": "La forma más rápida de contactarme es por email. Suelo responder en un día.",
+    "copy": "Copiar",
+    "open": "Abrir en la app de correo",
+    "colophon": "Construido en público con Hermes Agent. Sin frameworks ni rastreadores.",
+    "colophonLink": "Ver el sistema de diseño"
+  },
+  "palette": {
+    "title": "Paleta de comandos",
+    "open": "Paleta de comandos",
+    "placeholder": "Escribe un comando o busca…",
+    "empty": "Ningún comando coincide.",
+    "hNav": "navegar",
+    "hRun": "ejecutar",
+    "hClose": "cerrar",
+    "gGo": "Ir a",
+    "gTheme": "Tema",
+    "gLang": "Idioma",
+    "gLinks": "Enlaces",
+    "gActions": "Acciones",
+    "top": "Inicio",
+    "themeSet": "Tema: ",
+    "langEn": "Idioma: English",
+    "langEs": "Idioma: Español",
+    "openLink": "Abrir ",
+    "copyEmail": "Copiar dirección de email",
+    "repo": "Repositorio del portfolio",
+    "cv": "CV"
+  },
+  "ds": {
+    "title": "Sistema de diseño",
+    "lede": "Los tokens y componentes con los que está hecho este sitio. Los valores se leen en vivo de la página, así que cambian con el tema.",
+    "tabTokens": "tokens",
+    "tabComponents": "componentes",
+    "color": "color",
+    "colorNote": "Un solo acento, reservado para lo activo o accionable. Los colores de estado evitan las familias verde y ámbar y siempre van con un glifo y una etiqueta.",
+    "type": "tipografía",
+    "space": "espaciado (base 4px)",
+    "shape": "radio y borde",
+    "motion": "movimiento",
+    "motionNote": "Selecciona una fila para reproducirla. Las duraciones bajan a cero con prefers-reduced-motion.",
+    "layers": "z-index",
+    "sample": "Nítido, sobrio, seguro.",
+    "sPrimary": "Primario",
+    "sDefault": "Normal",
+    "sDisabled": "Inactivo",
+    "sLink": "Enlace en línea",
+    "sLive": "En vivo: cambia todo el sitio.",
+    "sTipTarget": "Pasa el cursor o enfócame",
+    "sTip": "Texto del tooltip",
+    "sRole": "[Nombre del rol]",
+    "sOrg": "[Empresa] · [Lugar]",
+    "sElsewhere": "Las tarjetas se usan en Trabajo seleccionado, las pestañas controlan esta vista y la barra de estado queda fija al pie de cada página."
+  }
+}

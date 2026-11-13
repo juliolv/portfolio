@@ -1,0 +1,56 @@
+---
+import Bi from './Bi.astro';
+import { s, SITE } from '../lib/i18n';
+import devlog from '../data/devlog.json';
+
+const L = 'en' as const;
+const statusClass: Record<string, string> = {
+  done: 'status--done',
+  progress: 'status--progress',
+  planned: 'status--planned',
+};
+---
+
+<section class="section" id="devlog" aria-labelledby="devlog-h">
+  <div class="section__head">
+    <p class="eyebrow">~/julio/<b>devlog</b></p>
+    <h2 class="section__title" id="devlog-h"><Bi en={s(L, 'devlog.title')} es={s('es', 'devlog.title')} /></h2>
+    <p class="section__note"><Bi en={s(L, 'devlog.note')} es={s('es', 'devlog.note')} /></p>
+  </div>
+
+  <div class="section__body">
+    <p class="lede reveal"><Bi en={s(L, 'devlog.intro')} es={s('es', 'devlog.intro')} /></p>
+
+    <div class="log-head reveal">
+      <p class="prompt"><span class="prompt__glyph">›</span><span class="prompt__cmd">git log --reverse --issues</span></p>
+      <a class="link link--mono" href={SITE.links.repo} target="_blank" rel="noopener">
+        <Bi en={s(L, 'devlog.repo')} es={s('es', 'devlog.repo')} /> ↗
+      </a>
+    </div>
+
+    <ol class="log reveal">
+      {devlog.map((entry) => (
+        <li class="log__item">
+          <span class="log__hash">#{entry.issue}</span>
+          <span class={`log__status status ${statusClass[entry.status] ?? 'status--planned'}`}>
+            <span aria-hidden="true">●</span>{' '}
+            <Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} />
+          </span>
+          <span class="log__date">{entry.date ?? s(L, 'status.tbd')}</span>
+          <div>
+            <h3 class="log__title"><Bi en={entry.title} es={entry.titleEs} /></h3>
+            <p class="log__note"><Bi en={entry.note} es={entry.noteEs} /></p>
+          </div>
+          <a class="log__link link link--mono" href={`${SITE.links.repo}/issues/${entry.issue}`} target="_blank" rel="noopener">
+            {s(L, 'devlog.issue')} #{entry.issue} ↗
+          </a>
+        </li>
+      ))}
+    </ol>
+
+    <p class="section__note reveal">
+      <Bi en={s(L, 'devlog.hosted')} es={s('es', 'devlog.hosted')} />
+      {' '}<a class="link" href={SITE.links.pages} target="_blank" rel="noopener">GitHub Pages ↗</a>
+    </p>
+  </div>
+</section>

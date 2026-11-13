@@ -1,0 +1,46 @@
+/* Additions on top of the design system.
+   design.css is kept as the reference implementation, unmodified. */
+
+[hidden] {
+  display: none !important;
+}
+
+/* --- bilingual content blocks ---
+   Both languages are rendered at build time; switching is a CSS toggle,
+   so there is no re-render and no layout shift. */
+html[data-lang='en'] .bi--es,
+html[data-lang='es'] .bi--en {
+  display: none !important;
+}
+
+html[lang] [data-lang-block] {
+  display: none;
+}
+html[data-lang='en'] [data-lang-block='en'],
+html[data-lang='es'] [data-lang-block='es'] {
+  display: revert;
+}
+
+/* --- skip link --- */
+.skip {
+  position: absolute;
+  left: var(--sp-4);
+  top: calc(-1 * var(--sp-9));
+  z-index: var(--z-tooltip);
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  text-decoration: none;
+  transition: top var(--dur-base) var(--ease-out);
+}
+.skip:focus-visible,
+.skip:focus {
+  top: var(--sp-4);
+}
+
+/* The home page is a single document; keep long labels readable. */
+.card__body .kv dd {
+  margin: 0;
+}

@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The denylist of real-world terms is gitignored, so CI only runs the
+      # credential and personal-email patterns. The local pre-commit hook is
+      # what blocks employer/client names.
+      - name: Secret and PII scan
+        run: node scripts/guard-secrets.mjs --all
+
+      - name: Build
+        run: pnpm build

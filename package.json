@@ -1,0 +1,21 @@
+{
+  "name": "portfolio",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "guard": "node scripts/guard-secrets.mjs",
+    "guard:all": "node scripts/guard-secrets.mjs --all",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "astro": "^7.4.11"
+  },
+  "description": "Terminal-inspired portfolio, built in public."
+}

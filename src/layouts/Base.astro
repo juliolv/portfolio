@@ -1,0 +1,62 @@
+---
+import '../styles/design.css';
+import '../styles/app.css';
+import Topbar from '../components/Topbar.astro';
+import StatusBar from '../components/StatusBar.astro';
+import Palette from '../components/Palette.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Section path shown in the status bar, e.g. "work". */
+  path?: string;
+  /** Which nav item to mark current (used by sub-pages). */
+  active?: string;
+}
+
+const {
+  title = 'Julio López — Senior full-stack software engineer',
+  description = 'Senior full-stack software engineer. Legacy modernization, operations platforms and e-commerce.',
+  path = '~/julio',
+  active = '',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-lang="en" data-active={active}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script is:inline>
+      /* Theme and language boot — runs before first paint so nothing flashes. */
+      (() => {
+        const root = document.documentElement;
+        try {
+          const theme = localStorage.getItem('theme');
+          if (theme === 'light' || theme === 'dark') root.dataset.theme = theme;
+          const lang = localStorage.getItem('lang');
+          if (lang === 'es' || lang === 'en') {
+            root.dataset.lang = lang;
+            root.lang = lang;
+          }
+        } catch {
+          /* private mode: fall back to system + English */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#top">Skip to content</a>
+    <Topbar active={active} />
+    <slot />
+    <StatusBar path={path} />
+    <Palette />
+    <script>
+      import '../scripts/client';
+    </script>
+  </body>
+</html>

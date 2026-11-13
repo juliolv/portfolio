@@ -1,0 +1,13 @@
+---
+/**
+ * Renders both languages; CSS shows the active one.
+ * Switching language is therefore a CSS toggle — no re-render, no layout shift.
+ */
+interface Props {
+  en: string;
+  es?: string;
+}
+const { en, es } = Astro.props;
+---
+
+<span class="bi bi--en">{en}</span>{es && <span class="bi bi--es" lang="es">{es}</span>}

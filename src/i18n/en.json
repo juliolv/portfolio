@@ -1,0 +1,168 @@
+{
+  "a11y": {
+    "home": "Julio, back to top",
+    "sections": "Sections",
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "nav": {
+    "work": "work",
+    "devlog": "devlog",
+    "experience": "experience",
+    "stack": "stack",
+    "about": "about",
+    "contact": "contact",
+    "system": "design-system"
+  },
+  "theme": {
+    "system": "system",
+    "light": "light",
+    "dark": "dark"
+  },
+  "status": {
+    "done": "done",
+    "progress": "in progress",
+    "planned": "planned",
+    "ready": "ready",
+    "copied": "copied",
+    "copyFailed": "select the address to copy it",
+    "tbd": "TBD"
+  },
+  "hero": {
+    "role": "Senior full-stack software engineer",
+    "pitch": "Senior engineer with 10+ years across the full development lifecycle. I turn legacy systems into fast, cloud-native web platforms, and I build the internal operations tools and e-commerce that businesses run on.",
+    "cv": "Download CV",
+    "email": "Copy email",
+    "available": "Available",
+    "availableNote": "for senior full-stack roles · [City, time zone] · remote friendly",
+    "cardLabel": "Summary",
+    "cardMeta": "read-only",
+    "card": [
+      [
+        "role",
+        "Senior software engineer"
+      ],
+      [
+        "experience",
+        "10+ years, since 2015"
+      ],
+      [
+        "focus",
+        "Legacy modernization, operations platforms, e-commerce"
+      ],
+      [
+        "stack",
+        "TypeScript · React · Next.js · Node.js · AWS"
+      ],
+      [
+        "speaks",
+        "Spanish (native) · English (professional)"
+      ],
+      [
+        "based",
+        "[City, country]"
+      ],
+      [
+        "contact",
+        "your.email@example.com"
+      ]
+    ]
+  },
+  "work": {
+    "title": "Selected work",
+    "note": "Summaries from my CV. Full case studies are in progress.",
+    "count": "4 items",
+    "view": "View the repo",
+    "soon": "case study in progress",
+    "labels": {
+      "problem": "Problem",
+      "role": "Role",
+      "stack": "Stack",
+      "outcome": "Outcome"
+    }
+  },
+  "devlog": {
+    "title": "Building in public",
+    "note": "Sample entries. Each one will mirror a real GitHub issue.",
+    "intro": "I am learning Hermes Agent, the open-source agent from Nous Research, by using it to build this site. Each phase is tracked as a GitHub issue, and this log follows them.",
+    "repo": "Public repo",
+    "hosted": "The site is published from the repo with",
+    "issue": "issue"
+  },
+  "experience": {
+    "title": "Experience",
+    "note": "10+ years, 2015 to today."
+  },
+  "stack": {
+    "title": "Stack",
+    "note": "What I reach for, grouped by area.",
+    "groups": [
+      "Languages",
+      "Frontend",
+      "Backend and data",
+      "Infrastructure, tooling and AI-assisted workflows"
+    ]
+  },
+  "about": {
+    "title": "About",
+    "body": [
+      "I am Julio, a software engineer with a decade of shipping web products. I like software that feels obvious to use and stays calm to maintain, and I care about the small details that make both true.",
+      "[Add two or three sentences: what you value in a team and what you do away from the keyboard.]"
+    ]
+  },
+  "contact": {
+    "title": "Contact",
+    "lede": "The fastest way to reach me is email. I usually reply within a day.",
+    "copy": "Copy",
+    "open": "Open in mail app",
+    "colophon": "Built in public with Hermes Agent. No frameworks, no trackers.",
+    "colophonLink": "See the design system"
+  },
+  "palette": {
+    "title": "Command palette",
+    "open": "Command palette",
+    "placeholder": "Type a command or search…",
+    "empty": "No matching commands.",
+    "hNav": "navigate",
+    "hRun": "run",
+    "hClose": "close",
+    "gGo": "Go to",
+    "gTheme": "Theme",
+    "gLang": "Language",
+    "gLinks": "Links",
+    "gActions": "Actions",
+    "top": "Top",
+    "themeSet": "Theme: ",
+    "langEn": "Language: English",
+    "langEs": "Language: Español",
+    "openLink": "Open ",
+    "copyEmail": "Copy email address",
+    "repo": "Portfolio repo",
+    "cv": "CV"
+  },
+  "ds": {
+    "title": "Design system",
+    "lede": "The tokens and components this site is built from. Values are read live from the page, so switching theme updates them.",
+    "tabTokens": "tokens",
+    "tabComponents": "components",
+    "color": "color",
+    "colorNote": "One accent, used only for what is active or actionable. Status hues stay out of the green and amber families and always appear with a glyph and a label.",
+    "type": "type",
+    "space": "space (4px base)",
+    "shape": "radius and border",
+    "motion": "motion",
+    "motionNote": "Select a row to play it. All durations drop to zero under prefers-reduced-motion.",
+    "layers": "z-index",
+    "sample": "Sharp, quiet, confident.",
+    "sPrimary": "Primary",
+    "sDefault": "Default",
+    "sDisabled": "Disabled",
+    "sLink": "Inline text link",
+    "sLive": "Live: it switches the whole site.",
+    "sTipTarget": "Hover or focus me",
+    "sTip": "Tooltip text",
+    "sRole": "[Role title]",
+    "sOrg": "[Company] · [Place]",
+    "sElsewhere": "Cards are used in Selected work, tabs drive this view, and the status bar is pinned to the bottom of every page."
+  }
+}

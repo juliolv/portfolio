@@ -1,0 +1,34 @@
+[
+  {
+    "when": "20XX — present",
+    "role": "Senior Software Engineer",
+    "roleEs": "Ingeniero de software senior",
+    "org": "Example Corp",
+    "text": "Placeholder for the real role. Describe scope, the systems you owned and one measurable outcome.",
+    "textEs": "Marcador para el puesto real. Describe alcance, los sistemas que owned y un resultado medible."
+  },
+  {
+    "when": "20XX — 20XX",
+    "role": "Mid-Level Software Engineer",
+    "roleEs": "Ingeniero de software",
+    "org": "Example Inc",
+    "text": "Placeholder for the real role. Owned features end to end and consolidated a fragmented codebase.",
+    "textEs": "Marcador para el puesto real. Funcionalidades de punta a punta y consolidación de un código fragmentado."
+  },
+  {
+    "when": "20XX — 20XX",
+    "role": "Junior Software Engineer",
+    "roleEs": "Ingeniero de software junior",
+    "org": "Example Ltd",
+    "text": "Placeholder for the real role. Built and maintained modules for business applications.",
+    "textEs": "Marcador para el puesto real. Desarrollo y mantenimiento de módulos para aplicaciones de negocio."
+  },
+  {
+    "when": "20XX — 20XX",
+    "role": "BSc in Computer Science",
+    "roleEs": "Lic. en Ciencias de la Computación",
+    "org": "Example University",
+    "text": "Placeholder for education. Thesis topic and any honours go here.",
+    "textEs": "Marcador para formación académica. Tema de tesis y distinciones aquí."
+  }
+]

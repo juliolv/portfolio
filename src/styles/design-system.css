@@ -1,0 +1,128 @@
+/* Design-system page (public spec). Values come from design.css at build time;
+   these rules only lay the samples out. */
+
+.ds {
+  padding-top: var(--sp-8);
+}
+
+.ds-head {
+  padding-bottom: var(--sp-7);
+  border-bottom: var(--bw) solid var(--border);
+  margin-bottom: var(--sp-7);
+}
+
+.ds-title {
+  margin: var(--sp-3) 0 var(--sp-3);
+  font-size: var(--fs-7);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+}
+
+.ds-section {
+  margin-bottom: var(--sp-8);
+}
+
+.ds-section__title {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin: 0 0 var(--sp-2);
+}
+
+.ds-section__note {
+  max-width: 68ch;
+  color: var(--text-muted);
+  font-size: var(--fs-3);
+  margin: 0 0 var(--sp-5);
+}
+
+.ds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: var(--sp-3);
+}
+
+.swatch {
+  border: var(--bw) solid var(--border);
+  background: var(--surface-raised);
+}
+
+.swatch__chip {
+  height: 64px;
+  border-bottom: var(--bw) solid var(--border);
+}
+
+.swatch__meta {
+  padding: var(--sp-2) var(--sp-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.swatch__name {
+  color: var(--text);
+}
+
+.swatch__hex {
+  color: var(--text-muted);
+}
+
+.ds-rows {
+  border-top: var(--bw) solid var(--border);
+}
+
+.ds-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 200px) minmax(0, 1fr) auto;
+  gap: var(--sp-4);
+  align-items: baseline;
+  padding: var(--sp-3) var(--sp-1);
+  border-bottom: var(--bw) solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+}
+
+.ds-row__name {
+  color: var(--text-muted);
+}
+
+.ds-samples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: center;
+  margin-bottom: var(--sp-4);
+}
+
+.ds-type-row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: baseline;
+  padding: var(--sp-3) 0;
+  border-bottom: var(--bw) solid var(--border);
+}
+
+.ds-type-row span:first-child {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  color: var(--text-muted);
+}
+
+.ds-panes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-4);
+}
+
+@media (max-width: 640px) {
+  .ds-row {
+    grid-template-columns: 1fr;
+    gap: var(--sp-1);
+  }
+}
