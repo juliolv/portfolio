@@ -63,7 +63,7 @@ const items = (await getCollection('work')).sort((a, b) => a.data.order - b.data
               <span aria-hidden="true">●</span>
               <Bi en={s('en', `status.${data.status}`)} es={s('es', `status.${data.status}`)} />
             </span>
-            <a class="link link--mono card__more" href={url(`/work/${id}/`)}>
+            <a class="link link--mono card__more" href={url(`/work/${id}/`)} aria-hidden="true" tabindex="-1">
               <Bi en={s(L, 'case.read')} es={s('es', 'case.read')} />{' '}
               <span aria-hidden="true">→</span>
             </a>

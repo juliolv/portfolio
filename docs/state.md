@@ -29,17 +29,19 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 
 ## Milestone
 
-**Done:** design-system port, motion/interaction handoff, GitHub Pages deploy.
-**Now:** case-study routes and a devlog that mirrors real GitHub issues.
+**Done:** design-system port, motion/interaction handoff, GitHub Pages deploy,
+/work/[slug] case studies with linked cards and a generated sitemap.
+**Now:** the devlog mirroring real GitHub issues.
 **Then:** real content (blocked on the owner), then launch polish.
 
 ## Next actions
 
-1. `/work/[slug]` case-study routes — **in flight** (Builder batch: route page,
-   card links, generated sitemap; then audit and review batches).
-2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
+1. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
-3. Open issues #1–#4 so the devlog has something to mirror (owner approval).
+2. Open issues #1–#4 so the devlog has something to mirror (owner approval).
+3. Case-study body copy: the pages currently render the card summary only; a
+   markdown body would render under Overview (content collection already
+   supports it, the route does not read `item.body` yet).
 4. Design pass on hero density and affordances (Designer agent, one batch).
 5. Replace placeholder content — **needs the owner**: city, contact email, CV
    PDF, one metric per project.
@@ -54,6 +56,7 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 | 2026-11-13 | `/design-system/` is a route, not a JS view | Real URL, indexable, works without JS (deviation from handoff §7, documented in client.ts) |
 | 2026-11-13 | Boot steps each run in a guard | One throwing step used to kill scroll tracking and nav handlers |
 | 2026-11-13 | Placeholder content only | Public repo; real employers/projects must never enter history |
+| 2026-11-13 | Browser tab title/meta follow the language switch; the URL does not fork | cheap bilingual signal without canonical/hreflang complexity; crawlers see English |
 | 2026-11-13 | No free models in the fleet | Owner ruled them out: predictable quality beats marginal savings |
 | 2026-11-13 | Per-role model tiers | `delegation.model` is global: one role per batch (build → audit → review). Builder `deepseek-v4.1-flash`, Auditor `qwen3.8-flash`, Reviewer **`glm-5.3-flash`** (mandated), Designer `gpt-6-luna` |
 

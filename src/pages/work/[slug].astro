@@ -30,7 +30,9 @@ const description =
 
 <Base
   title={`${data.name} — Julio López`}
+  titleEs={`${data.nameEs} — Julio López`}
   description={description}
+  descriptionEs={data.problemEs.length <= 155 ? data.problemEs : `${data.problemEs.slice(0, 154).trimEnd()}…`}
   path={`~/julio/work/${item.id}`}
   active="work"
 >

@@ -41,7 +41,13 @@ const config = (() => {
 })();
 
 const ui = { en: config.en as UiCopy, es: config.es as UiCopy };
-const SITE = config.site as { email: string; links: Record<string, string>; base: string };
+const SITE = config.site as {
+  email: string;
+  links: Record<string, string>;
+  base: string;
+  title?: Record<Lang, string>;
+  description?: Record<Lang, string>;
+};
 const BASE = (SITE.base || '/').replace(/\/$/, '');
 
 const store = {
@@ -130,6 +136,15 @@ function refreshStatusLang() {
   if (label) label.textContent = state.lang.toUpperCase();
 }
 
+/** Title bar and meta description follow the language switch (the URL does not). */
+function applyDocumentMeta() {
+  const title = SITE.title?.[state.lang];
+  if (title) document.title = title;
+  const description = SITE.description?.[state.lang];
+  const meta = document.querySelector('meta[name="description"]');
+  if (description && meta) meta.setAttribute('content', description);
+}
+
 /** Two-level lookup for the JS-authored strings that live in #site-config. */
 function lookup(path: string): string {
   const [section, key] = path.split('.');
@@ -165,6 +180,7 @@ function applyLang(next: Lang, options: { persist?: boolean } = {}) {
   refreshStatusLang();
   refreshThemeLabel();
   applyStrings();
+  applyDocumentMeta();
   fillRole(roleText()); // translated string at once — never retypes
   updateIndicator();
   document.dispatchEvent(new CustomEvent('pf:lang', { detail: { lang: next } }));
