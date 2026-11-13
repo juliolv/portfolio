@@ -1,14 +1,18 @@
 # Portfolio
 
+**Live: [juliolv.github.io/portfolio](https://juliolv.github.io/portfolio/)** · [design system](https://juliolv.github.io/portfolio/design-system/)
+
 A terminal-inspired portfolio, built in public. Static Astro output, one small
 script for theme / language / command palette, and a design-system page that
 reads its tokens from the real stylesheet so it cannot drift.
 
 ## Status
 
-Phase 1 — design system ported, content is **placeholder**. Every employer,
-project and metric in this repo is fictional and marked as a placeholder on
-purpose; real content lands in issue #3.
+Deployed on GitHub Pages (push to `main` deploys). The design system, the
+motion/interaction handoff and a first accessibility/SEO/i18n audit pass are
+done; case-study routes are in progress. Content is **placeholder** on purpose —
+every employer, project and metric in this repo is fictional and marked as such
+(real content lands in issue #3).
 
 ## Stack
 

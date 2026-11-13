@@ -20,6 +20,7 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 |---|---|
 | Repo | https://github.com/juliolv/portfolio (public, history is permanent) |
 | Live | https://juliolv.github.io/portfolio/ — deploys on every push to `main` |
+| Repo About | homepage set to the live URL, description, 6 topics (astro, portfolio, design-system, i18n, github-pages, accessibility) |
 | Host | GitHub Pages, project subpath `/portfolio` (NOT Vercel) |
 | Stack | Astro 7 static, hand-authored CSS, ~10 KB vanilla TS, no UI framework |
 | Languages | EN / ES rendered at build time, toggled with CSS |
@@ -34,9 +35,8 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 
 ## Next actions
 
-1. `/work/[slug]` case-study routes — the content collection already carries
-   `order`, `slug` and bilingual frontmatter; this is one route file plus
-   making the cards links.
+1. `/work/[slug]` case-study routes — **in flight** (Builder batch: route page,
+   card links, generated sitemap; then audit and review batches).
 2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
 3. Open issues #1–#4 so the devlog has something to mirror (owner approval).
