@@ -40,7 +40,8 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
 3. Open issues #1–#4 so the devlog has something to mirror (owner approval).
-4. Replace placeholder content — **needs the owner**: city, contact email, CV
+4. Design pass on hero density and affordances (Designer agent, one batch).
+5. Replace placeholder content — **needs the owner**: city, contact email, CV
    PDF, one metric per project.
 
 ## Decisions
@@ -54,6 +55,7 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 | 2026-11-13 | Boot steps each run in a guard | One throwing step used to kill scroll tracking and nav handlers |
 | 2026-11-13 | Placeholder content only | Public repo; real employers/projects must never enter history |
 | 2026-11-13 | No free models in the fleet | Owner ruled them out: predictable quality beats marginal savings |
+| 2026-11-13 | Designer on gpt-6-luna, tier-switched per batch | `delegation.model` is global, so design batches run separately from code batches |
 
 ## Known issues
 

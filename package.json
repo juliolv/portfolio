@@ -13,7 +13,8 @@
     "guard": "node scripts/guard-secrets.mjs",
     "guard:all": "node scripts/guard-secrets.mjs --all",
     "check": "astro check",
-    "state": "node scripts/state.mjs"
+    "state": "node scripts/state.mjs",
+    "fleet": "node scripts/fleet.mjs"
   },
   "dependencies": {
     "astro": "^7.4.11"

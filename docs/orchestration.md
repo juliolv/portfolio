@@ -32,9 +32,37 @@ describes *what* is true right now.
 | **Auditor** | Read-only checks: a11y, motion, links, i18n, privacy | no | "Report violations with severity + file:line, max 40 lines" |
 | **Reviewer** | Reads a diff and argues about it | no | "Find what breaks, not what you would rename" |
 | **Researcher** | Pins down an API or version fact | no | "What does Astro 7 change about X? Cite the doc line" |
+| **Designer** | Taste, hierarchy, density, affordance, UX critique — judges, never ships | no | "Critique the hero's hierarchy and the three worst affordances; 5 numbered findings" |
 
 Auditors and reviewers are the cheapest, highest-value fan-out: they never
 conflict on disk, and their output is short.
+
+## Model tiers
+
+`delegation.model` pins **all** children at once, so models are assigned per
+**batch**, not per agent. `node scripts/fleet.mjs` switches the tier:
+
+| Agent | Tier | Model |
+|---|---|---|
+| Orchestrator | main session | whatever the session runs (currently `deepseek-v4.1-flash`) |
+| Builder | code | `deepseek-v4.1-flash` |
+| Auditor | code | `deepseek-v4.1-flash` |
+| Reviewer | code | `deepseek-v4.1-flash` |
+| Researcher | code | `deepseek-v4.1-flash` |
+| Designer | design | `gpt-6-luna` |
+
+```sh
+node scripts/fleet.mjs design   # children -> gpt-6-luna (design batch)
+node scripts/fleet.mjs code     # children -> deepseek-v4.1-flash (work batch)
+node scripts/fleet.mjs          # print the roster and what children resolve to
+```
+
+**The limitation, stated plainly:** the Designer cannot run on `gpt-6-luna` in
+the same batch as builders on `deepseek-v4.1-flash`. Design critiques therefore
+run as their own batch (usually one child), and their findings come back to the
+orchestrator, which implements them. Per-agent parallel models need the
+community `delegation-model-map` plugin (`delegation.backends.model_map`);
+it is not installed — ask the owner first.
 
 ## Cost model
 
