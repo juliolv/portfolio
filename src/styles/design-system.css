@@ -126,3 +126,9 @@
     gap: var(--sp-1);
   }
 }
+
+/* The demo track needs a column width of its own, or the dot has nowhere to travel. */
+.motion-row .track {
+  width: 168px;
+  justify-self: end;
+}

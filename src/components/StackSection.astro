@@ -20,7 +20,7 @@ const groupsEs = t('es', 'stack.groups') as string[];
       {stack.map((group, i) => (
         <section class="pane">
           <div class="pane__bar">
-            <span class="pane__title"><b>stack</b>/{groupsEn[i]}</span>
+            <span class="pane__title"><b>stack</b>/<Bi en={groupsEn[i]} es={groupsEs[i]} /></span>
             <span>{group.items.length}</span>
           </div>
           <div class="pane__body">

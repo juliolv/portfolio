@@ -44,3 +44,23 @@ html[data-lang='es'] [data-lang-block='es'] {
 .card__body .kv dd {
   margin: 0;
 }
+
+/* Motion demo rows are buttons laid out on the same grid as a token row. */
+button.motion-row {
+  font: inherit;
+  color: inherit;
+  padding: var(--sp-3) var(--sp-1);
+}
+
+.motion-row .track {
+  justify-self: stretch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .palette__backdrop,
+  .palette__panel,
+  .motion-row .track i {
+    animation: none !important;
+    transition: none !important;
+  }
+}

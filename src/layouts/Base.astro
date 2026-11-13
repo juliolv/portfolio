@@ -1,6 +1,7 @@
 ---
 import '../styles/design.css';
 import '../styles/app.css';
+import { SITE, t } from '../lib/i18n';
 import Topbar from '../components/Topbar.astro';
 import StatusBar from '../components/StatusBar.astro';
 import Palette from '../components/Palette.astro';
@@ -20,6 +21,14 @@ const {
   path = '~/julio',
   active = '',
 } = Astro.props;
+
+/* Client-side UI copy (status messages, theme names, palette labels).
+   Content strings stay server-rendered — this is only what JS needs. */
+const ui = {
+  site: { email: SITE.email, links: SITE.links },
+  en: { status: t('en', 'status'), theme: t('en', 'theme'), palette: t('en', 'palette') },
+  es: { status: t('es', 'status'), theme: t('es', 'theme'), palette: t('es', 'palette') },
+};
 ---
 
 <!doctype html>
@@ -32,24 +41,36 @@ const {
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script is:inline>
-      /* Theme and language boot — runs before first paint so nothing flashes. */
+      /* Theme and language boot — runs before first paint so nothing flashes.
+         Keys: pf.theme (light | dark | system), pf.lang (en | es). */
       (() => {
         const root = document.documentElement;
-        try {
-          const theme = localStorage.getItem('theme');
-          if (theme === 'light' || theme === 'dark') root.dataset.theme = theme;
-          const lang = localStorage.getItem('lang');
-          if (lang === 'es' || lang === 'en') {
-            root.dataset.lang = lang;
-            root.lang = lang;
+        const read = (key) => {
+          try {
+            return localStorage.getItem(key);
+          } catch {
+            return null;
           }
-        } catch {
-          /* private mode: fall back to system + English */
-        }
+        };
+
+        const theme = read('pf.theme');
+        if (theme === 'light' || theme === 'dark') root.dataset.theme = theme;
+        root.dataset.themePref = theme === 'light' || theme === 'dark' ? theme : 'system';
+
+        const stored = read('pf.lang');
+        const lang =
+          stored === 'en' || stored === 'es'
+            ? stored
+            : /^es\b/i.test(navigator.language || '')
+              ? 'es'
+              : 'en';
+        root.dataset.lang = lang;
+        root.lang = lang;
       })();
     </script>
   </head>
   <body>
+    <script type="application/json" id="site-config" set:html={JSON.stringify(ui)}></script>
     <a class="skip" href="#top">Skip to content</a>
     <Topbar active={active} />
     <slot />

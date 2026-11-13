@@ -39,6 +39,17 @@ const shapeScale = pick(['--r-', '--bw']);
 const motionScale = pick(['--dur-', '--ease-']);
 const layers = pick(['--z-']);
 
+/** One demo row per duration token; the dot borrows that token's own timing. */
+const motionDemos = motionScale
+  .filter((token) => token.startsWith('--dur-'))
+  .map((token) => ({
+    token,
+    value: light[token],
+    duration: `var(${token})`,
+    easing: 'var(--ease-out)',
+    ease: 'ease-out',
+  }));
+
 const colors = COLOR_TOKENS.filter((t) => light[`--${t}`]);
 ---
 
@@ -58,6 +69,13 @@ const colors = COLOR_TOKENS.filter((t) => light[`--${t}`]);
         <p class="lede muted"><Bi en={s(L, 'ds.lede')} es={s('es', 'ds.lede')} /></p>
       </header>
 
+      <div class="tabs" role="tablist" aria-label={s(L, 'ds.title')}>
+        <button class="tab" type="button" role="tab" id="tab-tokens" aria-controls="panel-tokens" aria-selected="true" tabindex="0">{s(L, 'ds.tabTokens')}</button>
+        <button class="tab" type="button" role="tab" id="tab-components" aria-controls="panel-components" aria-selected="false" tabindex="-1">{s(L, 'ds.tabComponents')}</button>
+      </div>
+
+      <div class="tabpanel" id="panel-tokens" role="tabpanel" aria-labelledby="tab-tokens">
+
       <section class="ds-section" aria-labelledby="ds-color">
         <h2 class="ds-section__title" id="ds-color">{s(L, 'ds.color')}</h2>
         <p class="ds-section__note"><Bi en={s(L, 'ds.colorNote')} es={s('es', 'ds.colorNote')} /></p>
@@ -67,8 +85,8 @@ const colors = COLOR_TOKENS.filter((t) => light[`--${t}`]);
               <div class="swatch__chip" style={`background: var(--${token})`}></div>
               <div class="swatch__meta">
                 <span class="swatch__name">--{token}</span>
-                <span class="swatch__hex">{light[`--${token}`]}</span>
-                {dark[`--${token}`] && <span class="swatch__hex">dark: {dark[`--${token}`]}</span>}
+                <span class="swatch__hex" data-hex={token}>{light[`--${token}`]}</span>
+                {dark[`--${token}`] && <span class="swatch__hex" data-hex-dark={token}>dark: {dark[`--${token}`]}</span>}
               </div>
             </div>
           ))}
@@ -131,12 +149,12 @@ const colors = COLOR_TOKENS.filter((t) => light[`--${t}`]);
         <h2 class="ds-section__title" id="ds-motion">{s(L, 'ds.motion')}</h2>
         <p class="ds-section__note"><Bi en={s(L, 'ds.motionNote')} es={s('es', 'ds.motionNote')} /></p>
         <div class="ds-rows">
-          {motionScale.map((token) => (
-            <div class="ds-row">
-              <span class="ds-row__name">{token}</span>
-              <span class="swatch__hex">{light[token]}</span>
-              <span></span>
-            </div>
+          {motionDemos.map((demo) => (
+            <button class="motion-row ds-row" type="button" aria-pressed="false">
+              <span class="ds-row__name">{demo.token}</span>
+              <span class="swatch__hex">{demo.value} · {demo.ease}</span>
+              <span class="track"><i style={`transition-duration: ${demo.duration}; transition-timing-function: ${demo.easing};`}></i></span>
+            </button>
           ))}
         </div>
       </section>
@@ -154,6 +172,9 @@ const colors = COLOR_TOKENS.filter((t) => light[`--${t}`]);
         </div>
       </section>
 
+      </div>
+
+      <div class="tabpanel" id="panel-components" role="tabpanel" aria-labelledby="tab-components" hidden>
       <section class="ds-section" aria-labelledby="ds-components">
         <h2 class="ds-section__title" id="ds-components">components</h2>
 
@@ -193,11 +214,11 @@ const colors = COLOR_TOKENS.filter((t) => light[`--${t}`]);
             <div class="pane__bar"><span class="pane__title">~/<b>motion.css</b></span><span>css</span></div>
             <div class="pane__body">
               <pre class="code"><code><span class="c">/* Every component reads tokens, never literals. */</span>
-.btn--primary {
+.btn--primary &#123;
   <span class="k">background</span>: var(--accent);
   <span class="k">color</span>: var(--accent-fg);
   <span class="k">transition</span>: border-color var(--dur-fast);
-}</code></pre>
+&#125;</code></pre>
             </div>
           </section>
         </div>
@@ -214,6 +235,11 @@ const colors = COLOR_TOKENS.filter((t) => light[`--${t}`]);
 
         <p class="section__note" style="margin-top: var(--sp-4);">{s(L, 'ds.sElsewhere')}</p>
       </section>
+      </div>
     </div>
   </main>
 </Base>
+
+<script>
+  import '../scripts/design-system';
+</script>

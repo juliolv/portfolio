@@ -13,8 +13,11 @@ const cardEs = t('es', 'hero.card') as [string, string][];
 
     <h1 class="hero__name" id="hero-name">{SITE.name}</h1>
 
-    <p class="hero__role">
-      <span class="prompt__glyph" aria-hidden="true">› </span><Bi en={s(L, 'hero.role')} es={s('es', 'hero.role')} />
+    <p class="hero__role" data-role-en={s(L, 'hero.role')} data-role-es={s('es', 'hero.role')}>
+      <span class="hero__ghost" aria-hidden="true">› {s(L, 'hero.role')}<span class="caret"></span></span>
+      <span>
+        <span aria-hidden="true">› </span><span class="sr-only"><Bi en={s(L, 'hero.role')} es={s('es', 'hero.role')} /></span><span id="typed" aria-hidden="true"></span><span class="caret" aria-hidden="true"></span>
+      </span>
     </p>
 
     <p class="hero__pitch"><Bi en={s(L, 'hero.pitch')} es={s('es', 'hero.pitch')} /></p>

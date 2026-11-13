@@ -17,5 +17,10 @@
   "dependencies": {
     "astro": "^7.4.11"
   },
-  "description": "Terminal-inspired portfolio, built in public."
+  "description": "Terminal-inspired portfolio, built in public.",
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@types/node": "^26.6.6",
+    "typescript": "^6.0.3"
+  }
 }
