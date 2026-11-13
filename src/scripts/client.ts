@@ -611,59 +611,86 @@ function setupSegmented(selector: string, onSelect: (value: string) => void) {
 
 /* ---------------------------------------------------------------- boot -- */
 
-function boot() {
-  state.theme = (root.dataset.themePref as Theme) || 'system';
-  state.lang = (root.dataset.lang as Lang) || 'en';
-
-  syncSegmented('[data-seg="theme"]', state.theme);
-  syncSegmented('[data-seg="lang"]', state.lang);
-  refreshStatusLang();
-  refreshThemeLabel();
-  applyStrings();
-
-  const active = root.dataset.active || '';
-  if (active) {
-    state.section = active;
-    markActive(active);
-  } else {
-    markActive('top');
+/**
+ * Each step is isolated: one failing behaviour must never take the rest of the
+ * page with it. (The first version of this file lost scroll tracking and the
+ * palette shortcut because a single step threw.)
+ */
+function step(name: string, run: () => void) {
+  try {
+    run();
+  } catch (error) {
+    console.error('[pf] step failed:', name, error);
   }
+}
 
-  const ready = document.getElementById('sb-msg');
-  if (ready) ready.textContent = copy('ready');
+function boot() {
+  step('state', () => {
+    state.theme = (root.dataset.themePref as Theme) || 'system';
+    state.lang = (root.dataset.lang as Lang) || 'en';
 
-  setupTyped();
-  setupReveal();
-  setupSegmented('[data-seg="theme"]', (value) => applyTheme(value as Theme));
-  setupSegmented('[data-seg="lang"]', (value) => applyLang(value as Lang));
-  setupPalette();
+    syncSegmented('[data-seg="theme"]', state.theme);
+    syncSegmented('[data-seg="lang"]', state.lang);
+    refreshStatusLang();
+    refreshThemeLabel();
+    applyStrings();
+  });
 
-  document.querySelectorAll<HTMLElement>('[data-copy-email]').forEach((btn) =>
-    btn.addEventListener('click', () => void copyEmail())
+  step('active section', () => {
+    const active = root.dataset.active || '';
+    state.section = active || 'top';
+    markActive(state.section);
+  });
+
+  step('status bar', () => {
+    const ready = document.getElementById('sb-msg');
+    if (ready) ready.textContent = copy('ready');
+  });
+
+  step('typed line', setupTyped);
+  step('reveal', setupReveal);
+  step('theme control', () => setupSegmented('[data-seg="theme"]', (value) => applyTheme(value as Theme)));
+  step('language control', () => setupSegmented('[data-seg="lang"]', (value) => applyLang(value as Lang)));
+  step('palette', setupPalette);
+
+  step('copy email', () =>
+    document.querySelectorAll<HTMLElement>('[data-copy-email]').forEach((btn) =>
+      btn.addEventListener('click', () => void copyEmail())
+    )
   );
 
-  navLinks.forEach((link) => {
-    link.addEventListener('click', (event) => {
-      const hash = (link.getAttribute('href') ?? '').replace(/^\//, '');
-      if (!hash.startsWith('#') || hash !== window.location.hash) return;
-      event.preventDefault();
-      goTo(hash); // clicking the current section re-scrolls it
+  step('nav links', () =>
+    navLinks.forEach((link) => {
+      link.addEventListener('click', (event) => {
+        const hash = (link.getAttribute('href') ?? '').replace(/^\//, '');
+        if (!hash.startsWith('#') || hash !== window.location.hash) return;
+        event.preventDefault();
+        goTo(hash); // clicking the current section re-scrolls it
+      });
+    })
+  );
+
+  step('scroll tracking', () => {
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    window.addEventListener('load', updateIndicator);
+    document.fonts?.ready.then(updateIndicator);
+    // A hidden tab can swallow the rAF callback; never leave the guard stuck.
+    document.addEventListener('visibilitychange', () => {
+      raf = 0;
+      onScroll();
+    });
+    onScroll();
+  });
+
+  step('os scheme', () => {
+    // While the preference is "system", follow the OS scheme.
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (state.theme === 'system') {
+        document.dispatchEvent(new CustomEvent('pf:theme', { detail: { theme: 'system' } }));
+      }
     });
   });
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
-  window.addEventListener('load', updateIndicator);
-  document.fonts?.ready.then(updateIndicator);
-
-  // While the preference is "system", follow the OS scheme.
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    if (state.theme === 'system') {
-      document.dispatchEvent(new CustomEvent('pf:theme', { detail: { theme: 'system' } }));
-    }
-  });
-
-  onScroll();
 }
 
 if (document.readyState === 'loading') {
