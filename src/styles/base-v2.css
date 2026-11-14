@@ -367,7 +367,11 @@ html[data-lang='es'] [data-lang-block='en'] {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: calc(100% - var(--side-w) - var(--bw));
+  /* The sidebar's own first column, not the one before it: the dock spans the
+     main column and its opaque background ends exactly at this x, so a rule one
+     pixel to the left was painted over wherever the dock was pinned, and the line
+     looked cut off at the dock's top edge. */
+  left: calc(100% - var(--side-w));
   bottom: calc(-1 * var(--sp-2));
   width: var(--bw);
   background: var(--border);
