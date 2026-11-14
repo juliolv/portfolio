@@ -38,3 +38,9 @@ html[data-lang='en'] [data-lang-block='es'],
 html[data-lang='es'] [data-lang-block='en'] {
   display: none;
 }
+
+/* --- hidden ---
+   .dialog and .menu set their own display, so the attribute needs to win. */
+[hidden] {
+  display: none !important;
+}

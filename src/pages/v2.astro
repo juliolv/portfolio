@@ -13,6 +13,7 @@ import { s, t, SITE } from '../lib/i18n';
 import devlog from '../data/devlog.json';
 import experience from '../data/experience.json';
 import stack from '../data/stack.json';
+import { SKINS, DEFAULT_SKIN } from '../data/skins';
 
 const L = 'en' as const;
 
@@ -165,11 +166,11 @@ const kv: [string, string][] = [
             <button class="seg__opt" type="button" role="radio" aria-checked="true">EN</button>
             <button class="seg__opt" type="button" role="radio" aria-checked="false">ES</button>
           </div>
-          <button class="btn skinbtn" type="button">
+          <button class="btn skinbtn" type="button" data-open-dlg="theme" aria-haspopup="dialog">
             <span class="sw" aria-hidden="true"><i style="background:var(--bg)"></i><i style="background:var(--accent)"></i><i style="background:var(--ok)"></i><i style="background:var(--warn)"></i></span>
             <span class="skinbtn__label">·</span>
           </button>
-          <button class="btn" type="button"><span class="kbd">Ctrl K</span></button>
+          <button class="btn" type="button" id="palette-btn" aria-label="Focus the prompt"><span class="kbd">Ctrl K</span></button>
         </div>
         <nav class="tabstrip" aria-label="Sections">
           {sections.map((section) => (
@@ -365,12 +366,78 @@ const kv: [string, string][] = [
             </div>
             <p class="ctx__read">1/7 sections read</p>
           </div>
-          <button class="tip" type="button"><span class="kbd">?</span><span class="tip__desc">keyboard shortcuts</span></button>
+          <button class="tip" type="button" data-open-dlg="keys" aria-haspopup="dialog"><span class="kbd">?</span><span class="tip__desc">keyboard shortcuts</span></button>
         </aside>
       </div>
     </div>
+
+    <!-- dialogs: theme picker, shortcuts, help (§5.2) -->
+    <div class="dialog" data-dlg="theme" hidden>
+      <div class="dialog__backdrop" data-dlg-close></div>
+      <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-theme-title">
+        <div class="dialog__head">
+          <h2 class="dialog__title" id="dlg-theme-title">Theme</h2>
+          <button class="btn btn--ghost" type="button" data-dlg-close>esc</button>
+        </div>
+        <div class="dialog__list">
+          <div class="skins" role="group" aria-label="Skins">
+            {[{ id: 'system', name: 'System', mode: 'auto', preview: DEFAULT_SKIN }, ...SKINS.map((skin) => ({ ...skin, preview: skin.id }))].map((skin) => (
+              <button class="skin-card" type="button" data-skin-pick={skin.id} data-skin-name={skin.name}
+                aria-pressed="false">
+                <span class="mini" data-skin={skin.preview} aria-hidden="true">
+                  <span><b>❯</b> /work</span>
+                  <span class="mini__muted">● List(work/)</span>
+                  <span class="mini__bar"><i></i><i></i><i></i></span>
+                </span>
+                <span>{skin.name}<small>{skin.mode}</small></span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <p class="dialog__note">Saved as <code>tui.skin</code>. Until you pick one, the page follows your system.</p>
+      </div>
+    </div>
+
+    <div class="dialog" data-dlg="keys" hidden>
+      <div class="dialog__backdrop" data-dlg-close></div>
+      <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-keys-title">
+        <div class="dialog__head">
+          <h2 class="dialog__title" id="dlg-keys-title">Keyboard</h2>
+          <button class="btn btn--ghost" type="button" data-dlg-close>esc</button>
+        </div>
+        <div class="helptable">
+          <h3>anywhere</h3>
+          <span><kbd class="kbd">/</kbd></span><span>jump to the prompt</span>
+          <span><kbd class="kbd">Ctrl K</kbd></span><span>jump to the prompt</span>
+          <span><kbd class="kbd">?</kbd></span><span>this dialog</span>
+          <span><kbd class="kbd">Esc</kbd></span><span>close a dialog or the menu</span>
+          <h3>prompt</h3>
+          <span><kbd class="kbd">↑</kbd> <kbd class="kbd">↓</kbd></span><span>move through results, or recall history</span>
+          <span><kbd class="kbd">Tab</kbd></span><span>complete a slash command</span>
+          <span><kbd class="kbd">Enter</kbd></span><span>run the selected result</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog" data-dlg="help" hidden>
+      <div class="dialog__backdrop" data-dlg-close></div>
+      <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-help-title">
+        <div class="dialog__head">
+          <h2 class="dialog__title" id="dlg-help-title">Commands</h2>
+          <button class="btn btn--ghost" type="button" data-dlg-close>esc</button>
+        </div>
+        <div class="helptable">
+          <h3>go</h3>
+          {commands.slice(0, 7).map((c) => (<><span><code>{c.cmd}</code></span><span>{c.desc}</span></>))}
+          <h3>do</h3>
+          {commands.slice(7).map((c) => (<><span><code>{c.cmd}</code></span><span>{c.desc}</span></>))}
+        </div>
+      </div>
+    </div>
+
     <script>
       import '../scripts/v2-prompt';
+      import '../scripts/v2-dialogs';
     </script>
   </body>
 </html>

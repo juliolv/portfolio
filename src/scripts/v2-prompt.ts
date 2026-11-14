@@ -237,7 +237,7 @@ if (input && menu) {
         break;
       case '/theme':
       case '/help':
-        if (msg) msg.textContent = `${cmd} arrives with the theme picker and help dialog`;
+        window.dispatchEvent(new CustomEvent('tui:open-dialog', { detail: cmd.slice(1) }));
         break;
       default:
         if (msg) msg.textContent = `Unknown command ${cmd}. Type / to see all commands.`;
