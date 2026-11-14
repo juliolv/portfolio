@@ -177,3 +177,29 @@ html[data-lang='es'] [data-lang-block='en'] {
   min-width: 72px;
   height: 48px;
 }
+
+/* --- scrolling strips ---------------------------------------------------
+   `.tabs` and `.tabstrip` scroll horizontally so their items never wrap. The
+   selected tab's 2px underline sits 1px below the row (border-bottom plus
+   margin-bottom: -1px), and `overflow-x: auto` forces overflow-y to auto too,
+   so that single pixel earns a vertical scrollbar. */
+.tabstrip {
+  overflow-y: hidden;
+}
+
+/* `.tabs` (tokens / skins / components) is not a scroll container: three short
+   labels always fit, and `overflow-x: auto` was the reason a vertical scrollbar
+   appeared — the selected tab's 2px underline extends 1px past the row, which
+   forces overflow-y to auto as well. Visible overflow lets the underline sit on
+   the row's rule exactly as designed. The tab strip, which really does scroll on
+   a phone, keeps its hidden overflow-y. */
+#view-system .tabs {
+  overflow: visible;
+}
+
+@media (max-width: 480px) {
+  #view-system .tabs {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
