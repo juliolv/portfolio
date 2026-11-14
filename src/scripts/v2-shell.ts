@@ -23,6 +23,8 @@ const meta = JSON.parse(document.getElementById('v2-meta')?.textContent ?? '{}')
   hintTouch?: Record<Lang, string>;
   placeholder?: Record<Lang, string>;
   placeholderPhone?: Record<Lang, string>;
+  tokensLine?: Record<Lang, string>;
+  readLine?: Record<Lang, string>;
 };
 
 /** Touch is a capability, not a width: a small window with a mouse is not a phone. */
@@ -100,9 +102,12 @@ function applyLang(next: Lang, announce = true) {
     /* private mode */
   }
 
-  // text lengths differ per language, so the meter has to recount
+  // text lengths differ per language, so the meter has to recount — and its own
+  // copy changes with the language, which is why it repaints rather than waiting
+  // for the next scroll.
   metrics = null;
   measure();
+  paintMeter(maxRead);
   paintChrome();
   window.dispatchEvent(new CustomEvent('tui:lang', { detail: next }));
   if (announce && msg) msg.textContent = next.toUpperCase();
@@ -155,12 +160,20 @@ function paintMeter(read: number) {
   const pct = Math.min(100, Math.round((used / total) * 100));
 
   paintBar(pct);
-  if (ctxNums) ctxNums.textContent = `≈ ${(used / 1000).toFixed(1)}k / ${Math.round(total / 1000)}k tokens · ${pct}%`;
-  if (ctxRead) ctxRead.textContent = `${read}/${blocks.length} sections read`;
+  const tokensLine = (meta.tokensLine?.[lang] ?? '{used} / {total}')
+    .replace('{used}', `${(used / 1000).toFixed(1)}k`)
+    .replace('{total}', `${Math.round(total / 1000)}k`)
+    .replace('{pct}', String(pct));
+  const readLine = (meta.readLine?.[lang] ?? '{n}/{total}')
+    .replace('{total}', String(blocks.length))
+    .replace('{n}', String(read));
+
+  if (ctxNums) ctxNums.textContent = tokensLine;
+  if (ctxRead) ctxRead.textContent = readLine;
   if (ctxPct) ctxPct.textContent = `${pct}%`;
   if (ctx) {
     ctx.setAttribute('aria-valuenow', String(pct));
-    ctx.setAttribute('aria-valuetext', `${pct}%, ${read} of ${blocks.length} sections read`);
+    ctx.setAttribute('aria-valuetext', `${pct}%, ${readLine}`);
   }
 }
 

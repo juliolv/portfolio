@@ -29,8 +29,11 @@ const STATUS_GLYPH: Record<string, string> = { done: '●', progress: '◐', pla
 /* The sidebar reports the fleet, and the entry point is the devlog item in
    progress — so the two can never disagree. */
 const inProgress = devlog.find((entry) => entry.status === 'progress');
-const issueRef = inProgress ? `#${inProgress.issue} ${inProgress.title}` : '';
-const agentDesc = (id: string, lang: 'en' | 'es') => s(lang, `agents.${id}`).replace('{issue}', issueRef);
+/** The issue reference follows the language, like the rest of the devlog. */
+const issueRef = (lang: 'en' | 'es') =>
+  inProgress ? `#${inProgress.issue} ${lang === 'es' ? inProgress.titleEs : inProgress.title}` : '';
+const agentDesc = (id: string, lang: 'en' | 'es') =>
+  s(lang, `agents.${id}`).replace('{issue}', issueRef(lang));
 const todoDone = devlog.filter((entry) => entry.status === 'done').length;
 
 const sections = [
@@ -87,24 +90,16 @@ const stackItems = stack.flatMap((group) =>
   }))
 );
 
+/* Commands render in the prompt menu and in the help dialog, so each one carries
+   its description in both languages. */
 const commands = [
-  { cmd: '/work', desc: 'selected work' },
-  { cmd: '/devlog', desc: 'building in public' },
-  { cmd: '/experience', desc: 'career timeline' },
-  { cmd: '/stack', desc: 'tools and languages' },
-  { cmd: '/about', desc: 'who he is' },
-  { cmd: '/contact', desc: 'email and links' },
-  { cmd: '/design', desc: 'design system page' },
-  { cmd: '/theme', desc: 'theme picker (with the picker)' },
-  { cmd: '/lang', desc: 'toggle English / Español' },
-  { cmd: '/github', desc: 'open GitHub' },
-  { cmd: '/linkedin', desc: 'open LinkedIn' },
-  { cmd: '/cv', desc: 'open the CV' },
-  { cmd: '/repo', desc: 'open the repository' },
-  { cmd: '/copy', desc: 'copy the email address' },
-  { cmd: '/hire', desc: 'jump to contact and copy the email' },
-  { cmd: '/help', desc: 'shortcuts (with the help dialog)' },
-];
+  'work', 'devlog', 'experience', 'stack', 'about', 'contact',
+  'design', 'theme', 'lang', 'github', 'linkedin', 'cv', 'repo', 'copy', 'hire', 'help',
+].map((id) => ({
+  id,
+  cmd: `/${id}`,
+  desc: { en: s('en', `tui.cmds.${id}`), es: s('es', `tui.cmds.${id}`) },
+}));
 
 const searchPayload = {
   items: [...sectionItems, ...projectItems, ...devlogItems, ...experienceItems, ...stackItems],
@@ -114,12 +109,14 @@ const searchPayload = {
 };
 
 
-const kv: [string, string][] = [
-  ['role', 'senior software engineer'],
-  ['experience', '10+ years'],
-  ['focus', 'modernization · platforms'],
-  ['stack', 'TypeScript · React · Node'],
-  ['based', '[City, country]'],
+/* Label and value are both copy: the summary was the last block rendering
+   English in Spanish. */
+const kv: [string, string, string][] = [
+  ['role', 'hero.kvRole', 'hero.kvRole'],
+  ['experience', 'hero.kvLabelExperience', 'hero.kvExperience'],
+  ['focus', 'hero.kvLabelFocus', 'hero.kvFocus'],
+  ['stack', 'hero.kvLabelStack', 'hero.kvStack'],
+  ['based', 'hero.kvLabelBased', 'hero.kvBased'],
 ];
 ---
 
@@ -210,6 +207,8 @@ const kv: [string, string][] = [
       placeholder: { en: s('en', 'tui.placeholder'), es: s('es', 'tui.placeholder') },
       placeholderPhone: { en: s('en', 'tui.placeholderPhone'), es: s('es', 'tui.placeholderPhone') },
       role: { en: s('en', 'hero.role'), es: s('es', 'hero.role') },
+      tokensLine: { en: s('en', 'tui.tokensLine'), es: s('es', 'tui.tokensLine') },
+      readLine: { en: s('en', 'tui.readLine'), es: s('es', 'tui.readLine') },
     })}></script>
     <div class="app">
       <header class="titlebar">
@@ -249,19 +248,24 @@ const kv: [string, string][] = [
                   <span class="hero__ghost" aria-hidden="true">› <Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /><span class="caret"></span></span>
                   <span><span aria-hidden="true">› </span><span class="sr-only"><Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /></span><span id="typed" aria-hidden="true"><Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /></span><span class="caret" aria-hidden="true"></span></span>
                 </p>
-                <p class="hero__pitch">{s(L, 'hero.pitch')}</p>
+                <p class="hero__pitch"><Bi en={s('en', 'hero.pitch')} es={s('es', 'hero.pitch')} /></p>
                 <div class="actions">
-                  <a class="btn btn--primary" href="#contact"><span aria-hidden="true">↓</span>{s(L, 'hero.cv')}</a>
-                  <button class="btn" type="button"><span aria-hidden="true">@</span>{s(L, 'hero.email')}</button>
+                  <a class="btn btn--primary" href="#contact"><span aria-hidden="true">↓</span><Bi en={s('en', 'hero.cv')} es={s('es', 'hero.cv')} /></a>
+                  <button class="btn" type="button"><span aria-hidden="true">@</span><Bi en={s('en', 'hero.email')} es={s('es', 'hero.email')} /></button>
                   <a class="btn" href={SITE.links.github} target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
                   <a class="btn" href={SITE.links.linkedin} target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span></a>
                 </div>
-                <p class="avail"><span class="status status--done"><span aria-hidden="true">●</span> {s(L, 'hero.available')}</span><span>{s(L, 'hero.availableNote')}</span></p>
+                <p class="avail"><span class="status status--done"><span aria-hidden="true">●</span> <Bi en={s('en', 'hero.available')} es={s('es', 'hero.available')} /></span><span><Bi en={s('en', 'hero.availableNote')} es={s('es', 'hero.availableNote')} /></span></p>
               </div>
               <aside class="welcome__side">
-                <p class="side__label">{s(L, 'hero.cardLabel')}</p>
+                <p class="side__label"><Bi en={s('en', 'hero.cardLabel')} es={s('es', 'hero.cardLabel')} /></p>
                 <dl class="kv">
-                  {kv.map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}
+                  {kv.map(([label, value]) => (
+                    <>
+                      <dt><Bi en={s('en', `hero.kvLabel${label[0].toUpperCase()}${label.slice(1)}`)} es={s('es', `hero.kvLabel${label[0].toUpperCase()}${label.slice(1)}`)} /></dt>
+                      <dd><Bi en={s('en', value)} es={s('es', value)} /></dd>
+                    </>
+                  ))}
                 </dl>
                 <p class="side__label"><Bi en={s(L, 'tui.tipsTitle')} es={s('es', 'tui.tipsTitle')} /></p>
                 <ul class="tips" id="tips">
@@ -297,11 +301,11 @@ const kv: [string, string][] = [
                       <div class="row__body" id={`proj-${i}`} hidden={i !== 0}>
                         <div class="row__inner">
                           <dl class="man">
-                            <dt>{s(L, 'work.labels.role')}</dt>
+                            <dt><Bi en={s('en', 'work.labels.role')} es={s('es', 'work.labels.role')} /></dt>
                             <dd><Bi en={data.role} es={data.roleEs} /></dd>
-                            <dt>{s(L, 'work.labels.stack')}</dt>
+                            <dt><Bi en={s('en', 'work.labels.stack')} es={s('es', 'work.labels.stack')} /></dt>
                             <dd><span class="tags">{data.stack.map((tech) => <span class="tag">{tech}</span>)}</span></dd>
-                            <dt>{s(L, 'work.labels.outcome')}</dt>
+                            <dt><Bi en={s('en', 'work.labels.outcome')} es={s('es', 'work.labels.outcome')} /></dt>
                             <dd><Bi en={data.outcome} es={data.outcomeEs} /></dd>
                           </dl>
                           <p class="row__foot"><span class="tag tag--dashed"><Bi en={s(L, 'work.soon')} es={s('es', 'work.soon')} /></span></p>
@@ -479,7 +483,7 @@ const kv: [string, string][] = [
               ))}
             </ul>
           </div>
-          <button class="tip" type="button" data-open-dlg="keys" aria-haspopup="dialog"><span class="kbd">?</span><span class="tip__desc">keyboard shortcuts</span></button>
+          <button class="tip" type="button" data-open-dlg="keys" aria-haspopup="dialog"><span class="kbd">?</span><span class="tip__desc"><Bi en={s('en', 'side.keys')} es={s('es', 'side.keys')} /></span></button>
         </aside>
       </div>
     </div>
@@ -489,8 +493,8 @@ const kv: [string, string][] = [
       <div class="dialog__backdrop" data-dlg-close></div>
       <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-theme-title">
         <div class="dialog__head">
-          <h2 class="dialog__title" id="dlg-theme-title">Theme</h2>
-          <button class="btn btn--ghost" type="button" data-dlg-close>esc</button>
+          <h2 class="dialog__title" id="dlg-theme-title"><Bi en={s('en', 'tui.dlgTheme')} es={s('es', 'tui.dlgTheme')} /></h2>
+          <button class="btn btn--ghost" type="button" data-dlg-close><Bi en={s('en', 'tui.dlgEsc')} es={s('es', 'tui.dlgEsc')} /></button>
         </div>
         <div class="dialog__list dialog__list--padded">
           <div class="skins" role="radiogroup" aria-label="Theme">
@@ -502,7 +506,7 @@ const kv: [string, string][] = [
                   <span class="mini__muted">● List(work/)</span>
                   <span class="mini__bar"><i></i><i></i><i></i></span>
                 </span>
-                <span>{skin.name}<small>{skin.mode}<span class="skin-card__cur" hidden> · ● current</span></small></span>
+                <span>{skin.name}<small>{skin.mode}<span class="skin-card__cur" hidden><Bi en={` · ${s('en', 'tui.current')}`} es={` · ${s('es', 'tui.current')}`} /></span></small></span>
               </button>
             ))}
           </div>
@@ -512,7 +516,7 @@ const kv: [string, string][] = [
           <span><kbd class="kbd">Enter</kbd> apply</span>
           <span><kbd class="kbd">Esc</kbd> revert</span>
         </p>
-        <p class="dialog__note">Saved as <code>tui.skin</code>. Until you pick one, the page follows your system.</p>
+        <p class="dialog__note"><Bi en={s('en', 'tui.savedAs')} es={s('es', 'tui.savedAs')} /> <code>tui.skin</code>. <Bi en={s('en', 'tui.savedNote').replace('Saved as {key}. ', '')} es={s('es', 'tui.savedNote').replace('Se guarda como {key}. ', '')} /></p>
       </div>
     </div>
 
@@ -520,19 +524,19 @@ const kv: [string, string][] = [
       <div class="dialog__backdrop" data-dlg-close></div>
       <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-keys-title">
         <div class="dialog__head">
-          <h2 class="dialog__title" id="dlg-keys-title">Keyboard</h2>
-          <button class="btn btn--ghost" type="button" data-dlg-close>esc</button>
+          <h2 class="dialog__title" id="dlg-keys-title"><Bi en={s('en', 'tui.dlgKeys')} es={s('es', 'tui.dlgKeys')} /></h2>
+          <button class="btn btn--ghost" type="button" data-dlg-close><Bi en={s('en', 'tui.dlgEsc')} es={s('es', 'tui.dlgEsc')} /></button>
         </div>
         <div class="helptable">
-          <h3>anywhere</h3>
-          <span><kbd class="kbd">/</kbd></span><span>jump to the prompt</span>
-          <span><kbd class="kbd">Ctrl K</kbd></span><span>jump to the prompt</span>
-          <span><kbd class="kbd">?</kbd></span><span>this dialog</span>
-          <span><kbd class="kbd">Esc</kbd></span><span>close a dialog or the menu</span>
-          <h3>prompt</h3>
-          <span><kbd class="kbd">↑</kbd> <kbd class="kbd">↓</kbd></span><span>move through results, or recall history</span>
-          <span><kbd class="kbd">Tab</kbd></span><span>complete a slash command</span>
-          <span><kbd class="kbd">Enter</kbd></span><span>run the selected result</span>
+          <h3><Bi en={s('en', 'tui.keysAnywhere')} es={s('es', 'tui.keysAnywhere')} /></h3>
+          <span><kbd class="kbd">/</kbd></span><span><Bi en={s('en', 'tui.kJump')} es={s('es', 'tui.kJump')} /></span>
+          <span><kbd class="kbd">Ctrl K</kbd></span><span><Bi en={s('en', 'tui.kJump')} es={s('es', 'tui.kJump')} /></span>
+          <span><kbd class="kbd">?</kbd></span><span><Bi en={s('en', 'tui.kHelp')} es={s('es', 'tui.kHelp')} /></span>
+          <span><kbd class="kbd">Esc</kbd></span><span><Bi en={s('en', 'tui.kEsc')} es={s('es', 'tui.kEsc')} /></span>
+          <h3><Bi en={s('en', 'tui.keysPrompt')} es={s('es', 'tui.keysPrompt')} /></h3>
+          <span><kbd class="kbd">↑</kbd> <kbd class="kbd">↓</kbd></span><span><Bi en={s('en', 'tui.kUpDown')} es={s('es', 'tui.kUpDown')} /></span>
+          <span><kbd class="kbd">Tab</kbd></span><span><Bi en={s('en', 'tui.kTab')} es={s('es', 'tui.kTab')} /></span>
+          <span><kbd class="kbd">Enter</kbd></span><span><Bi en={s('en', 'tui.kEnter')} es={s('es', 'tui.kEnter')} /></span>
         </div>
       </div>
     </div>
@@ -541,14 +545,14 @@ const kv: [string, string][] = [
       <div class="dialog__backdrop" data-dlg-close></div>
       <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-help-title">
         <div class="dialog__head">
-          <h2 class="dialog__title" id="dlg-help-title">Commands</h2>
-          <button class="btn btn--ghost" type="button" data-dlg-close>esc</button>
+          <h2 class="dialog__title" id="dlg-help-title"><Bi en={s('en', 'tui.dlgCommands')} es={s('es', 'tui.dlgCommands')} /></h2>
+          <button class="btn btn--ghost" type="button" data-dlg-close><Bi en={s('en', 'tui.dlgEsc')} es={s('es', 'tui.dlgEsc')} /></button>
         </div>
         <div class="helptable">
-          <h3>go</h3>
-          {commands.slice(0, 7).map((c) => (<><span><code>{c.cmd}</code></span><span>{c.desc}</span></>))}
-          <h3>do</h3>
-          {commands.slice(7).map((c) => (<><span><code>{c.cmd}</code></span><span>{c.desc}</span></>))}
+          <h3><Bi en={s('en', 'tui.keysGo')} es={s('es', 'tui.keysGo')} /></h3>
+          {commands.slice(0, 7).map((c) => (<><span><code>{c.cmd}</code></span><span><Bi en={c.desc.en} es={c.desc.es} /></span></>))}
+          <h3><Bi en={s('en', 'tui.keysDo')} es={s('es', 'tui.keysDo')} /></h3>
+          {commands.slice(7).map((c) => (<><span><code>{c.cmd}</code></span><span><Bi en={c.desc.en} es={c.desc.es} /></span></>))}
         </div>
       </div>
     </div>

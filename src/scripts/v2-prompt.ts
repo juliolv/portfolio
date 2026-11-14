@@ -15,7 +15,7 @@ interface Item {
   tags?: string[];
   body?: string;
   cmd?: string;
-  desc?: string;
+  desc?: string | Record<'en' | 'es', string>;
   /** Project rows are addressed by their index in the transcript. */
   index?: number;
 }
@@ -28,6 +28,10 @@ interface Payload {
 }
 
 const data: Payload = JSON.parse(document.getElementById('v2-search-data')?.textContent ?? '{}');
+
+const lang = (): 'en' | 'es' => (document.documentElement.dataset.lang === 'es' ? 'es' : 'en');
+const descOf = (item: Item): string =>
+  typeof item.desc === 'string' ? item.desc : (item.desc?.[lang()] ?? '');
 const input = document.getElementById('cmd') as HTMLInputElement | null;
 const menu = document.getElementById('menu');
 const msg = document.getElementById('st-msg');
@@ -113,7 +117,7 @@ if (input && menu) {
       option.setAttribute('aria-selected', String(i === cursor));
       option.innerHTML =
         `<span class="opt__key">${mode === 'command' ? escape(item.cmd ?? '') : highlight(item.label, query)}</span>` +
-        `<span class="opt__desc">${escape(mode === 'command' ? item.desc ?? '' : item.meta ?? '')}</span>` +
+        `<span class="opt__desc">${escape(mode === 'command' ? descOf(item) : item.meta ?? '')}</span>` +
         `<span class="opt__end" aria-hidden="true">${item.kind === 'command' ? '↵' : '→'}</span>`;
 
       option.addEventListener('mousedown', (event) => event.preventDefault()); // keep focus
@@ -377,6 +381,12 @@ if (input && menu) {
         input.blur();
       }
     }
+  });
+
+  // The menu's descriptions are per language, so an open menu re-renders when the
+  // language changes instead of keeping the old one on screen.
+  window.addEventListener('tui:lang', () => {
+    if (!menu!.hidden) update();
   });
 
   // The prompt is the point of the page: focus it on load, except on touch,
