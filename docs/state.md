@@ -1,5 +1,5 @@
 ---
-updated: 2026-11-13
+updated: 2026-11-14
 milestone: 3 — v2 TUI port, acceptance run
 next_action: re-run §9 with the palette in, then decide the merge
 owner: julio
