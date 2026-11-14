@@ -39,9 +39,11 @@ After that: the devlog mirroring real GitHub issues.
 
 ## Next actions
 
-1. v2 port, one issue at a time (`HERMES_HANDOFF.md` §8). Done: tokens + nine
-   skins + AA gate (`pnpm contrast`), branch `feat/tui-v2`. Next: §3 i18n/data,
-   then §4 shell. Scaffold (§1) already exists, so it is skipped.
+1. v2 port, one issue at a time (`HERMES_HANDOFF.md` §8), branch `feat/tui-v2`.
+   Done: §2 tokens + nine skins + AA gate (`pnpm contrast`); §4 shell skeleton at
+   `/v2` (title bar, tab strip, welcome, one turn, sidebar, dock) with the base and
+   component CSS ported. Next: fill the transcript turns from the real data, then
+   the i18n dictionary, the prompt, and the dialogs.
 2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
 2. Open issues #1–#4 so the devlog has something to mirror (owner approval).
