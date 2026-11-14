@@ -44,3 +44,15 @@ html[data-lang='es'] [data-lang-block='en'] {
 [hidden] {
   display: none !important;
 }
+
+/* --- theme picker ---
+   The card states use aria-checked (radiogroup semantics), not aria-pressed. */
+.skin-card[aria-checked='true'] {
+  border-color: var(--accent);
+}
+
+.skin-card__cur {
+  display: block;
+  color: var(--accent);
+  font-size: var(--fs-1);
+}

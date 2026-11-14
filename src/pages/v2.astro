@@ -380,16 +380,16 @@ const kv: [string, string][] = [
           <button class="btn btn--ghost" type="button" data-dlg-close>esc</button>
         </div>
         <div class="dialog__list">
-          <div class="skins" role="group" aria-label="Skins">
+          <div class="skins" role="radiogroup" aria-label="Theme">
             {[{ id: 'system', name: 'System', mode: 'auto', preview: DEFAULT_SKIN }, ...SKINS.map((skin) => ({ ...skin, preview: skin.id }))].map((skin) => (
-              <button class="skin-card" type="button" data-skin-pick={skin.id} data-skin-name={skin.name}
-                aria-pressed="false">
+              <button class="skin-card" type="button" role="radio" aria-checked="false" tabindex="-1"
+                data-skin-pick={skin.id} data-skin-name={skin.name}>
                 <span class="mini" data-skin={skin.preview} aria-hidden="true">
                   <span><b>❯</b> /work</span>
                   <span class="mini__muted">● List(work/)</span>
                   <span class="mini__bar"><i></i><i></i><i></i></span>
                 </span>
-                <span>{skin.name}<small>{skin.mode}</small></span>
+                <span>{skin.name}<small>{skin.mode}</small><span class="skin-card__cur" hidden>● current</span></span>
               </button>
             ))}
           </div>
