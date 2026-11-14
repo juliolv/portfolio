@@ -33,7 +33,7 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 /work/[slug] case studies with linked cards, a generated sitemap and
 per-language markdown bodies.
 **Now:** the v2 TUI rewrite, on branch `feat/tui-v2` (main stays live until the
-handoff's §9 checklist passes). Handoff: `docs/design/v2/portfolio-tui-handoff/`.
+handoff's §9 checklist passes). Case-study routes removed from both branches. Handoff: `docs/design/v2/portfolio-tui-handoff/`.
 After that: the devlog mirroring real GitHub issues.
 **Then:** real content (blocked on the owner), then launch polish.
 
@@ -59,7 +59,7 @@ After that: the devlog mirroring real GitHub issues.
 | 2026-11-13 | `/design-system/` is a route, not a JS view | Real URL, indexable, works without JS (deviation from handoff §7, documented in client.ts) |
 | 2026-11-13 | Boot steps each run in a guard | One throwing step used to kill scroll tracking and nav handlers |
 | 2026-11-13 | Placeholder content only | Public repo; real employers/projects must never enter history |
-| 2026-11-13 | v2 keeps `/work/[slug]` case studies | the handoff was written before they shipped; project rows will expand in place *and* link out — dropping shipped content is not reversible in spirit |
+| 2026-11-13 | `/work/[slug]` dropped | owner decision: v2 expands project rows in place, so the routes, bodies, sitemap entries and `case.*` copy are gone |
 | 2026-11-13 | Design system stays a real route | shareable URL and its own canonical/OG beat a hash view; the spec's tabs port into the route |
 | 2026-11-13 | v2 lands on `feat/tui-v2`, not `main` | a shell rewrite this size needs a preview branch until §9 passes |
 | 2026-11-13 | Themes use official palettes, green/amber included | handoff §3.2 reverses the earlier no-green rule on purpose |
