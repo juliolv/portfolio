@@ -1,7 +1,7 @@
 ---
 updated: 2026-11-13
 milestone: 3 — v2 TUI port, acceptance run
-next_action: build the command palette and the single-key shortcuts, then merge
+next_action: re-run §9 with the palette in, then decide the merge
 owner: julio
 ---
 
@@ -94,8 +94,8 @@ line, because "looks fine" is what this section exists to replace.
 | Theme picker by keyboard | pass — Enter opens on the saved skin, arrows preview, Enter saves, Esc reverts |
 | Prompt: autofocus, Tab completes without losing focus, `/work ` matches | pass |
 | Spanish, visible copy | pass — 245 strings identical EN/ES, of which 42 are technology names, theme names, URLs and code samples; no prose left in English |
-| **Command palette (§5.2)** | **not built** — `Ctrl K` focuses the prompt; there is no grouped palette dialog |
-| **Single-key shortcuts `t` `l` `j` `k` and the help switch (`tui.keys`)** | **not built** |
+| Command palette (§5.2) | pass — Ctrl K or the button; 25 entries in four groups, arrows/Enter/hover, language-aware placeholder |
+| Single keys `t` `l` `j` `k` `?` + switch (`tui.keys`) | pass — ignored while typing, in a dialog, or with a modifier; hint changes when off; Ctrl K unaffected |
 | aria-labels, `data-tip` tooltips | partial — visible copy is translated, attribute strings stay English |
 | `/design-system/` | v1 page still served; v2 lives at `#design-system` |
 
