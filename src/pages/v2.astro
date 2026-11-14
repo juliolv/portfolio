@@ -25,6 +25,13 @@ const aboutEs = t('es', 'about.body') as string[];
 
 const STATUS_GLYPH: Record<string, string> = { done: '●', progress: '◐', planned: '○' };
 
+/* The sidebar reports the fleet, and the entry point is the devlog item in
+   progress — so the two can never disagree. */
+const inProgress = devlog.find((entry) => entry.status === 'progress');
+const issueRef = inProgress ? `#${inProgress.issue} ${inProgress.title}` : '';
+const agentDesc = (id: string, lang: 'en' | 'es') => s(lang, `agents.${id}`).replace('{issue}', issueRef);
+const todoDone = devlog.filter((entry) => entry.status === 'done').length;
+
 const sections = [
   { id: 'work', label: s(L, 'nav.work'), file: 'work/' },
   { id: 'devlog', label: s(L, 'nav.devlog'), file: 'devlog/' },
@@ -385,7 +392,7 @@ const kv: [string, string][] = [
 
         <aside class="sidebar" aria-label="Sidebar">
           <div class="side__block">
-            <p class="side__title">Files</p>
+            <p class="side__title"><span><Bi en={s(L, 'side.files')} es={s('es', 'side.files')} /></span></p>
             <nav class="files" aria-label="Files">
               {sections.map((section) => (
                 <a href={`#${section.id}`} data-nav={section.id} aria-current={section.id === 'work' ? 'true' : undefined}><span class="files__cur" aria-hidden="true">❯</span><span>{section.file}</span></a>
@@ -394,12 +401,50 @@ const kv: [string, string][] = [
             </nav>
           </div>
           <div class="side__block">
-            <p class="side__title"><span>Context</span><span id="ctx-pct">0%</span></p>
+            <p class="side__title"><span><Bi en={s(L, 'side.context')} es={s('es', 'side.context')} /></span><span id="ctx-pct">0%</span></p>
             <div class="ctx" role="progressbar" aria-label="Context window" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
               <span class="ctx__bar" aria-hidden="true"></span>
               <span class="ctx__nums"></span>
               <span class="ctx__read"></span>
             </div>
+          </div>
+
+          <div class="side__block">
+            <p class="side__title"><span><Bi en={s(L, 'side.agents')} es={s('es', 'side.agents')} /></span><span>{SITE.agents.length}</span></p>
+            <ul class="agents">
+              {SITE.agents.map((agent) => {
+                const learning = agent.status === 'learning';
+                return (
+                  <li class="agent">
+                    <span class={`status status--${learning ? 'progress' : 'done'}`} aria-hidden="true">{learning ? '◐' : '●'}</span>
+                    <span class="agent__name">{agent.name} <span class="muted">· <Bi en={s('en', `status.${agent.status}`)} es={s('es', `status.${agent.status}`)} /></span></span>
+                    <p class="agent__desc"><Bi en={agentDesc(agent.id, 'en')} es={agentDesc(agent.id, 'es')} /></p>
+                    {'subs' in agent && agent.subs && (
+                      <ul class="agent__subs">
+                        {agent.subs.map((sub) => (
+                          <li><Bi en={s('en', `agents.${sub}`)} es={s('es', `agents.${sub}`)} /></li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <div class="side__block">
+            <p class="side__title"><span><Bi en={s(L, 'side.todo')} es={s('es', 'side.todo')} /></span><span>{todoDone}/{devlog.length}</span></p>
+            <ul class="mini-todo">
+              {devlog.map((entry) => (
+                <li>
+                  <a href="#devlog">
+                    <span class={`status status--${entry.status}`} aria-hidden="true">{STATUS_GLYPH[entry.status]}</span>
+                    <span class="sr-only"><Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} /> </span>
+                    <span>#{entry.issue} <Bi en={entry.title} es={entry.titleEs} /></span>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
           <button class="tip" type="button" data-open-dlg="keys" aria-haspopup="dialog"><span class="kbd">?</span><span class="tip__desc">keyboard shortcuts</span></button>
         </aside>

@@ -30,6 +30,16 @@ export const SITE = {
     repo: 'https://github.com/juliolv/portfolio',
     pages: 'https://juliolv.github.io/portfolio/',
   },
+  /**
+   * The fleet that builds this site, as the sidebar reports it. Descriptions are
+   * copy (i18n `agents.<id>`); a `{issue}` placeholder is filled from the devlog
+   * entry marked in progress, so the sidebar cannot drift from the devlog.
+   */
+  agents: [
+    { id: 'hermes', name: 'hermes', status: 'learning' as const },
+    { id: 'opencode', name: 'opencode', status: 'active' as const, subs: ['orchestrator', 'reviewers'] as const },
+    { id: 'claude', name: 'claude code', status: 'active' as const },
+  ],
 };
 
 /** Prefix a site-absolute path with the deploy base ('' locally, '/portfolio' on Pages). */

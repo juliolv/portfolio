@@ -27,7 +27,9 @@
     "ready": "ready",
     "copied": "copied",
     "copyFailed": "select the address to copy it",
-    "tbd": "TBD"
+    "tbd": "TBD",
+    "learning": "learning",
+    "active": "active"
   },
   "hero": {
     "role": "Senior full-stack software engineer",
@@ -189,5 +191,19 @@
     "hintTouch": "tap ❯ to search · / commands",
     "placeholder": "Search projects and skills, or type / for commands…",
     "placeholderPhone": "Search, or type /…"
+  },
+  "side": {
+    "agents": "Agents",
+    "todo": "Todo",
+    "keys": "keyboard shortcuts",
+    "files": "Files",
+    "context": "Context"
+  },
+  "agents": {
+    "hermes": "building this site · {issue}",
+    "opencode": "driving the build fleet",
+    "orchestrator": "orchestrator · read-only",
+    "reviewers": "specialist reviewers",
+    "claude": "design and copy passes"
   }
 }

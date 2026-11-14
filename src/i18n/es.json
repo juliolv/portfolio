@@ -27,7 +27,9 @@
     "ready": "listo",
     "copied": "copiado",
     "copyFailed": "selecciona la dirección para copiarla",
-    "tbd": "por definir"
+    "tbd": "por definir",
+    "learning": "aprendiendo",
+    "active": "activo"
   },
   "hero": {
     "role": "Ingeniero de software full-stack senior",
@@ -189,5 +191,19 @@
     "hintTouch": "toca ❯ para buscar · / comandos",
     "placeholder": "Busca proyectos y tecnologías, o escribe / para comandos…",
     "placeholderPhone": "Busca, o escribe /…"
+  },
+  "side": {
+    "agents": "Agentes",
+    "todo": "Pendientes",
+    "keys": "atajos de teclado",
+    "files": "Archivos",
+    "context": "Contexto"
+  },
+  "agents": {
+    "hermes": "construyendo este sitio · {issue}",
+    "opencode": "al mando de la flota de construcción",
+    "orchestrator": "orquestador · solo lectura",
+    "reviewers": "revisores especialistas",
+    "claude": "pasadas de diseño y copy"
   }
 }
