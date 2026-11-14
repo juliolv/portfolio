@@ -243,3 +243,10 @@ html[data-lang='es'] [data-lang-block='en'] {
   user-select: none;
   -webkit-user-select: none;
 }
+
+/* The shortcut on the palette button: monospace, muted, and part of the button
+   rather than a second bordered box inside it. */
+.btn__key {
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}

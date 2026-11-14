@@ -68,8 +68,9 @@ function paintChrome() {
   if (tips) tips.classList.toggle('tips--chips', TOUCH);
 
   if (paletteButton) {
-    const kbd = paletteButton.querySelector('.kbd');
-    if (kbd) kbd.textContent = TOUCH ? 'menu' : 'Ctrl K';
+    // A keycap inside a button is two frames; this is plain text in the button.
+    const key = paletteButton.querySelector('.btn__key');
+    if (key) key.textContent = TOUCH ? 'menu' : 'Ctrl K';
   }
 
   if (promptInput) {
