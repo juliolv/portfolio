@@ -1,73 +1,666 @@
 ---
-import Base from '../layouts/Base.astro';
+/**
+ * The site — a terminal/IDE transcript: welcome box, six turns, a file and
+ * context sidebar, and a prompt docked at the bottom.
+ * seen and measured before it replaces the live one.
+ */
+import '../styles/tokens.css';
+import '../styles/base-v2.css';
+import '../styles/components.css';
+import { getCollection } from 'astro:content';
 import Bi from '../components/Bi.astro';
-import Hero from '../components/Hero.astro';
-import WorkSection from '../components/WorkSection.astro';
-import DevlogSection from '../components/DevlogSection.astro';
-import ExperienceSection from '../components/ExperienceSection.astro';
-import StackSection from '../components/StackSection.astro';
-import { t, s, SITE, url } from '../lib/i18n';
+import DesignSystemView from '../components/v2/DesignSystemView.astro';
+import { s, t, url, SITE } from '../lib/i18n';
+import devlog from '../data/devlog.json';
+import experience from '../data/experience.json';
+import stack from '../data/stack.json';
+import { THEMES, DEFAULT_THEME, THEME_IDS, LEGACY_SKINS } from '../data/themes';
 
 const L = 'en' as const;
-const aboutBody = t(L, 'about.body') as string[];
-const aboutBodyEs = t('es', 'about.body') as string[];
+
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const groupsEn = t('en', 'stack.groups') as string[];
+const groupsEs = t('es', 'stack.groups') as string[];
+const aboutEn = t('en', 'about.body') as string[];
+const aboutEs = t('es', 'about.body') as string[];
+
+const STATUS_GLYPH: Record<string, string> = { done: '●', progress: '◐', planned: '○' };
+
+/* The sidebar reports the fleet, and the entry point is the devlog item in
+   progress — so the two can never disagree. */
+const inProgress = devlog.find((entry) => entry.status === 'progress');
+/** The issue reference follows the language, like the rest of the devlog. */
+const issueRef = (lang: 'en' | 'es') =>
+  inProgress ? `#${inProgress.issue} ${lang === 'es' ? inProgress.titleEs : inProgress.title}` : '';
+const agentDesc = (id: string, lang: 'en' | 'es') =>
+  s(lang, `agents.${id}`).replace('{issue}', issueRef(lang));
+const todoDone = devlog.filter((entry) => entry.status === 'done').length;
+
+const sections = [
+  { id: 'work', label: s(L, 'nav.work'), file: 'work/' },
+  { id: 'devlog', label: s(L, 'nav.devlog'), file: 'devlog/' },
+  { id: 'experience', label: s(L, 'nav.experience'), file: 'experience.md' },
+  { id: 'stack', label: s(L, 'nav.stack'), file: 'stack/' },
+  { id: 'about', label: s(L, 'nav.about'), file: 'about.md' },
+  { id: 'contact', label: s(L, 'nav.contact'), file: 'contact.md' },
+];
+
+/* ---------------------------------------------------------------- search --
+   One payload, embedded at build time: the prompt script never touches data
+   files, and every item carries where it lives and what to do with it. */
+const sectionItems = sections.map((section) => ({
+  kind: 'section' as const,
+  label: s(L, `nav.${section.id}`),
+  meta: `section · /${section.id}`,
+  hash: `#${section.id}`,
+}));
+
+const projectItems = work.map(({ data }, index) => ({
+  kind: 'project' as const,
+  label: data.name,
+  meta: `work/ · ${data.period}`,
+  tags: data.stack,
+  body: [data.problem, data.role, data.outcome].join(' '),
+  index,
+}));
+
+const devlogItems = devlog.map((entry) => ({
+  kind: 'devlog' as const,
+  label: entry.title,
+  meta: `devlog/ · #${entry.issue} · ${entry.date ?? 'TBD'}`,
+  body: entry.note,
+  hash: '#devlog',
+}));
+
+const experienceItems = experience.map((row) => ({
+  kind: 'experience' as const,
+  label: row.role,
+  meta: `experience.md · ${row.org} · ${row.when}`,
+  body: row.text,
+  hash: '#experience',
+}));
+
+const stackItems = stack.flatMap((group) =>
+  group.items.map((item) => ({
+    kind: 'stack' as const,
+    label: item,
+    meta: `stack/${group.dir}`,
+    tags: [item],
+    hash: '#stack',
+  }))
+);
+
+/* Commands render in the prompt menu and in the help dialog, so each one carries
+   its description in both languages. */
+const commands = [
+  'work', 'devlog', 'experience', 'stack', 'about', 'contact',
+  'design', 'theme', 'lang', 'github', 'linkedin', 'cv', 'repo', 'copy', 'hire', 'help',
+].map((id) => ({
+  id,
+  cmd: `/${id}`,
+  desc: { en: s('en', `tui.cmds.${id}`), es: s('es', `tui.cmds.${id}`) },
+}));
+
+const searchPayload = {
+  items: [...sectionItems, ...projectItems, ...devlogItems, ...experienceItems, ...stackItems],
+  commands: commands.map((c) => ({ kind: 'command' as const, label: c.cmd, cmd: c.cmd, desc: c.desc })),
+  email: SITE.email,
+  links: SITE.links,
+};
+
+
+/* Label and value are both copy: the summary was the last block rendering
+   English in Spanish. */
+const kv: [string, string, string][] = [
+  ['role', 'hero.kvLabelRole', 'hero.kvRole'],
+  ['experience', 'hero.kvLabelExperience', 'hero.kvExperience'],
+  ['focus', 'hero.kvLabelFocus', 'hero.kvFocus'],
+  ['stack', 'hero.kvLabelStack', 'hero.kvStack'],
+  ['based', 'hero.kvLabelBased', 'hero.kvBased'],
+];
 ---
 
-<Base>
-  <main class="view" id="view-home" tabindex="-1">
-    <div class="wrap">
-      <Hero />
-      <WorkSection />
-      <DevlogSection />
-      <ExperienceSection />
-      <StackSection />
+<!doctype html>
+<html lang="en" data-lang="en" data-skin={DEFAULT_THEME}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content={s(L, 'hero.pitch')} />
+    <meta name="color-scheme" content="light dark" />
+    <title>{`${SITE.name} · ${s(L, 'hero.role')}`}</title>
 
-      <section class="section" id="about" aria-labelledby="about-h">
-        <div class="section__head">
-          <p class="eyebrow">~/julio/<b>about</b></p>
-          <h2 class="section__title" id="about-h"><Bi en={s(L, 'about.title')} es={s('es', 'about.title')} /></h2>
+    <link rel="canonical" href={SITE.url} />
+    <meta name="theme-color" content="#16161e" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#eef0f6" media="(prefers-color-scheme: light)" />
+
+    <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
+    <link rel="icon" type="image/png" sizes="32x32" href={url('/favicon-32.png')} />
+    <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={`${SITE.name} · ${s(L, 'hero.role')}`} />
+    <meta property="og:description" content={s(L, 'hero.pitch')} />
+    <meta property="og:url" content={SITE.url} />
+    <meta property="og:image" content={`${SITE.url}og.png`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${SITE.name} — ${s(L, 'hero.role')}`} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="es_ES" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${SITE.name} · ${s(L, 'hero.role')}`} />
+    <meta name="twitter:description" content={s(L, 'hero.pitch')} />
+    <meta name="twitter:image" content={`${SITE.url}og.png`} />
+
+    <script type="application/json" id="v2-theme-data" set:html={JSON.stringify({
+      themes: THEME_IDS, legacy: LEGACY_SKINS, fallback: DEFAULT_THEME,
+      names: Object.fromEntries(THEMES.map((t) => [t.id, t.name])),
+    })}></script>
+    <script is:inline>
+      /* Boot (handoff §3.2). Two things resolve before first paint: the theme,
+         and the language. The light/dark palette is not resolved here at all —
+         tokens.css flips it in a prefers-color-scheme query, so the browser picks
+         the right one before anything is painted and there is no flash to fix. */
+      (() => {
+        const root = document.documentElement;
+        const data = JSON.parse(document.getElementById('v2-theme-data').textContent);
+
+        let stored = null;
+        let storedMode = null;
+        try {
+          stored = localStorage.getItem('tui.skin');
+          storedMode = localStorage.getItem('tui.mode');
+        } catch {}
+        // A stored id from the old nine-skin build is mapped, not trusted: an
+        // unknown id means no tokens, which is an unstyled page.
+        const theme = data.themes.includes(stored)
+          ? stored
+          : (data.legacy[stored] ?? data.fallback);
+        root.setAttribute('data-skin', theme);
+        // data-mode only exists when the reader chose a variant. Without it the
+        // media query decides, which is the whole point of leaving it off.
+        if (storedMode === 'dark' || storedMode === 'light') root.setAttribute('data-mode', storedMode);
+        root.classList.add('js');
+
+        let lang = null;
+        try { lang = localStorage.getItem('tui.lang'); } catch {}
+        if (lang !== 'en' && lang !== 'es') {
+          lang = (navigator.language || '').toLowerCase().startsWith('es') ? 'es' : 'en';
+        }
+        root.setAttribute('data-lang', lang);
+        root.setAttribute('lang', lang);
+
+        const label = document.querySelector('.skinbtn__label');
+        if (label) label.textContent = data.names[theme] ?? theme;
+      })();
+    </script>
+  </head>
+  <body>
+    <script type="application/json" id="v2-search-data" set:html={JSON.stringify(searchPayload)}></script>
+    <script type="application/json" id="v2-palette-data" set:html={JSON.stringify([
+      ...sections.map((section) => ({
+        group: 'go',
+        label: { en: section.file, es: section.file },
+        hint: { en: s('en', `nav.${section.id}`), es: s('es', `nav.${section.id}`) },
+        hash: `#${section.id}`,
+      })),
+      { group: 'go', label: { en: 'design-system', es: 'design-system' },
+        hint: { en: s('en', 'palette.designSystem'), es: s('es', 'palette.designSystem') }, hash: '#design-system' },
+      ...THEMES.map((theme) => ({
+        group: 'appearance',
+        label: { en: theme.name, es: theme.nameEs },
+        hint: { en: 'theme · light + dark', es: 'tema · claro + oscuro' },
+        skin: theme.id,
+      })),
+      { group: 'appearance', label: { en: 'English', es: 'Inglés' }, hint: { en: 'language', es: 'idioma' }, lang: 'en' },
+      { group: 'appearance', label: { en: 'Español', es: 'Español' }, hint: { en: 'language', es: 'idioma' }, lang: 'es' },
+      { group: 'links', label: { en: 'GitHub', es: 'GitHub' }, hint: { en: 'github.com/juliolv', es: 'github.com/juliolv' }, url: SITE.links.github },
+      { group: 'links', label: { en: 'LinkedIn', es: 'LinkedIn' }, hint: { en: 'linkedin.com', es: 'linkedin.com' }, url: SITE.links.linkedin },
+      { group: 'links', label: { en: 'CV', es: 'CV' }, hint: { en: 'cv.pdf', es: 'cv.pdf' }, url: SITE.links.cv },
+      { group: 'links', label: { en: 'Repository', es: 'Repositorio' }, hint: { en: 'github.com/juliolv/portfolio', es: 'github.com/juliolv/portfolio' }, url: SITE.links.repo },
+      { group: 'actions', label: { en: s('en', 'palette.copyEmail'), es: s('es', 'palette.copyEmail') }, hint: { en: 'email', es: 'email' }, action: 'copy' },
+      { group: 'actions', label: { en: s('en', 'palette.shortcuts'), es: s('es', 'palette.shortcuts') }, hint: { en: '?', es: '?' }, action: 'keys' },
+      { group: 'actions', label: { en: s('en', 'palette.themePicker'), es: s('es', 'palette.themePicker') }, hint: { en: 't', es: 't' }, action: 'theme' },
+    ])}></script>
+    <script type="application/json" id="v2-palette-titles" set:html={JSON.stringify({
+      go: { en: s('en', 'palette.go'), es: s('es', 'palette.go') },
+      appearance: { en: s('en', 'palette.appearance'), es: s('es', 'palette.appearance') },
+      links: { en: s('en', 'palette.links'), es: s('es', 'palette.links') },
+      actions: { en: s('en', 'palette.actions'), es: s('es', 'palette.actions') },
+      noResults: { en: s('en', 'palette.noResults'), es: s('es', 'palette.noResults') },
+      placeholder: { en: s('en', 'palette.placeholder'), es: s('es', 'palette.placeholder') },
+    })}></script>
+    <script type="application/json" id="v2-meta" set:html={JSON.stringify({
+      title: { en: `${SITE.name} — ${s('en', 'hero.role')}`, es: `${SITE.name} — ${s('es', 'hero.role')}` },
+      desc: { en: s('en', 'hero.pitch'), es: s('es', 'hero.pitch') },
+      hint: { en: s('en', 'tui.hint'), es: s('es', 'tui.hint') },
+      hintTouch: { en: s('en', 'tui.hintTouch'), es: s('es', 'tui.hintTouch') },
+      hintOff: { en: s('en', 'palette.keysOffHint'), es: s('es', 'palette.keysOffHint') },
+      placeholder: { en: s('en', 'tui.placeholder'), es: s('es', 'tui.placeholder') },
+      placeholderPhone: { en: s('en', 'tui.placeholderPhone'), es: s('es', 'tui.placeholderPhone') },
+      role: { en: s('en', 'hero.role'), es: s('es', 'hero.role') },
+      tokensLine: { en: s('en', 'tui.tokensLine'), es: s('es', 'tui.tokensLine') },
+      readLine: { en: s('en', 'tui.readLine'), es: s('es', 'tui.readLine') },
+    })}></script>
+    <div class="app">
+      <header class="titlebar">
+        <div class="titlebar__row">
+          <a class="brand" href="#top">
+            <span class="brand__logo" aria-hidden="true">
+              <svg class="logo" viewBox="0 0 24 24" focusable="false"><rect x="7" y="3.5" width="3" height="3" fill="var(--accent)"/><path d="M8.5 9.5V18a3 3 0 0 1-3 3H3" fill="none" stroke="var(--accent)" stroke-width="3"/><rect x="13" y="3.5" width="7" height="14.5" fill="var(--text)"/></svg>
+            </span>julio<span class="brand__crumb" aria-hidden="true">/work</span>
+          </a>
+          <span class="titlebar__spacer"></span>
+          <div class="seg" role="radiogroup" aria-label={s(L, 'a11y.language')} data-label-en={s('en', 'a11y.language')} data-label-es={s('es', 'a11y.language')}>
+            <button class="seg__opt" type="button" role="radio" aria-checked="true" data-lang-to="en">EN</button>
+            <button class="seg__opt" type="button" role="radio" aria-checked="false" data-lang-to="es">ES</button>
+          </div>
+          <button class="btn skinbtn" type="button" data-open-dlg="theme" aria-haspopup="dialog">
+            <span class="sw" aria-hidden="true"><i style="background:var(--bg)"></i><i style="background:var(--accent)"></i><i style="background:var(--ok)"></i><i style="background:var(--warn)"></i></span>
+            <span class="skinbtn__label">·</span>
+          </button>
+          <button class="btn" type="button" id="palette-btn" data-open-dlg="palette" aria-haspopup="dialog"
+    aria-label={s(L, 'palette.title')} data-label-en={s('en', 'palette.title')} data-label-es={s('es', 'palette.title')}><span class="btn__key">Ctrl K</span></button>
         </div>
-        <div class="section__body">
-          <div class="prose reveal">
-            {aboutBody.map((paragraph, i) => (
-              <p><Bi en={paragraph} es={aboutBodyEs[i]} /></p>
+        <nav class="tabstrip" aria-label={s(L, 'a11y.sections')} data-label-en={s('en', 'a11y.sections')} data-label-es={s('es', 'a11y.sections')}>
+          {sections.map((section) => (
+            <a href={`#${section.id}`} data-nav={section.id} aria-current={section.id === 'work' ? 'true' : undefined}>{section.label}</a>
+          ))}
+          <span class="tabstrip__ind" aria-hidden="true"></span>
+        </nav>
+      </header>
+
+      <div class="shell">
+        <main class="main">
+          <div class="transcript" id="view-site">
+            <section class="welcome" id="top">
+              <span class="welcome__title" aria-hidden="true">portfolio v1.0</span>
+              <div class="welcome__main">
+                <h1 class="hero__name">{SITE.name}</h1>
+                {/* One text node, one accessible name. The ghost reserves the width;
+                    the visible copy is what types. There is no sr-only duplicate —
+                    that copy was reaching selection and reading twice. */}
+                <p class="hero__role" aria-label={s(L, 'hero.role')} data-label-en={s('en', 'hero.role')} data-label-es={s('es', 'hero.role')}>
+                  <span class="hero__ghost" aria-hidden="true"><span class="hero__role-glyph">›</span> <Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /><span class="caret"></span></span>
+                  <span aria-hidden="true"><span class="hero__role-glyph">›</span> <span id="typed"><Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /></span><span class="caret"></span></span>
+                </p>
+                <p class="hero__pitch"><Bi en={s('en', 'hero.pitch')} es={s('es', 'hero.pitch')} /></p>
+                <div class="actions">
+                  <a class="btn btn--primary" href="#contact"><span aria-hidden="true">↓</span><Bi en={s('en', 'hero.cv')} es={s('es', 'hero.cv')} /></a>
+                  <button class="btn" type="button"><span aria-hidden="true">@</span><Bi en={s('en', 'hero.email')} es={s('es', 'hero.email')} /></button>
+                  <a class="btn" href={SITE.links.github} target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
+                  <a class="btn" href={SITE.links.linkedin} target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span></a>
+                </div>
+                <p class="avail"><span class="status status--done"><span aria-hidden="true">●</span> <Bi en={s('en', 'hero.available')} es={s('es', 'hero.available')} /></span><span><Bi en={s('en', 'hero.availableNote')} es={s('es', 'hero.availableNote')} /></span></p>
+              </div>
+              <aside class="welcome__side">
+                <p class="side__label"><Bi en={s('en', 'hero.cardLabel')} es={s('es', 'hero.cardLabel')} /></p>
+                <dl class="kv">
+                  {/* [short label, label key, value key] — the dd used the label
+                      key, so every placeholder read "experience experience". */}
+                  {kv.map(([label, labelKey, valueKey]) => (
+                    <>
+                      <dt><Bi en={s('en', labelKey)} es={s('es', labelKey)} /></dt>
+                      <dd><Bi en={s('en', valueKey)} es={s('es', valueKey)} /></dd>
+                    </>
+                  ))}
+                </dl>
+                <p class="side__label"><Bi en={s(L, 'tui.tipsTitle')} es={s('es', 'tui.tipsTitle')} /></p>
+                <ul class="tips" id="tips">
+                  {[
+                    ['/work', 'tui.tipWork'],
+                    ['/devlog', 'tui.tipDevlog'],
+                    ['/contact', 'tui.tipContact'],
+                    ['/theme', 'tui.tipTheme'],
+                  ].map(([cmd, key]) => (
+                    <li><button class="tip" type="button" data-run={cmd}>
+                      <span class="tip__key">{cmd}</span>
+                      <span class="tip__desc"><Bi en={s(L, key)} es={s('es', key)} /></span>
+                    </button></li>
+                  ))}
+                </ul>
+              </aside>
+            </section>
+
+            <section class="turn reveal" id="work">
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qWork')} es={s('es', 'tui.qWork')} /><span class="turn__cmd">/work</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolList')}</span><span class="tool__arg">(work/)</span></p>
+              <div class="result">
+                <p class="muted"><Bi en={s(L, 'work.note')} es={s('es', 'work.note')} /></p>
+                <ul class="rows">
+                  {work.map(({ id, data }, i) => (
+                    <li class={`row${i === 0 ? ' is-open' : ''}`}>
+                      <button class="row__head" type="button" aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`proj-${i}`}>
+                        <span class="row__mark" aria-hidden="true">{i === 0 ? '▾' : '▸'}</span>
+                        <span class="row__name"><Bi en={data.name} es={data.nameEs} /></span>
+                        <span class="row__meta"><Bi en={data.period} es={data.periodEs} /></span>
+                      </button>
+                      <p class="row__sum"><Bi en={data.problem} es={data.problemEs} /></p>
+                      <div class="row__body" id={`proj-${i}`} hidden={i !== 0}>
+                        <div class="row__inner">
+                          <dl class="man">
+                            <dt><Bi en={s('en', 'work.labels.role')} es={s('es', 'work.labels.role')} /></dt>
+                            <dd><Bi en={data.role} es={data.roleEs} /></dd>
+                            <dt><Bi en={s('en', 'work.labels.stack')} es={s('es', 'work.labels.stack')} /></dt>
+                            <dd><span class="tags">{data.stack.map((tech) => <span class="tag">{tech}</span>)}</span></dd>
+                            <dt><Bi en={s('en', 'work.labels.outcome')} es={s('es', 'work.labels.outcome')} /></dt>
+                            <dd><Bi en={data.outcome} es={data.outcomeEs} /></dd>
+                          </dl>
+                          <p class="row__foot"><span class="tag tag--dashed"><Bi en={s(L, 'work.soon')} es={s('es', 'work.soon')} /></span></p>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+
+            <section class="turn reveal" id="devlog">
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qDevlog')} es={s('es', 'tui.qDevlog')} /><span class="turn__cmd">/devlog</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTodos')}</span><span class="tool__arg">(TODO.md)</span></p>
+              <div class="result">
+                <p class="muted"><Bi en={s(L, 'devlog.intro')} es={s('es', 'devlog.intro')} /></p>
+                <ul class="todo">
+                  {devlog.map((entry) => (
+                    <li class="todo__item">
+                      <span class="todo__id">#{entry.issue}</span>
+                      <span class={`todo__st status status--${entry.status}`}>
+                        <span aria-hidden="true">{STATUS_GLYPH[entry.status]}</span>{' '}
+                        <Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} />
+                      </span>
+                      {entry.date
+                        ? <time class="todo__date" datetime={entry.date}>{entry.date}</time>
+                        : <span class="todo__date"><Bi en={s(L, 'status.tbd')} es={s('es', 'status.tbd')} /></span>}
+                      <span class="todo__title"><Bi en={entry.title} es={entry.titleEs} /></span>
+                      <p class="todo__note"><Bi en={entry.note} es={entry.noteEs} /></p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+
+            <section class="turn reveal" id="experience">
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qExperience')} es={s('es', 'tui.qExperience')} /><span class="turn__cmd">/experience</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolBashLog')}</span><span class="tool__arg">(git log --graph --career)</span></p>
+              <div class="result">
+                <ul class="glog">
+                  {experience.map((row, i) => (
+                    <li class={`glog__item${i === experience.length - 1 ? ' glog__item--edu' : ''}`}>
+                      <p class="glog__role"><Bi en={row.role} es={row.roleEs} /> <span class="glog__org">· <Bi en={row.org} es={row.orgEs} /></span></p>
+                      <p class="glog__when"><Bi en={row.when} es={row.whenEs} /></p>
+                      <p class="glog__text"><Bi en={row.text} es={row.textEs} /></p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+
+            <section class="turn reveal" id="stack">
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qStack')} es={s('es', 'tui.qStack')} /><span class="turn__cmd">/stack</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTree')}</span><span class="tool__arg">(tree stack/)</span></p>
+              <div class="result">
+                <div class="trees">
+                  {stack.map((group, i) => (
+                    <section class="tree">
+                      <h3 class="tree__name">{group.dir}/ <span class="tree__sub"><Bi en={groupsEn[i]} es={groupsEs[i]} /></span></h3>
+                      <ul>{group.items.map((item) => <li>{item}</li>)}</ul>
+                    </section>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            <section class="turn reveal" id="about">
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qAbout')} es={s('es', 'tui.qAbout')} /><span class="turn__cmd">/about</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.assistant')}</span></p>
+              <div class="result msg">
+                {aboutEn.map((paragraph, i) => (
+                  <p class={i ? 'muted' : undefined}><Bi en={paragraph} es={aboutEs[i]} /></p>
+                ))}
+              </div>
+            </section>
+
+            <section class="turn reveal" id="contact">
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qContact')} es={s('es', 'tui.qContact')} /><span class="turn__cmd">/contact</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolRead')}</span><span class="tool__arg">(contact.md)</span></p>
+              <div class="result">
+                <p class="muted" style="margin-bottom:var(--sp-4)"><Bi en={s(L, 'contact.lede')} es={s('es', 'contact.lede')} /></p>
+                <dl class="contact">
+                  <dt>email</dt>
+                  <dd class="contact__email">
+                    <span class="contact__addr" id="email-text">{SITE.email}</span>
+                    <button class="btn" type="button"><Bi en={s(L, 'contact.copy')} es={s('es', 'contact.copy')} /></button>
+                    <a class="btn btn--ghost" href={`mailto:${SITE.email}`}><Bi en={s(L, 'contact.open')} es={s('es', 'contact.open')} /></a>
+                  </dd>
+                  <dt>github</dt>
+                  <dd><a class="link" href={SITE.links.github} target="_blank" rel="noopener">github.com/juliolv ↗</a></dd>
+                  <dt>linkedin</dt>
+                  <dd><a class="link" href={SITE.links.linkedin} target="_blank" rel="noopener">linkedin.com/in/your-handle ↗</a></dd>
+                  <dt>cv</dt>
+                  <dd><a class="link" href={SITE.links.cv} target="_blank" rel="noopener"><Bi en={s(L, 'hero.cv')} es={s('es', 'hero.cv')} /> ↓</a></dd>
+                </dl>
+                <p class="colophon"><Bi en={s(L, 'contact.colophon')} es={s('es', 'contact.colophon')} />{' '}
+                  <a class="link" href="#design-system"><Bi en={s(L, 'contact.colophonLink')} es={s('es', 'contact.colophonLink')} /></a></p>
+              </div>
+            </section>
+          </div>
+
+          <DesignSystemView />
+
+          <div class="dock">
+            <form class="prompt" autocomplete="off">
+              <div class="menu" id="menu" role="listbox" aria-label={s(L, 'a11y.results')} data-label-en={s('en', 'a11y.results')} data-label-es={s('es', 'a11y.results')} hidden></div>
+              <div class="prompt__box">
+                <span class="prompt__glyph" aria-hidden="true">❯</span>
+                <input class="prompt__input" id="cmd" type="text" role="combobox" aria-expanded="false"
+                  aria-controls="menu" aria-autocomplete="list" autocomplete="off" autocapitalize="off"
+                  spellcheck="false" enterkeyhint="go"
+                  placeholder="Search projects and skills, or type / for commands…" aria-label={s(L, 'a11y.prompt')} data-label-en={s('en', 'a11y.prompt')} data-label-es={s('es', 'a11y.prompt')} />
+              </div>
+            </form>
+            <div class="status-line">
+              <span class="status-line__msg is-hint" id="st-msg" role="status" aria-live="polite">? shortcuts · / commands · Ctrl K palette</span>
+              <span class="status-line__right">
+              <span class="mode tip-up" data-tip-en={s('en', 'a11y.tipMode')} data-tip-es={s('es', 'a11y.tipMode')}
+                data-label-en={`${s('en', 'a11y.mode')}: build`} data-label-es={`${s('es', 'a11y.mode')}: build`}>build</span>
+              <span class="model tip-up" data-tip-en={s('en', 'a11y.tipModel')} data-tip-es={s('es', 'a11y.tipModel')}
+                data-label-en={`${s('en', 'a11y.model')}: julio-lopez`} data-label-es={`${s('es', 'a11y.model')}: julio-lopez`}>julio-lopez</span>
+              <span class="muted" aria-hidden="true">/</span>
+              <span class="model tip-up" data-tip-en={s('en', 'a11y.tipVariant')} data-tip-es={s('es', 'a11y.tipVariant')}
+                data-label-en={`${s('en', 'a11y.variant')}: senior-full-stack`} data-label-es={`${s('es', 'a11y.variant')}: senior-full-stack`}>senior-full-stack</span>
+            </span>
+            </div>
+          </div>
+        </main>
+
+        <aside class="sidebar" aria-label={s(L, 'a11y.sidebar')} data-label-en={s('en', 'a11y.sidebar')} data-label-es={s('es', 'a11y.sidebar')}>
+          <div class="side__block">
+            <p class="side__title"><span><Bi en={s(L, 'side.files')} es={s('es', 'side.files')} /></span></p>
+            <nav class="files" aria-label={s(L, 'a11y.files')} data-label-en={s('en', 'a11y.files')} data-label-es={s('es', 'a11y.files')}>
+              {sections.map((section) => (
+                <a href={`#${section.id}`} data-nav={section.id} aria-current={section.id === 'work' ? 'true' : undefined}><span class="files__cur" aria-hidden="true">❯</span><span>{section.file}</span></a>
+              ))}
+              <span class="files__ind" aria-hidden="true"></span>
+            </nav>
+          </div>
+          <div class="side__block">
+            <p class="side__title"><span><Bi en={s(L, 'side.context')} es={s('es', 'side.context')} /></span><span id="ctx-pct">0%</span></p>
+            <div class="ctx" role="progressbar" aria-label={s(L, 'a11y.context')} data-label-en={s('en', 'a11y.context')} data-label-es={s('es', 'a11y.context')} aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span class="ctx__bar" aria-hidden="true"></span>
+              <span class="ctx__nums"></span>
+              <span class="ctx__read"></span>
+            </div>
+          </div>
+
+          <div class="side__block">
+            <p class="side__title"><span><Bi en={s(L, 'side.agents')} es={s('es', 'side.agents')} /></span><span>{SITE.agents.length}</span></p>
+            <ul class="agents">
+              {SITE.agents.map((agent) => {
+                const learning = agent.status === 'learning';
+                return (
+                  <li class="agent">
+                    <span class={`status status--${learning ? 'progress' : 'done'}`} aria-hidden="true">{learning ? '◐' : '●'}</span>
+                    <span class="agent__name">{agent.name} <span class="muted">· <Bi en={s('en', `status.${agent.status}`)} es={s('es', `status.${agent.status}`)} /></span></span>
+                    <p class="agent__desc"><Bi en={agentDesc(agent.id, 'en')} es={agentDesc(agent.id, 'es')} /></p>
+                    {'subs' in agent && agent.subs && (
+                      <ul class="agent__subs">
+                        {agent.subs.map((sub) => (
+                          <li><Bi en={s('en', `agents.${sub}`)} es={s('es', `agents.${sub}`)} /></li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <div class="side__block">
+            <p class="side__title"><span><Bi en={s(L, 'side.todo')} es={s('es', 'side.todo')} /></span><span>{todoDone}/{devlog.length}</span></p>
+            <ul class="mini-todo">
+              {devlog.map((entry) => (
+                <li>
+                  <a href="#devlog">
+                    <span class={`status status--${entry.status}`} aria-hidden="true">{STATUS_GLYPH[entry.status]}</span>
+                    <span class="sr-only"><Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} /> </span>
+                    <span>#{entry.issue} <Bi en={entry.title} es={entry.titleEs} /></span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button class="tip" type="button" data-open-dlg="keys" aria-haspopup="dialog"><span class="kbd">?</span><span class="tip__desc"><Bi en={s('en', 'side.keys')} es={s('es', 'side.keys')} /></span></button>
+        </aside>
+      </div>
+    </div>
+
+    <!-- dialogs: palette, theme picker, shortcuts, help (§5.2) -->
+    <div class="dialog" data-dlg="palette" hidden>
+      <div class="dialog__backdrop" data-dlg-close></div>
+      <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-palette-title">
+        <div class="dialog__head">
+          <h2 class="dialog__title" id="dlg-palette-title"><Bi en={s('en', 'palette.title')} es={s('es', 'palette.title')} /></h2>
+          <button class="btn btn--ghost" type="button" data-dlg-close><Bi en={s('en', 'tui.dlgEsc')} es={s('es', 'tui.dlgEsc')} /></button>
+        </div>
+        <div class="dialog__field">
+          <span class="prompt__glyph" aria-hidden="true">❯</span>
+          <input class="prompt__input" id="pal-input" type="text" role="combobox" aria-expanded="true"
+            aria-controls="pal-list" aria-autocomplete="list" autocomplete="off" spellcheck="false"
+            placeholder={s(L, 'palette.placeholder')} aria-label={s(L, 'palette.title')}
+            data-label-en={s('en', 'palette.title')} data-label-es={s('es', 'palette.title')} />
+        </div>
+        <div class="dialog__list" id="pal-list" role="listbox" aria-label={s(L, 'palette.title')}
+          data-label-en={s('en', 'palette.title')} data-label-es={s('es', 'palette.title')}></div>
+        <p class="dialog__hint">
+          <span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> <Bi en="move" es="moverse" /></span>
+          <span><kbd class="kbd">Enter</kbd> <Bi en="run" es="ejecutar" /></span>
+          <span><kbd class="kbd">Esc</kbd> <Bi en="close" es="cerrar" /></span>
+        </p>
+      </div>
+    </div>
+
+    <div class="dialog" data-dlg="theme" hidden>
+      <div class="dialog__backdrop" data-dlg-close></div>
+      <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-theme-title">
+        <div class="dialog__head">
+          <h2 class="dialog__title" id="dlg-theme-title"><Bi en={s('en', 'tui.dlgTheme')} es={s('es', 'tui.dlgTheme')} /></h2>
+          <button class="btn btn--ghost" type="button" data-dlg-close><Bi en={s('en', 'tui.dlgEsc')} es={s('es', 'tui.dlgEsc')} /></button>
+        </div>
+        <div class="dialog__list dialog__list--padded">
+          <div class="skins" role="radiogroup" aria-label={s(L, 'a11y.themeGroup')} data-label-en={s('en', 'a11y.themeGroup')} data-label-es={s('es', 'a11y.themeGroup')}>
+            {THEMES.map((theme) => (
+              <div class="theme-pick">
+                <p class="theme-pick__head">
+                  <b><Bi en={theme.name} es={theme.nameEs} /></b>
+                  <small><Bi en={theme.credit.en} es={theme.credit.es} /></small>
+                </p>
+                <div class="theme-pick__pair">
+                  {(['dark', 'light'] as const).map((mode) => (
+                    <button class="skin-card" type="button" role="radio" aria-checked="false" tabindex="-1"
+                      data-skin-pick={theme.id} data-mode-pick={mode}
+                      data-skin-name={`${theme.name} · ${mode}`} data-skin-name-es={`${theme.nameEs} · ${mode === 'dark' ? s('es', 'tui.modeDark') : s('es', 'tui.modeLight')}`}>
+                      {/* The preview forces its own mode: [data-skin][data-mode] is
+                          matched at any depth, so both palettes can sit side by side
+                          while the page keeps whichever one the reader chose. */}
+                      <span class="mini" data-skin={theme.id} data-mode={mode} aria-hidden="true">
+                        <span><b>❯</b> /work</span>
+                        <span class="mini__muted">● List(work/)</span>
+                        <span class="mini__bar"><i></i><i></i><i></i></span>
+                      </span>
+                      <span class="skin-card__mode">
+                        {mode === 'dark' ? <Bi en={s('en', 'tui.modeDark')} es={s('es', 'tui.modeDark')} />
+                                         : <Bi en={s('en', 'tui.modeLight')} es={s('es', 'tui.modeLight')} />}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
-      </section>
-
-      <section class="section" id="contact" aria-labelledby="contact-h">
-        <div class="section__head">
-          <p class="eyebrow">~/julio/<b>contact</b></p>
-          <h2 class="section__title" id="contact-h"><Bi en={s(L, 'contact.title')} es={s('es', 'contact.title')} /></h2>
-        </div>
-        <div class="section__body">
-          <p class="lede reveal"><Bi en={s(L, 'contact.lede')} es={s('es', 'contact.lede')} /></p>
-
-          <div class="contact__email reveal">
-            <span class="contact__addr" id="email-text">{SITE.email}</span>
-            <button class="btn" type="button" data-copy-email>
-              <Bi en={s(L, 'contact.copy')} es={s('es', 'contact.copy')} />
-            </button>
-            <a class="btn btn--ghost" href={`mailto:${SITE.email}`}>
-              <Bi en={s(L, 'contact.open')} es={s('es', 'contact.open')} />
-            </a>
-          </div>
-
-          <div class="contact__links reveal">
-            <a class="link link--mono" href={SITE.links.github} target="_blank" rel="noopener">github.com/juliolv ↗</a>
-            <a class="link link--mono" href={SITE.links.linkedin} target="_blank" rel="noopener">linkedin.com/in/your-handle ↗</a>
-            <a class="link link--mono" href={url(SITE.links.cv)} target="_blank" rel="noopener">
-              <Bi en={s(L, 'hero.cv')} es={s('es', 'hero.cv')} /> ↓
-            </a>
-          </div>
-
-          <p class="colophon">
-            <Bi en={s(L, 'contact.colophon')} es={s('es', 'contact.colophon')} />
-            {' '}<a class="link" href={url('/design-system/')}><Bi en={s(L, 'contact.colophonLink')} es={s('es', 'contact.colophonLink')} /></a>
-          </p>
-        </div>
-      </section>
+        <p class="dialog__hint">
+          <span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd><kbd class="kbd">←</kbd><kbd class="kbd">→</kbd> preview</span>
+          <span><kbd class="kbd">Enter</kbd> apply</span>
+          <span><kbd class="kbd">Esc</kbd> revert</span>
+        </p>
+        <p class="dialog__note"><Bi en={s('en', 'tui.savedNote')} es={s('es', 'tui.savedNote')} /></p>
+      </div>
     </div>
-  </main>
-</Base>
+
+    <div class="dialog" data-dlg="keys" hidden>
+      <div class="dialog__backdrop" data-dlg-close></div>
+      <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-keys-title">
+        <div class="dialog__head">
+          <h2 class="dialog__title" id="dlg-keys-title"><Bi en={s('en', 'tui.dlgKeys')} es={s('es', 'tui.dlgKeys')} /></h2>
+          <button class="btn btn--ghost" type="button" data-dlg-close><Bi en={s('en', 'tui.dlgEsc')} es={s('es', 'tui.dlgEsc')} /></button>
+        </div>
+        <button class="switch" type="button" role="switch" aria-checked="true" id="keys-switch">
+          <span id="keys-switch-label"><Bi en={s('en', 'palette.keysSwitch')} es={s('es', 'palette.keysSwitch')} /> <span class="muted"><Bi en={s('en', 'tui.keysWhich')} es={s('es', 'tui.keysWhich')} /></span></span>
+          <span class="switch__state">
+            <span class="switch__on"><Bi en={s('en', 'palette.keysOn')} es={s('es', 'palette.keysOn')} /></span>
+            <span class="switch__off"><Bi en={s('en', 'palette.keysOff')} es={s('es', 'palette.keysOff')} /></span>
+          </span>
+        </button>
+        <div class="helptable">
+          <h3><Bi en={s('en', 'tui.keysAnywhere')} es={s('es', 'tui.keysAnywhere')} /></h3>
+          <span><kbd class="kbd">/</kbd></span><span><Bi en={s('en', 'tui.kJump')} es={s('es', 'tui.kJump')} /></span>
+          <span><kbd class="kbd">Ctrl K</kbd></span><span><Bi en={s('en', 'tui.kPalette')} es={s('es', 'tui.kPalette')} /></span>
+          <span><kbd class="kbd">?</kbd></span><span><Bi en={s('en', 'tui.kHelp')} es={s('es', 'tui.kHelp')} /></span>
+          <span><kbd class="kbd">Esc</kbd></span><span><Bi en={s('en', 'tui.kEsc')} es={s('es', 'tui.kEsc')} /></span>
+          <h3><Bi en={s('en', 'tui.keysPrompt')} es={s('es', 'tui.keysPrompt')} /></h3>
+          <span><kbd class="kbd">↑</kbd> <kbd class="kbd">↓</kbd></span><span><Bi en={s('en', 'tui.kUpDown')} es={s('es', 'tui.kUpDown')} /></span>
+          <span><kbd class="kbd">Tab</kbd></span><span><Bi en={s('en', 'tui.kTab')} es={s('es', 'tui.kTab')} /></span>
+          <span><kbd class="kbd">Enter</kbd></span><span><Bi en={s('en', 'tui.kEnter')} es={s('es', 'tui.kEnter')} /></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog" data-dlg="help" hidden>
+      <div class="dialog__backdrop" data-dlg-close></div>
+      <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-help-title">
+        <div class="dialog__head">
+          <h2 class="dialog__title" id="dlg-help-title"><Bi en={s('en', 'tui.dlgCommands')} es={s('es', 'tui.dlgCommands')} /></h2>
+          <button class="btn btn--ghost" type="button" data-dlg-close><Bi en={s('en', 'tui.dlgEsc')} es={s('es', 'tui.dlgEsc')} /></button>
+        </div>
+        <div class="helptable">
+          <h3><Bi en={s('en', 'tui.keysGo')} es={s('es', 'tui.keysGo')} /></h3>
+          {commands.slice(0, 7).map((c) => (<><span><code>{c.cmd}</code></span><span><Bi en={c.desc.en} es={c.desc.es} /></span></>))}
+          <h3><Bi en={s('en', 'tui.keysDo')} es={s('es', 'tui.keysDo')} /></h3>
+          {commands.slice(7).map((c) => (<><span><code>{c.cmd}</code></span><span><Bi en={c.desc.en} es={c.desc.es} /></span></>))}
+        </div>
+      </div>
+    </div>
+
+    <script>
+      import '../scripts/v2-prompt';
+      import '../scripts/v2-dialogs';
+      import '../scripts/v2-shell';
+      import '../scripts/v2-motion';
+      import '../scripts/v2-ds';
+      import '../scripts/v2-palette';
+      import '../scripts/v2-keys';
+    </script>
+  </body>
+</html>

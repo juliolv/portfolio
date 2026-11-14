@@ -1,0 +1,164 @@
+/* ============================================================================
+   tokens.css — six themes, twelve palettes.
+
+   Two layers, and they answer different questions:
+
+   1. THE TOKENS (typography, spacing, elevation, z-index, motion). Ported from
+      the handoff's reference and not a theme's business. If a name here goes
+      missing the page does not look "unstyled", it looks broken in ways that are
+      hard to trace, so these names are the reference's exactly.
+
+   2. THE THEMES. Each has a dark and a light palette and can be shown in either.
+      `data-skin` picks the theme. `data-mode` picks the variant, and is only
+      written when the reader chooses one explicitly:
+
+         no data-mode        → the OS decides (prefers-color-scheme)
+         data-mode="dark"    → dark, whatever the OS says
+         data-mode="light"   → light, whatever the OS says
+
+      That is the whole rule. `prefers-color-scheme` does not pick a theme, and
+      after an explicit choice it does not pick the mode either.
+
+   The light palettes are duplicated on purpose: one copy inside the media query
+   for the OS default, one behind [data-mode="light"] for an explicit choice. A
+   browser that does not support light-dark() still gets a correct page.
+
+   `wave` is this site's own theme, after Tokyo Night: a blue-cyan accent on a
+   near-black indigo, and a cool paper light variant.
+
+   Contrast: scripts/check-contrast.mjs reads all twelve and fails on any pair
+   below AA, so a new palette cannot be added without passing.
+   ========================================================================== */
+
+/* ---- 1. tokens ---------------------------------------------------------- */
+:root {
+  --font: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "JetBrains Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+  --fs-1: 12px; --fs-2: 13px; --fs-3: 14px; --fs-4: 16px; --fs-5: 20px; --fs-6: 28px;
+  --fs-7: clamp(30px, 6.2vw, 48px);
+  --lh-tight: 1.1; --lh-snug: 1.4; --lh-body: 1.6;
+  --ls-tight: -0.02em; --ls-wide: 0.08em;
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 72px;
+  --r-0: 0; --r-1: 2px; --r-box: 6px; --bw: 1px; --bw-2: 2px;
+  --elev: 0 20px 50px -20px var(--shadow);
+  --z-bar: 20; --z-dock: 30; --z-menu: 35; --z-dialog: 50; --z-tip: 60;
+  --dur-fast: 120ms; --dur-base: 220ms; --dur-slow: 520ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.6, 0, 0.2, 1);
+  --bar-h: 49px; --side-w: 288px;
+}
+@media (max-width: 899px) { :root { --bar-h: 89px; } }
+/* Desktop scale: text grows with the screen so a 1440–1920px monitor isn't reading 12–14px type. */
+@media (min-width: 1200px) {
+  :root { --fs-1: 13px; --fs-2: 14px; --fs-3: 15px; --fs-4: 17px; --fs-5: 21px; --fs-7: clamp(40px, 3.4vw, 54px); --side-w: 304px; --app-w: 1360px; }
+}
+@media (min-width: 1600px) {
+  :root { --fs-1: 14px; --fs-2: 15px; --fs-3: 16px; --fs-4: 18px; --fs-5: 22px; --fs-7: clamp(48px, 3.2vw, 60px); --side-w: 336px; --app-w: 1520px; }
+}
+@media (prefers-reduced-motion: reduce) { :root { --dur-fast: 0ms; --dur-base: 0ms; --dur-slow: 0ms; } }
+
+/* ---- 2. themes ---------------------------------------------------------- */
+
+/* Wave — this site, by juliolv, after Tokyo Night */
+:root,
+[data-skin="wave"] {
+  --bg: #16161e; --panel: #1a1b26; --element: #24283b; --border: #2f3549; --border-strong: #5d658e; --text: #c0caf5; --muted: #8e98bc; --accent: #7dcfff; --accent-fg: #16161e; --accent-subtle: #1f2b45; --ok: #9ece6a; --warn: #e0af68; --danger: #f7768e; --select: #283457; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
+}
+
+/* No explicit choice: the OS decides. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-mode]),
+  [data-skin="wave"]:not([data-mode]) {
+      --bg: #eef0f6; --panel: #e6e9f1; --element: #dde1ec; --border: #c9cedc; --border-strong: #626a8c; --text: #343b58; --muted: #565d78; --accent: #1a5e97; --accent-fg: #f4f6fb; --accent-subtle: #d6e5f4; --ok: #3f6b16; --warn: #84560f; --danger: #b03050; --select: #cad9ef; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+  }
+}
+
+/* Explicit choice: wins over the OS. */
+:root[data-mode="light"],
+[data-skin="wave"][data-mode="light"] {
+  --bg: #eef0f6; --panel: #e6e9f1; --element: #dde1ec; --border: #c9cedc; --border-strong: #626a8c; --text: #343b58; --muted: #565d78; --accent: #1a5e97; --accent-fg: #f4f6fb; --accent-subtle: #d6e5f4; --ok: #3f6b16; --warn: #84560f; --danger: #b03050; --select: #cad9ef; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+}
+
+/* Ayu by dempfi */
+[data-skin="ayu"] {
+  --bg: #0d1017; --panel: #0f131a; --element: #131721; --border: #1c212b; --border-strong: #6c7380; --text: #bfbdb6; --muted: #9499a2; --accent: #e6b450; --accent-fg: #0d1017; --accent-subtle: #312d23; --ok: #aad94c; --warn: #ffb454; --danger: #d95757; --select: #273747; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
+}
+
+/* No explicit choice: the OS decides. */
+@media (prefers-color-scheme: light) {
+  [data-skin="ayu"]:not([data-mode]) {
+      --bg: #fcfcfc; --panel: #f8f9fa; --element: #f3f4f5; --border: #e7eaed; --border-strong: #868d94; --text: #3e4348; --muted: #656a70; --accent: #8c5e1c; --accent-fg: #fcfcfc; --accent-subtle: #f9f0e2; --ok: #5a7800; --warn: #8c652a; --danger: #c44444; --select: #d8e6f6; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+  }
+}
+
+/* Explicit choice: wins over the OS. */
+[data-skin="ayu"][data-mode="light"] {
+  --bg: #fcfcfc; --panel: #f8f9fa; --element: #f3f4f5; --border: #e7eaed; --border-strong: #868d94; --text: #3e4348; --muted: #656a70; --accent: #8c5e1c; --accent-fg: #fcfcfc; --accent-subtle: #f9f0e2; --ok: #5a7800; --warn: #8c652a; --danger: #c44444; --select: #d8e6f6; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+}
+
+/* Catppuccin (Mocha / Latte) */
+[data-skin="catppuccin"] {
+  --bg: #1e1e2e; --panel: #181825; --element: #313244; --border: #45475a; --border-strong: #7f849c; --text: #cdd6f4; --muted: #a6adc8; --accent: #cba6f7; --accent-fg: #1e1e2e; --accent-subtle: #302a45; --ok: #a6e3a1; --warn: #f9e2af; --danger: #f38ba8; --select: #313244; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
+}
+
+/* No explicit choice: the OS decides. */
+@media (prefers-color-scheme: light) {
+  [data-skin="catppuccin"]:not([data-mode]) {
+      --bg: #eff1f5; --panel: #e6e9ef; --element: #dce0e8; --border: #ccd0da; --border-strong: #818494; --text: #4c4f69; --muted: #5c5e71; --accent: #7d35dc; --accent-fg: #eff1f5; --accent-subtle: #e6dcf5; --ok: #2f751f; --warn: #8f5b13; --danger: #b6385a; --select: #d8e1f2; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+  }
+}
+
+/* Explicit choice: wins over the OS. */
+[data-skin="catppuccin"][data-mode="light"] {
+  --bg: #eff1f5; --panel: #e6e9ef; --element: #dce0e8; --border: #ccd0da; --border-strong: #818494; --text: #4c4f69; --muted: #5c5e71; --accent: #7d35dc; --accent-fg: #eff1f5; --accent-subtle: #e6dcf5; --ok: #2f751f; --warn: #8f5b13; --danger: #b6385a; --select: #d8e1f2; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+}
+
+/* Rosé Pine (Pine / Dawn) */
+[data-skin="rose-pine"] {
+  --bg: #191724; --panel: #1f1d2e; --element: #26233a; --border: #403d52; --border-strong: #6e6a86; --text: #e0def4; --muted: #908caa; --accent: #ebbcba; --accent-fg: #191724; --accent-subtle: #2b2536; --ok: #9ccfd8; --warn: #f6c177; --danger: #eb6f92; --select: #2b2a3e; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
+}
+
+/* No explicit choice: the OS decides. */
+@media (prefers-color-scheme: light) {
+  [data-skin="rose-pine"]:not([data-mode]) {
+      --bg: #faf4ed; --panel: #f2e9e1; --element: #ece0d6; --border: #dfd2c4; --border-strong: #7f6f66; --text: #575279; --muted: #635f78; --accent: #8a5451; --accent-fg: #faf4ed; --accent-subtle: #f3e3dd; --ok: #286983; --warn: #8a5c1e; --danger: #99545a; --select: #e2e6ee; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+  }
+}
+
+/* Explicit choice: wins over the OS. */
+[data-skin="rose-pine"][data-mode="light"] {
+  --bg: #faf4ed; --panel: #f2e9e1; --element: #ece0d6; --border: #dfd2c4; --border-strong: #7f6f66; --text: #575279; --muted: #635f78; --accent: #8a5451; --accent-fg: #faf4ed; --accent-subtle: #f3e3dd; --ok: #286983; --warn: #8a5c1e; --danger: #99545a; --select: #e2e6ee; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+}
+
+/* Solarized by Ethan Schoonover */
+[data-skin="solarized"] {
+  --bg: #002b36; --panel: #073642; --element: #0b4050; --border: #14495a; --border-strong: #5f7e8a; --text: #9facac; --muted: #9eabad; --accent: #c5a337; --accent-fg: #002b36; --accent-subtle: #233b2c; --ok: #93a51d; --warn: #cd900a; --danger: #e97c7a; --select: #0d4a5c; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
+}
+
+/* No explicit choice: the OS decides. */
+@media (prefers-color-scheme: light) {
+  [data-skin="solarized"]:not([data-mode]) {
+      --bg: #fdf6e3; --panel: #f7f0dd; --element: #eee8d5; --border: #d9d2bd; --border-strong: #7a7563; --text: #3f4d52; --muted: #56686f; --accent: #7f6400; --accent-fg: #fdf6e3; --accent-subtle: #f2e8c9; --ok: #5f6f00; --warn: #846900; --danger: #b3302c; --select: #dfe7ef; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+  }
+}
+
+/* Explicit choice: wins over the OS. */
+[data-skin="solarized"][data-mode="light"] {
+  --bg: #fdf6e3; --panel: #f7f0dd; --element: #eee8d5; --border: #d9d2bd; --border-strong: #7a7563; --text: #3f4d52; --muted: #56686f; --accent: #7f6400; --accent-fg: #fdf6e3; --accent-subtle: #f2e8c9; --ok: #5f6f00; --warn: #846900; --danger: #b3302c; --select: #dfe7ef; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+}
+
+/* Gruvbox by morhetz */
+[data-skin="gruvbox"] {
+  --bg: #282828; --panel: #1d2021; --element: #32302f; --border: #3c3836; --border-strong: #81756a; --text: #ebdbb2; --muted: #bdae93; --accent: #fabd2f; --accent-fg: #282828; --accent-subtle: #3a3226; --ok: #b8bb26; --warn: #fabd2f; --danger: #fb5e4b; --select: #3a4a52; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
+}
+
+/* No explicit choice: the OS decides. */
+@media (prefers-color-scheme: light) {
+  [data-skin="gruvbox"]:not([data-mode]) {
+      --bg: #fbf1c7; --panel: #f2e5bc; --element: #ebdbb2; --border: #d5c4a1; --border-strong: #7c6f64; --text: #3c3836; --muted: #665c54; --accent: #80570f; --accent-fg: #fbf1c7; --accent-subtle: #f0e0b8; --ok: #636700; --warn: #855b0f; --danger: #a8321f; --select: #d6e4ec; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+  }
+}
+
+/* Explicit choice: wins over the OS. */
+[data-skin="gruvbox"][data-mode="light"] {
+  --bg: #fbf1c7; --panel: #f2e5bc; --element: #ebdbb2; --border: #d5c4a1; --border-strong: #7c6f64; --text: #3c3836; --muted: #665c54; --accent: #80570f; --accent-fg: #fbf1c7; --accent-subtle: #f0e0b8; --ok: #636700; --warn: #855b0f; --danger: #a8321f; --select: #d6e4ec; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+}

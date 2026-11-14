@@ -1,0 +1,15 @@
+---
+/**
+ * The design system moved into the app as the #design-system view, so this route
+ * only forwards. Kept as a real page so old links do not 404.
+ *
+ * The app is the front door, so the forward lands on the root.
+ */
+import RedirectTo from '../components/RedirectTo.astro';
+---
+
+<RedirectTo
+  to="/#design-system"
+  label="Skins →"
+  note="Every theme is on the design system view, under the skins tab."
+/>

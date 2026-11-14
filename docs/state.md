@@ -1,7 +1,7 @@
 ---
-updated: 2026-11-13
-milestone: 2 — case studies and live devlog
-next_action: add /work/[slug] case-study routes
+updated: 2026-11-14
+milestone: 4 — v2 shipped to production
+next_action: v2 is live — open issues #1–#4 so the devlog mirrors real work
 owner: julio
 ---
 
@@ -19,12 +19,12 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 | | |
 |---|---|
 | Repo | https://github.com/juliolv/portfolio (public, history is permanent) |
-| Live | https://juliolv.github.io/portfolio/ — deploys on every push to `main` |
+| Live | https://juliolv.github.io/portfolio/ — the v2 TUI, deployed 2026-11-14 |
 | Repo About | homepage set to the live URL, description, 6 topics (astro, portfolio, design-system, i18n, github-pages, accessibility) |
 | Host | GitHub Pages, project subpath `/portfolio` (NOT Vercel) |
 | Stack | Astro 7 static, hand-authored CSS, ~10 KB vanilla TS, no UI framework |
 | Languages | EN / ES rendered at build time, toggled with CSS |
-| Build | `pnpm build` → `dist/` (3 pages: `/`, `/design-system/`, `404.html`) |
+| Build | `pnpm build` → `dist/` (7 pages: `/`, `/404`, three forwards, `/og`, `/icon`) |
 | Verified | 2026-11-13: live 200s, zero failed resources, reduced-motion + palette keyboard paths pass |
 
 ## Milestone
@@ -39,9 +39,20 @@ After that: the devlog mirroring real GitHub issues.
 
 ## Next actions
 
-1. v2 port, one issue at a time (`HERMES_HANDOFF.md` §8). Done: tokens + nine
-   skins + AA gate (`pnpm contrast`), branch `feat/tui-v2`. Next: §3 i18n/data,
-   then §4 shell. Scaffold (§1) already exists, so it is skipped.
+1. v2 port, one issue at a time (`HERMES_HANDOFF.md` §8), branch `feat/tui-v2`.
+   Done: §2 tokens + six themes (dark and light each) + AA gate (`pnpm contrast`);
+   §4/§5 shell at `/v2`
+   with all six transcript turns rendering from the collections and data files,
+   bilingual, no horizontal scroll; §5.1 prompt with 16 slash commands and live
+   search over every section; §5.2 dialogs — theme picker (six themes × two
+   variants, `tui.skin` + `tui.mode`), keyboard, commands; §5.3/§5.4 section tracking,
+   the sidebar reading meter and the EN/ES switch; §7 phones — touch chips, 44px
+   targets, the compact dock, gutters; §6 motion — typed role line, reveal,
+   prompt flash, theme cross-fade, reduced motion; §8 sidebar extras — agents
+   from SITE.agents and the compact todo from the devlog; §10 the design-system
+   view at #design-system (live tokens, skins, component specimens); §12 sharing
+   — meta, generated OG card and icons, and a 404 in the v2 language. Next: §9,
+   the pre-merge checklist, run against the whole branch in one pass.
 2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
 2. Open issues #1–#4 so the devlog has something to mirror (owner approval).
@@ -67,7 +78,110 @@ After that: the devlog mirroring real GitHub issues.
 | 2026-11-13 | No free models in the fleet | Owner ruled them out: predictable quality beats marginal savings |
 | 2026-11-13 | Per-role model tiers | `delegation.model` is global: one role per batch (build → audit → review). Builder `deepseek-v4.1-flash`, Auditor `qwen3.8-flash`, Reviewer **`glm-5.3-flash`** (mandated), Designer `gpt-6-luna` |
 
+## §9 acceptance run — 2026-11-14, branch `feat/tui-v2`
+
+Run in Chromium through CDP, not by eye. Evidence is the measurement next to each
+line, because "looks fine" is what this section exists to replace. Re-run after the
+theme rework: six themes with two variants each, Wave, and the picker's state model.
+
+| Check | Result |
+|---|---|
+| Console errors, 360/375/393/412/430/1366/1440/1536/1920 × light/dark | pass — 0 errors in 18 loads |
+| No horizontal page scroll at those widths | pass — 0px at every width |
+| AA across the themes | pass — `pnpm contrast`, 12 palettes (six themes × dark/light) |
+| Sticky prompts | pass — the section prompt pins at 49px, exactly `--bar-h` |
+| Context meter | simulated — 21% → 98% of the 1M window; `aria-valuenow` agrees with the label |
+| Phone dock | pass — 94px → 45px scrolling down, back to 94 on scroll up |
+| Touch: chips, 44px targets, `menu` label | pass — 4 chips in 2 rows, no tappable under 44px |
+| Reduced motion | pass — full role text, caret `animation-name: none`, `--dur-fast: 0ms` |
+| Theme picker by keyboard | pass — opens on the saved card, any arrow steps one and wraps, Enter saves, Esc reverts |
+| Default theme and the OS flip | pass — `wave` with no stored choice, #16161e → #eef0f6 when the scheme flips, no script |
+| Explicit variant beats the OS | pass — gruvbox/dark stays dark under a light OS |
+| Legacy ids migrate | pass — `dracula` → `wave`; no id without tokens |
+| Prompt: autofocus, Tab completes, `/wo` matches | pass — completes to `/work ` and keeps focus in the field |
+| Spanish, visible copy | pass — 258 EN/ES pairs, 36 identical: tech names, placeholder orgs, dates, theme names, `esc` |
+| Command palette (§5.2) | pass — Ctrl K, 22 entries in four groups, focus lands in the field |
+| Single keys `t` `l` `j` `k` `?` + switch | pass — `t` opens the picker, `l` switches to Spanish, ignored while typing or in a dialog |
+| aria-labels, `data-tip` tooltips | pass — 15 attribute strings per language, none shared between them |
+| `/design-system/`, `/skins/` | pass — both forward to the `#design-system` view |
+| Design-system view | pass — 3 tabs, 12 theme cards in 3 columns, 9 specimens, 0 overflow |
+| Sidebar rule | pass — reaches the viewport edge at 1300 and 900 tall, top and bottom of the page |
+| 404 | pass — Wave, 404 heading, four ways back |
+| Share images | regenerated from `/og` and `/icon` in Wave; 76 KB, 1 KB, <1 KB |
+
+## Merge — done 2026-11-14
+
+The v2 branch became `main` in one commit, and v1 came down with it. What happened,
+in the order it happened, because the next session will wonder why `v2.astro` is a
+forward:
+
+1. `src/pages/v2.astro` → `src/pages/index.astro` (v1's index removed first, so the
+   move is a rename in git, not a delete-plus-add).
+2. `design-system.astro` and `skins.astro` now forward to `/#design-system`.
+3. `src/pages/v2.astro` was re-created as a forward to `/`: the preview URL was
+   shared, and a bookmark should not 404.
+4. Deleted: `layouts/Base.astro`, `Topbar`, `StatusBar`, `Palette`, and the five v1
+   section components, `scripts/client.ts`, `scripts/design-system.ts`,
+   `styles/design.css`, `styles/app.css`.
+5. `theme-color` on the root page still carried the old palette (#0c0f14/#fbf9f5);
+   it is Wave now (#16161e/#eef0f6). `noindex` came off with the preview status.
+
+## Themes
+
+| id | name | credit | ships |
+| --- | --- | --- | --- |
+| `wave` | Wave | by juliolv — the default, after Tokyo Night | dark + light |
+| `ayu` | Ayu | by dempfi | dark + light |
+| `catppuccin` | Catppuccin | Mocha / Latte | dark + light |
+| `rose-pine` | Rosé Pine | by mvllow | Pine + Dawn |
+| `solarized` | Solarized | by Ethan Schoonover | dark + light |
+| `gruvbox` | Gruvbox | by morhetz | dark + light |
+
+**Choosing.** The picker offers both variants of every theme side by side, and
+either is a real choice: `tui.skin` holds the theme, `tui.mode` holds `dark` or
+`light`. Each preview forces its own `data-mode`, so a dark and a light palette
+can sit next to each other while the page renders one of them.
+
+**What the picker shows.** The saved choice is marked by its border alone — an
+accent border with an inset ring, so it reads heavier than the keyboard focus
+ring, which is also accent-coloured. There is no "current" label and no hover
+preview: colours change only when a card takes focus, and they revert on Esc.
+
+**What `prefers-color-scheme` decides.** Exactly one thing: when `tui.mode` is
+absent, the OS picks the variant — which means the default `wave` theme is dark
+or light according to the device, with no script and nothing to flash. The moment
+a variant is chosen, `data-mode` is set and the media query has no say. Absence of
+`data-mode` is the "follow the system" state; there is no third attribute value.
+
+Only themes with a real light variant are in the table. Dracula, Tokyo Night and
+Nord are dark-only, so they are not here. `themes.ts` maps the old nine-skin ids
+onto the six (`dracula` → `wave`): an unknown id means no tokens at all, which
+is an unstyled page.
+
+**Tokens are not a theme's business.** `tokens.css` opens with the reference's
+typography, spacing, elevation, z-index and motion tokens. Replacing the file
+without them yields a page that looks broken rather than unstyled — no `--font`,
+no `--elev`, no `--side-w` — so the audit in `scripts/check-contrast.mjs` and the
+names in that block are the thing to check first if the layout goes strange.
+
 ## Known issues
+
+- `og.png`, `favicon-32.png` and `apple-touch-icon.png` are captured from the
+  `/og` and `/icon` routes (2x, LANCZOS downscale). Re-run the capture after a
+  design change; the routes are `noindex` and stay out of the sitemap.
+- `/design-system/` is still the v1 page; the v2 view lives at `#design-system`.
+  The 404 already links to the hash — reconcile at merge.
+- **Testing note:** the browser harness reports `hover: none`, so the reference's
+  `@media (hover: none)` rule hides every tooltip there. Tooltips have to be
+  checked with that override forced, or they look broken when they are not.
+- **Port pitfall:** a component rendered twice (skin cards in the picker and in
+  the design-system view) makes `querySelectorAll` return two populations. Scope
+  the query to the surface that owns the behaviour, or a hidden copy silently
+  absorbs focus and arrow steps.
+- **Handoff bug:** §5.5 specifies `rootMargin: '0 0 -8% 0'` for the reveal
+  observer. IntersectionObserver rejects negative percentages, and the throw
+  takes the whole motion module with it. Implemented as -8% of the viewport in
+  pixels.
 
 Triaged from the first audit fleet (2026-11-13). Fixed items are gone from this
 table; they live in the git log.

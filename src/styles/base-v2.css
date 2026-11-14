@@ -1,0 +1,387 @@
+/* v2 base styles: reset, body, focus, and shared utilities, ported from the
+   handoff reference (p1-head.html, BASE section). */
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: var(--fs-3); line-height: var(--lh-body); -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: var(--z-dialog); background: var(--bg); }
+::selection { background: var(--select); color: var(--text); }
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: var(--bw-2) solid var(--accent); outline-offset: 2px; }
+h1[tabindex="-1"]:focus:not(:focus-visible), h2[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.muted { color: var(--muted); }
+.theme-anim, .theme-anim *, .theme-anim *::before, .theme-anim *::after {
+  transition: background-color var(--dur-base) var(--ease-in-out), color var(--dur-base) var(--ease-in-out),
+    border-color var(--dur-base) var(--ease-in-out), fill var(--dur-base) var(--ease-in-out) !important;
+}
+.reveal { transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
+.reveal.is-pending { opacity: 0; transform: translateY(10px); }
+.app { max-width: var(--app-w, 1280px); margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* --- bilingual content ---
+   Both languages render at build time; the active one is a CSS switch, so the
+   shell has no re-render and no layout shift. */
+html[data-lang='en'] .bi--es,
+html[data-lang='es'] .bi--en {
+  display: none !important;
+}
+
+html[data-lang='en'] [data-lang-block='es'],
+html[data-lang='es'] [data-lang-block='en'] {
+  display: none;
+}
+
+/* --- hidden ---
+   .dialog and .menu set their own display, so the attribute needs to win. */
+[hidden] {
+  display: none !important;
+}
+
+/* --- theme picker ---
+   The card states use aria-checked (radiogroup semantics), not aria-pressed.
+   The reference CSS sets .dialog__list to `padding: var(--sp-1) 0`, which is
+   right for a plain text list and wrong for a card grid: cards then touch the
+   panel edges. The picker gets its own padding. */
+.dialog .dialog__list--padded {
+  /* specificity: components.css is loaded after this file and sets
+     .dialog__list { padding: var(--sp-1) 0 } */
+  padding: var(--sp-4);
+}
+
+.skin-card[aria-checked='true'] {
+  border-color: var(--accent);
+}
+
+/* Inline with the mode label, so every card keeps the same two text lines and
+   the grid rows line up. */
+.skin-card__cur {
+  color: var(--accent);
+}
+
+/* The previewed card is also the checked one, so the accent border and the focus
+   ring would sit on top of each other. Push the ring out to keep them distinct. */
+.skin-card:focus-visible {
+  outline-offset: 4px;
+}
+
+/* --- gutters -------------------------------------------------------------
+   .titlebar__row and .tabstrip come from components.css without horizontal
+   padding (the reference nests them in a padded shell), so at every width the
+   brand sits on the very edge and the menu button touches the right one. */
+.titlebar__row,
+.tabstrip {
+  padding-left: var(--sp-4);
+  padding-right: var(--sp-4);
+}
+
+/* --- touch ---------------------------------------------------------------
+   Chips on touch: the same four commands, thumb-sized, showing only the
+   command because the description was a keyboard affordance. `.tips` sets
+   flex-direction: column and is declared after the modifier in components.css,
+   so the row layout needs two classes to win. */
+.tips.tips--chips {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.tips--chips .tip {
+  width: auto;
+  flex: 0 0 auto;
+  flex-direction: row;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--sp-3);
+  background: var(--panel);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r-box);
+}
+
+.tips--chips .tip__key {
+  min-width: 0;
+  color: var(--accent);
+}
+
+.tips--chips .tip__desc {
+  display: none;
+}
+
+/* --- phones -------------------------------------------------------------
+   44px minimum for anything you tap. The reference sets it on the prompt and
+   the chips; the nav, buttons and switch need it too. */
+@media (max-width: 640px) {
+  /* Scoped to .app so these win over components.css, which is imported after
+     this file and sets .btn { min-height: 36px }. */
+  .app .files a,
+  .app .tabstrip a,
+  .app .btn,
+  .app .seg__opt,
+  .app .tip {
+    min-height: 44px;
+  }
+
+  /* Four chips in a 3 + 1 wrap look accidental; a 2 x 2 grid does not. */
+  .app .tips.tips--chips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app .tips--chips .tip {
+    justify-content: center;
+  }
+
+  /* The title bar has to fit brand + language + theme + menu in 390px. The
+     theme name and the breadcrumb are the two things that can go: the swatch
+     strip already says which theme is on. */
+  .app .skinbtn__label,
+  .app .brand__crumb {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   MOTION — ported from p1-head.html. components.css references blink, rise,
+   fade and sweep; without the keyframes the caret never blinks, the welcome
+   never rises, dialogs appear instantly and the prompt flash animates nothing.
+   ========================================================================== */
+@keyframes blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sweep { from { box-shadow: inset 0 0 0 1px var(--accent); } to { box-shadow: inset 0 0 0 1px transparent; } }
+
+/* --- design system view ------------------------------------------------
+   A chip painted --bg or --panel is the same colour as the surface it sits on,
+   so the four lightest swatches had no visible edge. A hairline mixed from the
+   text colour works in every skin, light or dark. */
+.swatch__chip {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text) 18%, transparent);
+}
+
+/* --- design system view ------------------------------------------------
+   The dock is sticky over the transcript, so the view needs room at the end to
+   scroll its last rows out from under it. The radius chips are 56px wide in the
+   reference, which wraps `--r-box`; give them room and a taller sample so the
+   corner radius is actually visible. */
+#view-system {
+  padding-bottom: var(--sp-8);
+}
+
+#view-system .shapes .shape {
+  min-width: 72px;
+  height: 48px;
+}
+
+/* --- scrolling strips ---------------------------------------------------
+   `.tabs` and `.tabstrip` scroll horizontally so their items never wrap. The
+   selected tab's 2px underline sits 1px below the row (border-bottom plus
+   margin-bottom: -1px), and `overflow-x: auto` forces overflow-y to auto too,
+   so that single pixel earns a vertical scrollbar. */
+.tabstrip {
+  overflow-y: hidden;
+}
+
+/* `.tabs` (tokens / skins / components) is not a scroll container: three short
+   labels always fit, and `overflow-x: auto` was the reason a vertical scrollbar
+   appeared — the selected tab's 2px underline extends 1px past the row, which
+   forces overflow-y to auto as well. Visible overflow lets the underline sit on
+   the row's rule exactly as designed. The tab strip, which really does scroll on
+   a phone, keeps its hidden overflow-y. */
+#view-system .tabs {
+  overflow: visible;
+}
+
+@media (max-width: 480px) {
+  #view-system .tabs {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
+
+/* --- shortcut switch -----------------------------------------------------
+   Both words are in the DOM, one per language, and CSS picks one per state, so
+   toggling never has to rewrite translated text. */
+.switch[aria-checked='true'] .switch__off,
+.switch[aria-checked='false'] .switch__on {
+  display: none !important;
+}
+
+/* --- palette field -------------------------------------------------------
+   The prompt box draws its focus ring on focus-within; the palette's field had
+   none, so opening it with Ctrl K gave no visible sign of where typing goes. */
+.dialog__field:focus-within {
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+/* The switch is the whole row; give it a hover so it reads as a control rather
+   than a status line. */
+.switch:hover {
+  background: var(--panel);
+}
+
+.switch:focus-visible {
+  outline-offset: -2px;
+}
+
+/* The prompt glyph is the accent everywhere else (❯ in the turn lines); the role
+   line was the one place it inherited body text, and at a different size. */
+.hero__role-glyph {
+  color: var(--accent);
+  /* match the ❯ glyphs in the prompt lines below, which sit at --fs-3 */
+  font-size: var(--fs-3);
+}
+
+/* The ghost reserves the width, so it must not also be selectable: selecting the
+   role line was returning the hidden copy as well as the visible one. */
+.hero__ghost {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* The shortcut on the palette button: monospace, muted, and part of the button
+   rather than a second bordered box inside it. */
+.btn__key {
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+/* The design system shows both palettes of a theme, because both ship: the mini
+   preview follows the OS, and these rows are the tokens behind each mode. */
+.pairs {
+  display: grid;
+  gap: 3px;
+  margin-top: var(--sp-2);
+}
+.pairs__row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+  height: 8px;
+}
+.pairs__row i {
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text) 16%, transparent);
+}
+
+/* The keyboard legend is advice nobody can take on a touch screen: arrows and
+   Esc do not exist there, and it eats the height the theme list needs. */
+@media (hover: none), (pointer: coarse) {
+  /* Two classes, not one: components.css is imported after this file and sets
+     `.dialog__hint { display: flex }` at equal specificity, which would win. */
+  .dialog .dialog__hint {
+    display: none;
+  }
+}
+
+/* Content stops above the dock instead of scrolling under it: the shell measures
+   the dock into --dock-h (it is taller on a phone when the status line wraps).
+   `.main > .transcript` is two classes because components.css sets the padding at
+   one, and it is imported after this file. */
+.main > .transcript {
+  padding-bottom: calc(var(--dock-h, 96px) + var(--sp-5));
+}
+
+/* Theme picker: both variants of a theme sit side by side, because both ship and
+   either can be chosen. Each preview forces its own data-mode, so a dark and a
+   light palette can be on screen together while the page shows one of them. */
+.theme-pick {
+  display: grid;
+  gap: var(--sp-2);
+  padding-bottom: var(--sp-4);
+  border-bottom: var(--bw) solid var(--border);
+}
+.theme-pick:last-child {
+  border-bottom: 0;
+}
+.theme-pick__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin: 0;
+  font-size: var(--fs-2);
+}
+.theme-pick__head b {
+  font-weight: 600;
+  color: var(--text);
+}
+.theme-pick__head small {
+  color: var(--muted);
+  font-size: var(--fs-1);
+}
+.theme-pick__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+}
+.skin-card__mode {
+  font-size: var(--fs-1);
+  color: var(--muted);
+}
+
+/* Six themes: three pairs a row reads as a grid, four-plus-two reads as a mistake.
+   The dialog is narrower, so it keeps two. Both are two classes deep because
+   components.css sets the .skins grid at one. */
+#panel-skins .skins {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.dialog .skins {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 640px) {
+  #panel-skins .skins {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Selected card. The reference styles [aria-pressed="true"] for the design-system
+   cards, but the picker is a radiogroup and reports aria-checked — without this
+   the saved theme had no visible mark at all. The inset ring doubles the border
+   weight without moving anything: the keyboard focus ring is also accent-coloured,
+   so weight is what tells "saved" apart from "focused". */
+.dialog .skin-card[aria-checked="true"] {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* The column rule. It was a border-left on .sidebar, so it stopped wherever the
+   sidebar's content stopped — 834px of a 3553px column — and looked cut in half.
+   Drawing it on the shell makes it span the column at any content height; the
+   sidebar is sticky and scrolls inside, so it cannot own a full-height border.
+
+   It is pushed one gutter past the shell at the bottom: the body keeps the
+   reference's 8px margin, so a rule that ended at the shell would stop 8px short
+   of the page edge. And the shell keeps a viewport height so a short page — the
+   404, the design-system view — still gets a rule to the bottom, not a stub. */
+.shell {
+  position: relative;
+  min-height: calc(100dvh - var(--bar-h) - var(--sp-2));
+}
+.shell::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  /* The sidebar's own first column, not the one before it: the dock spans the
+     main column and its opaque background ends exactly at this x, so a rule one
+     pixel to the left was painted over wherever the dock was pinned, and the line
+     looked cut off at the dock's top edge. */
+  left: calc(100% - var(--side-w));
+  bottom: calc(-1 * var(--sp-2));
+  width: var(--bw);
+  background: var(--border);
+  pointer-events: none;
+}
+.shell > .sidebar {
+  border-left: 0;
+}
+@media (max-width: 899px) {
+  .shell::before {
+    display: none;
+  }
+}

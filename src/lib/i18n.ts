@@ -20,6 +20,8 @@ export function s(lang: Lang, path: string): string {
 
 /** Site-level config. Every outbound link lives here, in one place. */
 export const SITE = {
+  /** Absolute URL of the deployed site. Canonical, og:url and og:image build from it. */
+  url: 'https://juliolv.github.io/portfolio/',
   brand: 'julio',
   name: 'Julio López',
   email: 'you@example.com',
@@ -30,6 +32,16 @@ export const SITE = {
     repo: 'https://github.com/juliolv/portfolio',
     pages: 'https://juliolv.github.io/portfolio/',
   },
+  /**
+   * The fleet that builds this site, as the sidebar reports it. Descriptions are
+   * copy (i18n `agents.<id>`); a `{issue}` placeholder is filled from the devlog
+   * entry marked in progress, so the sidebar cannot drift from the devlog.
+   */
+  agents: [
+    { id: 'hermes', name: 'hermes', status: 'learning' as const },
+    { id: 'opencode', name: 'opencode', status: 'active' as const, subs: ['orchestrator', 'reviewers'] as const },
+    { id: 'claude', name: 'claude code', status: 'active' as const },
+  ],
 };
 
 /** Prefix a site-absolute path with the deploy base ('' locally, '/portfolio' on Pages). */

@@ -1,0 +1,13 @@
+---
+/**
+ * The preview route became the site. Anyone who bookmarked `/v2/` while the port
+ * was in progress should land on the front door, not on a 404.
+ */
+import RedirectTo from '../components/RedirectTo.astro';
+---
+
+<RedirectTo
+  to="/"
+  label="Home →"
+  note="This was the preview route while the site was rebuilt. It lives at the root now."
+/>

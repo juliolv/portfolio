@@ -1,0 +1,64 @@
+---
+/**
+ * Static-host redirect. GitHub Pages cannot answer with a 301, so an old URL
+ * hands over with a meta refresh, a script that keeps the hop out of history, and
+ * a real link for anyone whose browser blocks either.
+ */
+interface Props {
+  /** Path on this site, hash included, e.g. "/#design-system". */
+  to: string;
+  label: string;
+  note: string;
+}
+
+const { to, label, note } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const target = `${base}${to}`;
+const absolute = new URL(target, Astro.site ?? 'https://juliolv.github.io').href;
+---
+
+<!doctype html>
+<html lang="en" data-lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={absolute} />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <title>{label}</title>
+    <meta name="color-scheme" content="light dark" />
+    <script is:inline define:vars={{ target }}>
+      // Runs before the refresh, and on this origin: `target` is the relative
+      // path, not the absolute canonical, or a local build would send you to
+      // production. replace() keeps the hop out of the back stack.
+      location.replace(target);
+    </script>
+    <style>
+      :root {
+        --bg: #0d1017; --text: #bfbdb6; --muted: #9499a2; --accent: #e6b450;
+        --font: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      }
+      @media (prefers-color-scheme: light) {
+        :root { --bg: #fcfcfc; --text: #3e4348; --muted: #656a70; --accent: #8c5e1c; }
+      }
+      html, body { margin: 0; height: 100%; }
+      body {
+        background: var(--bg); color: var(--text); font: 14px/1.6 var(--font);
+        display: grid; place-items: center; padding: 24px;
+      }
+      main { max-width: 46ch; }
+      p { margin: 0 0 12px; }
+      .cmd { color: var(--muted); }
+      .cmd b { color: var(--accent); font-weight: 400; }
+      a { color: var(--accent); text-underline-offset: 3px; }
+      .muted { color: var(--muted); font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="cmd"><b>❯</b> mv {Astro.url.pathname} → <b>{to}</b></p>
+      <p><a href={target}>{label}</a></p>
+      <p class="muted">{note}</p>
+    </main>
+  </body>
+</html>
