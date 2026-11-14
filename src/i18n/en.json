@@ -239,7 +239,7 @@
     "placeholder": "Search projects and skills, or type / for commands…",
     "placeholderPhone": "Search, or type /…",
     "current": "● current",
-    "savedNote": "Saved as {key}. Until you pick one, the page follows your system.",
+    "savedNote": "Saved in this browser. With System, the site follows your device.",
     "dlgTheme": "Theme",
     "dlgKeys": "Keyboard",
     "dlgCommands": "Commands",
@@ -274,7 +274,6 @@
       "hire": "jump to contact and copy the email",
       "help": "keyboard shortcuts"
     },
-    "savedAs": "Saved as",
     "kPalette": "open the command palette",
     "keysWhich": "letters t · l · j · k · ?"
   },

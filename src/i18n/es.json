@@ -239,7 +239,7 @@
     "placeholder": "Busca proyectos y tecnologías, o escribe / para comandos…",
     "placeholderPhone": "Busca, o escribe /…",
     "current": "● actual",
-    "savedNote": "Se guarda como {key}. Hasta que elijas uno, la página sigue tu sistema.",
+    "savedNote": "Se guarda en este navegador. Con Sistema se ajusta a tu dispositivo.",
     "dlgTheme": "Tema",
     "dlgKeys": "Teclado",
     "dlgCommands": "Comandos",
@@ -274,7 +274,6 @@
       "hire": "ir a contacto y copiar el email",
       "help": "atajos de teclado"
     },
-    "savedAs": "Se guarda como",
     "kPalette": "abrir la paleta de comandos",
     "keysWhich": "las teclas t · l · j · k · ?"
   },
