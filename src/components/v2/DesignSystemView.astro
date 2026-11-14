@@ -7,7 +7,7 @@
  * so a skin change updates them and this view can never drift from tokens.css.
  */
 import { s } from '../../lib/i18n';
-import { SKINS, DEFAULT_SKIN } from '../../data/skins';
+import { THEMES } from '../../data/themes';
 import Bi from '../Bi.astro';
 
 const L = 'en' as const;
@@ -82,15 +82,20 @@ const specs = [
   <div class="tabpanel" role="tabpanel" id="panel-skins" aria-labelledby="tab-skins" tabindex="0" hidden>
     <p class="muted" style="margin-bottom:var(--sp-4);max-width:70ch"><Bi en={d('skinsNote').en} es={d('skinsNote').es} /></p>
     <div class="skins" role="radiogroup" aria-label={d('skins').en} data-label-en={d('skins').en} data-label-es={d('skins').es}>
-      {[{ id: 'system', name: 'System', mode: 'auto', preview: DEFAULT_SKIN }, ...SKINS.map((skin) => ({ ...skin, preview: skin.id }))].map((skin) => (
+      {THEMES.map((theme) => (
         <button class="skin-card" type="button" aria-pressed="false"
-          data-skin-pick={skin.id} data-skin-name={skin.name}>
-          <span class="mini" data-skin={skin.preview} aria-hidden="true">
+          data-skin-pick={theme.id} data-skin-name={theme.name} data-skin-name-es={theme.nameEs}>
+          <span class="mini" data-skin={theme.id} aria-hidden="true">
             <span><b>❯</b> /work</span>
             <span class="mini__muted">● List(work/)</span>
             <span class="mini__bar"><i></i><i></i><i></i></span>
           </span>
-          <span>{skin.name}<small>{skin.mode}<span class="skin-card__cur" hidden> · <Bi en={s('en', 'tui.current')} es={s('es', 'tui.current')} /></span></small></span>
+          <span><Bi en={theme.name} es={theme.nameEs} /><small><Bi en={theme.credit.en} es={theme.credit.es} /><span class="skin-card__cur" hidden> · <Bi en={s('en', 'tui.current')} es={s('es', 'tui.current')} /></span></small></span>
+          {/* Both palettes are shipped, so both are shown: bg, panel, text, accent. */}
+          <span class="pairs" aria-hidden="true">
+            <span class="pairs__row" title="dark">{theme.dark.map((c) => <i style={`background:${c}`} />)}</span>
+            <span class="pairs__row" title="light">{theme.light.map((c) => <i style={`background:${c}`} />)}</span>
+          </span>
         </button>
       ))}
     </div>

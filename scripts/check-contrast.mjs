@@ -18,19 +18,33 @@ const CHECK = process.argv.includes('--check');
 const TEXT = 4.5;
 const UI = 3;
 
-/* --- parse: one entry per [data-skin="id"] block --- */
+/* --- parse: one entry per theme and mode -----------------------------------
+   A theme is a `[data-skin="id"]` block; its light palette is the same selector
+   inside `@media (prefers-color-scheme: light)`. Both are checked, because both
+   are what a reader actually sees — the mode follows the OS, not a setting. */
+const TOKENS = /(--[a-z0-9-]+)\s*:\s*([^;]+);/g;
+
+function readTokens(css) {
+  const tokens = {};
+  for (const t of css.matchAll(TOKENS)) tokens[t[1]] = t[2].trim();
+  return tokens;
+}
+
 function blocks() {
   const out = {};
-  const re = /\[data-skin="([a-z-]+)"\]\s*\{([^}]*)\}/g;
-  for (const m of CSS.matchAll(re)) {
-    const tokens = {};
-    for (const t of m[2].matchAll(/(--[a-z0-9-]+)\s*:\s*([^;]+);/g)) tokens[t[1]] = t[2].trim();
-    out[m[1]] = tokens;
-  }
-  // Ayu Dark is also the :root fallback
-  const root = CSS.match(/:root,\s*\[data-skin="ayu-dark"\]\s*\{([^}]*)\}/);
-  if (root && out['ayu-dark']) {
-    for (const t of root[1].matchAll(/(--[a-z0-9-]+)\s*:\s*([^;]+);/g)) out['ayu-dark'][t[1]] ??= t[2].trim();
+  const rule = /\[data-skin="([a-z-]+)"\]\s*\{([^}]*)\}/g;
+
+  // dark: everything outside a media query (the light ones are picked out below)
+  const lightRegions = [...CSS.matchAll(/@media \(prefers-color-scheme: light\)\s*\{([\s\S]*?)\n\}/g)].map((m) => m[1]);
+  const darkOnly = CSS.replace(/@media \(prefers-color-scheme: light\)\s*\{[\s\S]*?\n\}/g, '');
+
+  for (const m of darkOnly.matchAll(rule)) out[`${m[1]} · dark`] = readTokens(m[2]);
+
+  for (const region of lightRegions) {
+    for (const m of region.matchAll(rule)) {
+      const base = out[`${m[1]} · dark`] ?? {};
+      out[`${m[1]} · light`] = { ...base, ...readTokens(m[2]) };
+    }
   }
   return out;
 }
@@ -71,7 +85,7 @@ const skins = blocks();
 const failures = [];
 const pad = (s, n) => String(s).padEnd(n);
 
-console.log(`contrast · ${Object.keys(skins).length} skins · AA text ${TEXT}:1 · UI ${UI}:1`);
+console.log(`contrast · ${Object.keys(skins).length} theme palettes · AA text ${TEXT}:1 · UI ${UI}:1`);
 console.log('─'.repeat(78));
 
 for (const [id, tokens] of Object.entries(skins)) {
@@ -91,7 +105,7 @@ for (const [id, tokens] of Object.entries(skins)) {
   }
 
   const status = bad.length ? `✕ ${bad.length}` : '✓';
-  console.log(`${pad(id, 20)} ${status.padEnd(5)} worst ${worst.value.toFixed(2)}:1  ${worst.name}`);
+  console.log(`${pad(id, 26)} ${status.padEnd(5)} worst ${worst.value.toFixed(2)}:1  ${worst.name}`);
   for (const b of bad) failures.push(`${id}: ${b}`);
 }
 
@@ -102,5 +116,5 @@ if (failures.length) {
   for (const f of failures) console.error(`  ✕ ${f}`);
   if (CHECK) process.exit(1);
 } else {
-  console.log('every skin passes AA on every documented pair.');
+  console.log('every theme passes AA in both modes, on every documented pair.');
 }

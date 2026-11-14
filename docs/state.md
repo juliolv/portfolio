@@ -40,7 +40,8 @@ After that: the devlog mirroring real GitHub issues.
 ## Next actions
 
 1. v2 port, one issue at a time (`HERMES_HANDOFF.md` §8), branch `feat/tui-v2`.
-   Done: §2 tokens + nine skins + AA gate (`pnpm contrast`); §4/§5 shell at `/v2`
+   Done: §2 tokens + six themes (dark and light each) + AA gate (`pnpm contrast`);
+   §4/§5 shell at `/v2`
    with all six transcript turns rendering from the collections and data files,
    bilingual, no horizontal scroll; §5.1 prompt with 16 slash commands and live
    search over every section; §5.2 dialogs — theme picker (System + nine skins,
@@ -86,13 +87,13 @@ line, because "looks fine" is what this section exists to replace.
 |---|---|
 | Console errors, 360/375/393/412/430/1366/1440/1536/1920 × light/dark | pass — 0 errors in 18 loads |
 | No horizontal page scroll at those widths | pass — 0px overflow; only the tab strip and `sr-only` spans extend past the viewport, both by design |
-| AA across the nine skins | pass — `pnpm contrast` |
+| AA across the themes | pass — `pnpm contrast` checks all six in both modes (12 palettes) |
 | Sticky prompts | pass — 49px under the bar at desktop, 89px on a phone |
 | Context meter | simulated — a section of reading costs a block of tokens, so the meter fills 21% → 98% of the 1M window instead of pinning at 0.2% |
 | Phone dock | pass — 94px → 45px scrolling down, back on scroll up, at either end, or on prompt focus |
 | Touch: chips, 44px targets, `menu` label | pass — chips 2×2, every tappable ≥44px |
 | Reduced motion | pass — full role text, no reveal, no cross-fade, caret static |
-| Theme picker by keyboard | pass — Enter opens on the saved skin, arrows preview, Enter saves, Esc reverts |
+| Theme picker by keyboard | pass — opens on the saved theme, arrows preview, Enter saves, Esc reverts |
 | Prompt: autofocus, Tab completes without losing focus, `/work ` matches | pass |
 | Spanish, visible copy | pass — 245 strings identical EN/ES, of which 42 are technology names, theme names, URLs and code samples; no prose left in English |
 | Command palette (§5.2) | pass — Ctrl K or the button; 25 entries in four groups, arrows/Enter/hover, language-aware placeholder |
@@ -113,6 +114,27 @@ decisions; they are the branch/test scaffolding coming down.
    `src/styles/design-system.css` (already gone), the v1 `/` markup.
 4. Keep `og.astro` and `icon.astro` (the image generators), `404.astro` (already v2)
    and the sitemap at one URL.
+
+## Themes
+
+| id | name | credit | ships |
+| --- | --- | --- | --- |
+| `custom` | Custom | this site — the default | dark + light |
+| `ayu` | Ayu | Ayu by dempfi | dark + light |
+| `catppuccin` | Catppuccin | Catppuccin | Mocha + Latte |
+| `rose-pine` | Rosé Pine | by mvllow | Pine + Dawn |
+| `solarized` | Solarized | by Ethan Schoonover | dark + light |
+| `gruvbox` | Gruvbox | by morhetz | dark + light |
+
+The mode is not a setting. `tokens.css` keeps each theme's light palette in a
+`prefers-color-scheme: light` query, so the browser picks it before first paint
+and the page follows the OS with no script and nothing to flash. There is no
+"System" card for the same reason: following the system is what a theme does.
+
+Only themes with a real light variant are in the table. Dracula, Tokyo Night and
+Nord are dark-only, so they were dropped rather than shipped as half a theme.
+`themes.ts` maps the old nine-skin ids onto the six (`dracula` → `custom`, and so
+on): an unknown id means no tokens at all, which is an unstyled page.
 
 ## Known issues
 

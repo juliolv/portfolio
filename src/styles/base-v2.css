@@ -250,3 +250,31 @@ html[data-lang='es'] [data-lang-block='en'] {
   color: var(--muted);
   letter-spacing: 0.02em;
 }
+
+/* The design system shows both palettes of a theme, because both ship: the mini
+   preview follows the OS, and these rows are the tokens behind each mode. */
+.pairs {
+  display: grid;
+  gap: 3px;
+  margin-top: var(--sp-2);
+}
+.pairs__row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+  height: 8px;
+}
+.pairs__row i {
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text) 16%, transparent);
+}
+
+/* The keyboard legend is advice nobody can take on a touch screen: arrows and
+   Esc do not exist there, and it eats the height the theme list needs. */
+@media (hover: none), (pointer: coarse) {
+  /* Two classes, not one: components.css is imported after this file and sets
+     `.dialog__hint { display: flex }` at equal specificity, which would win. */
+  .dialog .dialog__hint {
+    display: none;
+  }
+}

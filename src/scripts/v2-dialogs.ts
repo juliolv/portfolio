@@ -12,6 +12,12 @@
 
 const APP = document.querySelector<HTMLElement>('.app');
 const SKIN_KEY = 'tui.skin';
+/** The theme table, from the same payload the boot script reads. */
+const THEME_DATA = JSON.parse(
+  (document.getElementById('v2-theme-data')?.textContent ?? '{"themes":[],"legacy":{},"fallback":"custom"}')
+);
+const THEME_IDS: string[] = THEME_DATA.themes ?? [];
+const FALLBACK: string = THEME_DATA.fallback ?? 'custom';
 const msg = document.getElementById('st-msg');
 /** The picker's own radiogroup. Scoped: the design-system view renders a second
  *  set of skin cards, and focusing or arrow-stepping through those (hidden, and
@@ -25,33 +31,37 @@ let opener: HTMLElement | null = null;
 /** First paint sets the skin from storage; only later changes cross-fade. */
 let booted = false;
 /** What is saved. Not what is on screen — arrows preview without saving. */
-let committed = 'system';
+let committed = FALLBACK;
 /** What is on screen right now. */
-let previewing = 'system';
+let previewing = FALLBACK;
 
 /* ---------------------------------------------------------------- helpers -- */
 
-function systemSkin(): string {
-  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'ayu-light' : 'ayu-dark';
-}
-
 function skinName(id: string): string {
-  return allCards.find((card) => card.dataset.skinPick === id)?.dataset.skinName ?? id;
+  const card = allCards.find((c) => c.dataset.skinPick === id);
+  if (!card) return id;
+  const es = document.documentElement.dataset.lang === 'es';
+  return (es ? card.dataset.skinNameEs : card.dataset.skinName) ?? id;
 }
 
 function savedChoice(): string {
   try {
     const stored = localStorage.getItem(SKIN_KEY);
-    if (stored && pickerCards.some((card) => card.dataset.skinPick === stored)) return stored;
+    // Includes the old nine-skin ids: a returning visitor keeps the nearest
+    // theme instead of landing on an id with no tokens behind it.
+    if (stored && THEME_IDS.includes(stored)) return stored;
+    if (stored && THEME_DATA.legacy && THEME_DATA.legacy[stored]) return THEME_DATA.legacy[stored];
   } catch {
-    /* storage blocked: the system choice stands */
+    /* storage blocked: the default stands */
   }
-  return 'system';
+  return FALLBACK;
 }
 
 /** Paint a choice: tokens, checked card, roving tabindex, label, current mark. */
 function paint(id: string, announce = false) {
-  document.documentElement.dataset.skin = id === 'system' ? systemSkin() : id;
+  // Theme only: the light/dark palette is a media query in tokens.css, so there
+  // is no mode to set here and nothing to keep in sync with the OS.
+  document.documentElement.dataset.skin = id;
   previewing = id;
 
   allCards.forEach((card) => {
@@ -75,11 +85,10 @@ function paint(id: string, announce = false) {
   if (booted) window.dispatchEvent(new CustomEvent('tui:skin', { detail: id }));
 }
 
-/** Apply and persist. "system" stores nothing, which is how it follows the OS. */
+/** Apply and persist. The mode still follows the OS whatever is stored. */
 function save(id: string) {
   try {
-    if (id === 'system') localStorage.removeItem(SKIN_KEY);
-    else localStorage.setItem(SKIN_KEY, id);
+    localStorage.setItem(SKIN_KEY, id);
   } catch {
     /* private mode: the choice lasts for this page */
   }
@@ -301,9 +310,10 @@ committed = savedChoice();
 paint(committed);
 booted = true;
 
-// While the choice is "system", follow the OS live instead of going stale.
+// A theme's palette follows the OS live; re-paint so the label and the "current"
+// mark keep up with a mode switch (the colours are CSS and need no help).
 window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
-  if (savedChoice() === 'system') paint('system');
+  paint(savedChoice());
 });
 
 export {};

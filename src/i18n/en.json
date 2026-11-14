@@ -183,7 +183,7 @@
     "lede": "The tokens, skins and components this site is built from. Values are read live from the page, so they change with the skin.",
     "title": "Design system",
     "tokens": "tokens",
-    "skins": "skins",
+    "skins": "Themes",
     "components": "components",
     "color": "color",
     "type": "type (mono)",
@@ -193,7 +193,7 @@
     "layers": "z-index",
     "colorNote": "Each skin keeps its own accent, used for what is active or actionable. Status colours always come with a glyph and a word.",
     "motionNote": "Select a row to play it. Durations drop to zero under prefers-reduced-motion.",
-    "skinsNote": "Nine open-source themes plus system, which follows your OS. Each keeps its official palette, mapped onto the same tokens. Select a card to apply it.",
+    "skinsNote": "Six themes, five of them open-source ports. Each ships a dark and a light palette — the mode is never a setting here, it comes from your device. The two rows under each preview are that theme's dark and light tokens.",
     "primary": "Primary",
     "default": "Default",
     "disabled": "Disabled",
@@ -214,7 +214,8 @@
     "specTodo": "todo item",
     "specTimeline": "timeline item",
     "specCode": "code block",
-    "logoNote": "The jl mark: a j followed by a block cursor that doubles as the l. ⠚ is the letter j in Braille, shown only while something loads."
+    "logoNote": "The jl mark: a j followed by a block cursor that doubles as the l. ⠚ is the letter j in Braille, shown only while something loads.",
+    "intro": "Every token, theme and component on this page is read live from the page itself, so it changes the moment you change the theme."
   },
   "tui": {
     "qWork": "What has Julio built?",
@@ -239,7 +240,7 @@
     "placeholder": "Search projects and skills, or type / for commands…",
     "placeholderPhone": "Search, or type /…",
     "current": "● current",
-    "savedNote": "Saved in this browser. With System, the site follows your device.",
+    "savedNote": "Saved in this browser. Every theme follows your device's light or dark setting.",
     "dlgTheme": "Theme",
     "dlgKeys": "Keyboard",
     "dlgCommands": "Commands",

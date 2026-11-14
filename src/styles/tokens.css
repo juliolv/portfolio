@@ -1,108 +1,254 @@
-/* Design tokens and skins — ported verbatim from the v2 handoff
-   (docs/design/v2/portfolio-tui-handoff/reference/src/p1-head.html).
+/* ============================================================================
+   tokens.css — six themes, each with a dark and a light palette.
 
-   Every theme is scoped with [data-skin="id"] rather than :root[data-skin], so any
-   element can preview a skin. Ayu Dark is the :root fallback; without JavaScript a
-   prefers-color-scheme block gives Ayu Light. Do not edit values by hand: the
-   reference's gen_skins.py adjusts them to pass AA and prints every change.
-*/
+   The mode is never a setting: it comes from the operating system. Every theme
+   ships both palettes, and the light one lives in a `prefers-color-scheme: light`
+   query, so the browser switches before first paint and there is nothing to
+   flash. `data-skin` on <html> picks the theme; nothing else picks the mode.
 
-/* ==========================================================================
-   TOKENS
-   Layout concept: a TUI. Transcript column (prompt lines, tool calls, results)
-   beside a file/todo sidebar, with a prompt + status line docked at the bottom.
-   Skins are open-source themes (Catppuccin, Dracula, Tokyo Night, Nord, Rosé Pine,
-   Ayu) mapped onto the same tokens and scoped by [data-skin], so any element can
-   preview one. Each theme keeps its own official accent, green, yellow and red; values
-   that fail WCAG AA are darkened or lightened just enough to pass.
+   Five of the six are open-source ports, chosen because they have a real light
+   variant as well as a dark one — Dracula, Tokyo Night and Nord do not, so they
+   are not here. `custom` is this site's own palette, and it is the default.
+
+   Contrast is enforced by scripts/check-contrast.mjs against every documented
+   pair (AA text, 3:1 borders) in both modes. Where a port's own accent or muted
+   ink missed AA on its own surfaces it was darkened or lightened by the smallest
+   step that clears it; those are the only departures from upstream.
    ========================================================================== */
-:root, [data-skin="ayu-dark"] {
-  --bg: #0d1017; --panel: #0f131a; --element: #131721; --border: #1c212b; --border-strong: #6c7380;
-  --text: #bfbdb6; --muted: #9499a2; --accent: #e6b450; --accent-fg: #0d1017; --accent-subtle: #312d23;
-  --ok: #aad94c; --warn: #ffb454; --danger: #d95757; --select: #273747; --shadow: rgba(0, 0, 0, 0.55);
-  color-scheme: dark;
-}
-[data-skin="ayu-light"] {
-  --bg: #fcfcfc; --panel: #f8f9fa; --element: #f3f4f5; --border: #e7eaed; --border-strong: #868d94;
-  --text: #3e4348; --muted: #656a70; --accent: #8c5e1c; --accent-fg: #fcfcfc; --accent-subtle: #f9f0e2;
-  --ok: #5a7800; --warn: #8c652a; --danger: #c44444; --select: #d8e6f6; --shadow: rgba(40, 40, 60, 0.18);
-  color-scheme: light;
-}
-/* no JavaScript: follow the OS with Ayu Light */
-@media (prefers-color-scheme: light) { :root:not([data-skin]) {
-  --bg: #fcfcfc; --panel: #f8f9fa; --element: #f3f4f5; --border: #e7eaed; --border-strong: #868d94;
-  --text: #3e4348; --muted: #656a70; --accent: #8c5e1c; --accent-fg: #fcfcfc; --accent-subtle: #f9f0e2;
-  --ok: #5a7800; --warn: #8c652a; --danger: #c44444; --select: #d8e6f6; --shadow: rgba(40, 40, 60, 0.18);
-  color-scheme: light;
-} }
-[data-skin="catppuccin-mocha"] {
-  --bg: #1e1e2e; --panel: #181825; --element: #313244; --border: #45475a; --border-strong: #7f849c;
-  --text: #cdd6f4; --muted: #a6adc8; --accent: #cba6f7; --accent-fg: #11111b; --accent-subtle: #352f47;
-  --ok: #a6e3a1; --warn: #f9e2af; --danger: #f38ba8; --select: #45475a; --shadow: rgba(0, 0, 0, 0.55);
-  color-scheme: dark;
-}
-[data-skin="catppuccin-latte"] {
-  --bg: #eff1f5; --panel: #e6e9ef; --element: #dce0e8; --border: #ccd0da; --border-strong: #7f8293;
-  --text: #4c4f69; --muted: #565970; --accent: #7832d2; --accent-fg: #eff1f5; --accent-subtle: #dbd4ef;
-  --ok: #2f751f; --warn: #8f5b13; --danger: #cc0f37; --select: #bcc0cc; --shadow: rgba(40, 40, 60, 0.18);
-  color-scheme: light;
-}
-[data-skin="dracula"] {
-  --bg: #282a36; --panel: #21222c; --element: #343746; --border: #44475a; --border-strong: #6776a7;
-  --text: #f8f8f2; --muted: #9ba5c5; --accent: #bd93f9; --accent-fg: #282a36; --accent-subtle: #3a344d;
-  --ok: #50fa7b; --warn: #f1fa8c; --danger: #ff5a5a; --select: #44475a; --shadow: rgba(0, 0, 0, 0.55);
-  color-scheme: dark;
-}
-[data-skin="tokyo-night"] {
-  --bg: #1a1b26; --panel: #16161e; --element: #292e42; --border: #3b4261; --border-strong: #737aa2;
-  --text: #c0caf5; --muted: #a9b1d6; --accent: #7aa2f7; --accent-fg: #1a1b26; --accent-subtle: #262c41;
-  --ok: #9ece6a; --warn: #e0af68; --danger: #f7768e; --select: #283457; --shadow: rgba(0, 0, 0, 0.55);
-  color-scheme: dark;
-}
-[data-skin="nord"] {
-  --bg: #2e3440; --panel: #3b4252; --element: #3b4252; --border: #434c5e; --border-strong: #8791a5;
-  --text: #eceff4; --muted: #d8dee9; --accent: #acd3de; --accent-fg: #2e3440; --accent-subtle: #475666;
-  --ok: #a3be8c; --warn: #ebcb8b; --danger: #daa3a9; --select: #4c566a; --shadow: rgba(0, 0, 0, 0.55);
-  color-scheme: dark;
-}
-[data-skin="rose-pine"] {
-  --bg: #191724; --panel: #1f1d2e; --element: #26233a; --border: #403d52; --border-strong: #6e6a86;
-  --text: #e0def4; --muted: #a7a4bc; --accent: #ebbcba; --accent-fg: #191724; --accent-subtle: #403644;
-  --ok: #9ccfd8; --warn: #f6c177; --danger: #eb6f92; --select: #403d52; --shadow: rgba(0, 0, 0, 0.55);
-  color-scheme: dark;
-}
-[data-skin="rose-pine-dawn"] {
-  --bg: #faf4ed; --panel: #fffaf3; --element: #f2e9e1; --border: #dfdad9; --border-strong: #8a8696;
-  --text: #575279; --muted: #67637d; --accent: #905754; --accent-fg: #fffaf3; --accent-subtle: #faece5;
-  --ok: #286983; --warn: #966421; --danger: #9e576b; --select: #dfdad9; --shadow: rgba(40, 40, 60, 0.18);
-  color-scheme: light;
-}
-:root {
-  --font: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "JetBrains Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
-  --fs-1: 12px; --fs-2: 13px; --fs-3: 14px; --fs-4: 16px; --fs-5: 20px; --fs-6: 28px;
-  --fs-7: clamp(30px, 6.2vw, 48px);
-  --lh-tight: 1.1; --lh-snug: 1.4; --lh-body: 1.6;
-  --ls-tight: -0.02em; --ls-wide: 0.08em;
-  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 72px;
-  --r-0: 0; --r-1: 2px; --r-box: 6px; --bw: 1px; --bw-2: 2px;
-  --elev: 0 20px 50px -20px var(--shadow);
-  --z-bar: 20; --z-dock: 30; --z-menu: 35; --z-dialog: 50; --z-tip: 60;
-  --dur-fast: 120ms; --dur-base: 220ms; --dur-slow: 520ms;
-  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --ease-in-out: cubic-bezier(0.6, 0, 0.2, 1);
-  --bar-h: 49px; --side-w: 288px;
-}
-@media (max-width: 899px) { :root { --bar-h: 89px; } }
-/* Desktop scale: text grows with the screen so a 1440–1920px monitor isn't reading 12–14px type. */
-@media (min-width: 1200px) {
-  :root { --fs-1: 13px; --fs-2: 14px; --fs-3: 15px; --fs-4: 17px; --fs-5: 21px; --fs-7: clamp(40px, 3.4vw, 54px); --side-w: 304px; --app-w: 1360px; }
-}
-@media (min-width: 1600px) {
-  :root { --fs-1: 14px; --fs-2: 15px; --fs-3: 16px; --fs-4: 18px; --fs-5: 22px; --fs-7: clamp(48px, 3.2vw, 60px); --side-w: 336px; --app-w: 1520px; }
-}
-@media (prefers-reduced-motion: reduce) { :root { --dur-fast: 0ms; --dur-base: 0ms; --dur-slow: 0ms; } }
 
-@keyframes blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
-@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes sweep { from { box-shadow: inset 0 0 0 1px var(--accent); } to { box-shadow: inset 0 0 0 1px transparent; } }
+:root {
+  --font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+  --fs-1: 12px; --fs-2: 13px; --fs-3: 14px; --fs-4: 15px; --fs-5: 18px;
+  --fs-6: 22px; --fs-7: 28px; --fs-8: 36px;
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+  --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
+  --bw: 1px;
+  --radius: 4px; --radius-lg: 6px;
+  --bar-h: 44px;
+  --z-tip: 60; --z-dialog: 80;
+  --dur-1: 120ms; --dur-2: 200ms; --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+/* ---- the default theme: ours, and it follows the system like the rest ------ */
+:root,
+[data-skin="custom"] {
+  --bg: #0c0f14;
+  --panel: #11151c;
+  --element: #171c25;
+  --border: #232a35;
+  --border-strong: #6b7482;
+  --text: #c9c7c1;
+  --muted: #8f949c;
+  --accent: #e8b86a;
+  --accent-fg: #0c0f14;
+  --accent-subtle: #2e2a22;
+  --ok: #9ecb6a;
+  --warn: #e8b86a;
+  --danger: #e0736b;
+  --select: #223243;
+}
+
+@media (prefers-color-scheme: light) {
+  :root,
+  [data-skin="custom"] {
+    --bg: #fbf9f5;
+    --panel: #f6f2ea;
+    --element: #efeae0;
+    --border: #ded8cc;
+    --border-strong: #6f6a61;
+    --text: #31353b;
+    --muted: #5f636a;
+    --accent: #8a5a1e;
+    --accent-fg: #fbf9f5;
+    --accent-subtle: #f4e9d6;
+    --ok: #4f6b14;
+    --warn: #8a5a1e;
+    --danger: #b4443c;
+    --select: #dae3ef;
+  }
+}
+
+/* ---- Ayu — Ayu by dempfi ------------------------------------- */
+[data-skin="ayu"] {
+  --bg: #0d1017;
+  --panel: #0f131a;
+  --element: #131721;
+  --border: #1c212b;
+  --border-strong: #6c7380;
+  --text: #bfbdb6;
+  --muted: #9499a2;
+  --accent: #e6b450;
+  --accent-fg: #0d1017;
+  --accent-subtle: #312d23;
+  --ok: #aad94c;
+  --warn: #ffb454;
+  --danger: #d95757;
+  --select: #273747;
+}
+
+@media (prefers-color-scheme: light) {
+  [data-skin="ayu"] {
+      --bg: #fcfcfc;
+      --panel: #f8f9fa;
+      --element: #f3f4f5;
+      --border: #e7eaed;
+      --border-strong: #868d94;
+      --text: #3e4348;
+      --muted: #656a70;
+      --accent: #8c5e1c;
+      --accent-fg: #fcfcfc;
+      --accent-subtle: #f9f0e2;
+      --ok: #5a7800;
+      --warn: #8c652a;
+      --danger: #c44444;
+      --select: #d8e6f6;
+  }
+}
+
+/* ---- Catppuccin — Catppuccin ------------------------------------- */
+[data-skin="catppuccin"] {
+  --bg: #1e1e2e;
+  --panel: #181825;
+  --element: #313244;
+  --border: #45475a;
+  --border-strong: #7f849c;
+  --text: #cdd6f4;
+  --muted: #a6adc8;
+  --accent: #cba6f7;
+  --accent-fg: #1e1e2e;
+  --accent-subtle: #302a45;
+  --ok: #a6e3a1;
+  --warn: #f9e2af;
+  --danger: #f38ba8;
+  --select: #313244;
+}
+
+@media (prefers-color-scheme: light) {
+  [data-skin="catppuccin"] {
+      --bg: #eff1f5;
+      --panel: #e6e9ef;
+      --element: #dce0e8;
+      --border: #ccd0da;
+      --border-strong: #818494;
+      --text: #4c4f69;
+      --muted: #5c5e71;
+      --accent: #7d35dc;
+      --accent-fg: #eff1f5;
+      --accent-subtle: #e6dcf5;
+      --ok: #2f751f;
+      --warn: #8f5b13;
+      --danger: #b6385a;
+      --select: #d8e1f2;
+  }
+}
+
+/* ---- Rosé Pine — Rosé Pine by mvllow ------------------------------------- */
+[data-skin="rose-pine"] {
+  --bg: #191724;
+  --panel: #1f1d2e;
+  --element: #26233a;
+  --border: #403d52;
+  --border-strong: #6e6a86;
+  --text: #e0def4;
+  --muted: #908caa;
+  --accent: #ebbcba;
+  --accent-fg: #191724;
+  --accent-subtle: #2b2536;
+  --ok: #9ccfd8;
+  --warn: #f6c177;
+  --danger: #eb6f92;
+  --select: #2b2a3e;
+}
+
+@media (prefers-color-scheme: light) {
+  [data-skin="rose-pine"] {
+      --bg: #faf4ed;
+      --panel: #f2e9e1;
+      --element: #ece0d6;
+      --border: #dfd2c4;
+      --border-strong: #7f6f66;
+      --text: #575279;
+      --muted: #635f78;
+      --accent: #8a5451;
+      --accent-fg: #faf4ed;
+      --accent-subtle: #f3e3dd;
+      --ok: #286983;
+      --warn: #8a5c1e;
+      --danger: #99545a;
+      --select: #e2e6ee;
+  }
+}
+
+/* ---- Solarized — Solarized by Ethan Schoonover ------------------------------------- */
+[data-skin="solarized"] {
+  --bg: #002b36;
+  --panel: #073642;
+  --element: #0b4050;
+  --border: #14495a;
+  --border-strong: #5f7e8a;
+  --text: #9facac;
+  --muted: #9eabad;
+  --accent: #c5a337;
+  --accent-fg: #002b36;
+  --accent-subtle: #233b2c;
+  --ok: #93a51d;
+  --warn: #cd900a;
+  --danger: #e97c7a;
+  --select: #0d4a5c;
+}
+
+@media (prefers-color-scheme: light) {
+  [data-skin="solarized"] {
+      --bg: #fdf6e3;
+      --panel: #f7f0dd;
+      --element: #eee8d5;
+      --border: #d9d2bd;
+      --border-strong: #7a7563;
+      --text: #3f4d52;
+      --muted: #56686f;
+      --accent: #7f6400;
+      --accent-fg: #fdf6e3;
+      --accent-subtle: #f2e8c9;
+      --ok: #5f6f00;
+      --warn: #846900;
+      --danger: #b3302c;
+      --select: #dfe7ef;
+  }
+}
+
+/* ---- Gruvbox — Gruvbox by morhetz ------------------------------------- */
+[data-skin="gruvbox"] {
+  --bg: #282828;
+  --panel: #1d2021;
+  --element: #32302f;
+  --border: #3c3836;
+  --border-strong: #81756a;
+  --text: #ebdbb2;
+  --muted: #bdae93;
+  --accent: #fabd2f;
+  --accent-fg: #282828;
+  --accent-subtle: #3a3226;
+  --ok: #b8bb26;
+  --warn: #fabd2f;
+  --danger: #fb5e4b;
+  --select: #3a4a52;
+}
+
+@media (prefers-color-scheme: light) {
+  [data-skin="gruvbox"] {
+      --bg: #fbf1c7;
+      --panel: #f2e5bc;
+      --element: #ebdbb2;
+      --border: #d5c4a1;
+      --border-strong: #7c6f64;
+      --text: #3c3836;
+      --muted: #665c54;
+      --accent: #80570f;
+      --accent-fg: #fbf1c7;
+      --accent-subtle: #f0e0b8;
+      --ok: #636700;
+      --warn: #855b0f;
+      --danger: #a8321f;
+      --select: #d6e4ec;
+  }
+}

@@ -183,7 +183,7 @@
     "lede": "Los tokens, skins y componentes con los que está hecho este sitio. Los valores se leen de la página, así que cambian con el skin.",
     "title": "Sistema de diseño",
     "tokens": "tokens",
-    "skins": "skins",
+    "skins": "Temas",
     "components": "componentes",
     "color": "color",
     "type": "tipografía (mono)",
@@ -193,7 +193,7 @@
     "layers": "z-index",
     "colorNote": "Cada skin conserva su acento, usado para lo activo o accionable. Los colores de estado siempre van con un glifo y una palabra.",
     "motionNote": "Elige una fila para reproducirla. Las duraciones bajan a cero con prefers-reduced-motion.",
-    "skinsNote": "Nueve temas de código abierto más sistema, que sigue tu SO. Cada uno conserva su paleta oficial, mapeada a los mismos tokens. Elige una tarjeta para aplicarlo.",
+    "skinsNote": "Seis temas, cinco de ellos portados de proyectos open source. Cada uno trae paleta oscura y clara: el modo no es un ajuste aquí, lo decide tu dispositivo. Las dos filas bajo cada vista previa son las fichas oscura y clara de ese tema.",
     "primary": "Primario",
     "default": "Normal",
     "disabled": "Deshabilitado",
@@ -214,7 +214,8 @@
     "specTodo": "ítem de pendientes",
     "specTimeline": "ítem de línea de tiempo",
     "specCode": "bloque de código",
-    "logoNote": "La marca jl: una j seguida de un cursor de bloque que hace de l. ⠚ es la j en braille, solo mientras algo carga."
+    "logoNote": "La marca jl: una j seguida de un cursor de bloque que hace de l. ⠚ es la j en braille, solo mientras algo carga.",
+    "intro": "Cada token, tema y componente de esta página se lee en vivo de la propia página, así que cambia en el momento en que cambias el tema."
   },
   "tui": {
     "qWork": "¿Qué ha construido Julio?",
@@ -239,7 +240,7 @@
     "placeholder": "Busca proyectos y tecnologías, o escribe / para comandos…",
     "placeholderPhone": "Busca, o escribe /…",
     "current": "● actual",
-    "savedNote": "Se guarda en este navegador. Con Sistema se ajusta a tu dispositivo.",
+    "savedNote": "Se guarda en este navegador. Cada tema sigue el ajuste claro u oscuro de tu dispositivo.",
     "dlgTheme": "Tema",
     "dlgKeys": "Teclado",
     "dlgCommands": "Comandos",

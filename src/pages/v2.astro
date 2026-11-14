@@ -14,7 +14,7 @@ import { s, t, url, SITE } from '../lib/i18n';
 import devlog from '../data/devlog.json';
 import experience from '../data/experience.json';
 import stack from '../data/stack.json';
-import { SKINS, DEFAULT_SKIN } from '../data/skins';
+import { THEMES, DEFAULT_THEME, THEME_IDS, LEGACY_SKINS } from '../data/themes';
 
 const L = 'en' as const;
 
@@ -121,7 +121,7 @@ const kv: [string, string, string][] = [
 ---
 
 <!doctype html>
-<html lang="en" data-lang="en" data-skin="ayu-dark">
+<html lang="en" data-lang="en" data-skin={DEFAULT_THEME}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -130,8 +130,8 @@ const kv: [string, string, string][] = [
     <title>{`${SITE.name} · ${s(L, 'hero.role')}`}</title>
 
     <link rel="canonical" href={SITE.url} />
-    <meta name="theme-color" content="#0d1017" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#fcfcfc" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0c0f14" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fbf9f5" media="(prefers-color-scheme: light)" />
 
     <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
     <link rel="icon" type="image/png" sizes="32x32" href={url('/favicon-32.png')} />
@@ -157,26 +157,29 @@ const kv: [string, string, string][] = [
     {/* Still a preview route: the shares above describe the page it becomes on
         merge, but crawlers are held off until it is the real front door. */}
     <meta name="robots" content="noindex" />
+    <script type="application/json" id="v2-theme-data" set:html={JSON.stringify({
+      themes: THEME_IDS, legacy: LEGACY_SKINS, fallback: DEFAULT_THEME,
+      names: Object.fromEntries(THEMES.map((t) => [t.id, t.name])),
+    })}></script>
     <script is:inline>
-      /* Theme boot (handoff §3.2): resolves a stored skin before first paint. */
+      /* Boot (handoff §3.2). Two things resolve before first paint: the theme,
+         and the language. The light/dark palette is not resolved here at all —
+         tokens.css flips it in a prefers-color-scheme query, so the browser picks
+         the right one before anything is painted and there is no flash to fix. */
       (() => {
-        const skins = ['ayu-dark','ayu-light','catppuccin-mocha','catppuccin-latte','dracula','tokyo-night','nord','rose-pine','rose-pine-dawn'];
         const root = document.documentElement;
+        const data = JSON.parse(document.getElementById('v2-theme-data').textContent);
+
         let stored = null;
         try { stored = localStorage.getItem('tui.skin'); } catch {}
-        let skin = skins.includes(stored) ? stored : 'system';
-        if (skin === 'system') {
-          const attr = root.getAttribute('data-theme');
-          skin = attr === 'light' || (attr !== 'dark' && matchMedia('(prefers-color-scheme: light)').matches)
-            ? 'ayu-light'
-            : 'ayu-dark';
-        }
-        root.setAttribute('data-skin', skin);
+        // A stored id from the old nine-skin build is mapped, not trusted: an
+        // unknown id means no tokens, which is an unstyled page.
+        const theme = data.themes.includes(stored)
+          ? stored
+          : (data.legacy[stored] ?? data.fallback);
+        root.setAttribute('data-skin', theme);
         root.classList.add('js');
 
-        // Same for the language: resolve it before paint so the first frame is
-        // already in the right one. Latin copy is wider in Spanish, so flipping
-        // after paint would reflow the page.
         let lang = null;
         try { lang = localStorage.getItem('tui.lang'); } catch {}
         if (lang !== 'en' && lang !== 'es') {
@@ -185,15 +188,8 @@ const kv: [string, string, string][] = [
         root.setAttribute('data-lang', lang);
         root.setAttribute('lang', lang);
 
-        // The preview has no picker yet: label the button with the resolved skin
-        // instead of a hardcoded name that can contradict the colours.
-        const names = {
-          'ayu-dark': 'Ayu Dark', 'ayu-light': 'Ayu Light', 'catppuccin-mocha': 'Catppuccin Mocha',
-          'catppuccin-latte': 'Catppuccin Latte', dracula: 'Dracula', 'tokyo-night': 'Tokyo Night',
-          nord: 'Nord', 'rose-pine': 'Rosé Pine', 'rose-pine-dawn': 'Rosé Pine Dawn',
-        };
         const label = document.querySelector('.skinbtn__label');
-        if (label) label.textContent = names[skin] ?? skin;
+        if (label) label.textContent = data.names[theme] ?? theme;
       })();
     </script>
   </head>
@@ -208,11 +204,11 @@ const kv: [string, string, string][] = [
       })),
       { group: 'go', label: { en: 'design-system', es: 'design-system' },
         hint: { en: s('en', 'palette.designSystem'), es: s('es', 'palette.designSystem') }, hash: '#design-system' },
-      ...SKINS.map((skin) => ({
+      ...THEMES.map((theme) => ({
         group: 'appearance',
-        label: { en: skin.name, es: skin.name },
-        hint: { en: `theme · ${skin.mode}`, es: `tema · ${skin.mode}` },
-        skin: skin.id,
+        label: { en: theme.name, es: theme.nameEs },
+        hint: { en: 'theme · light + dark', es: 'tema · claro + oscuro' },
+        skin: theme.id,
       })),
       { group: 'appearance', label: { en: 'English', es: 'Inglés' }, hint: { en: 'language', es: 'idioma' }, lang: 'en' },
       { group: 'appearance', label: { en: 'Español', es: 'Español' }, hint: { en: 'language', es: 'idioma' }, lang: 'es' },
@@ -568,15 +564,15 @@ const kv: [string, string, string][] = [
         </div>
         <div class="dialog__list dialog__list--padded">
           <div class="skins" role="radiogroup" aria-label={s(L, 'a11y.themeGroup')} data-label-en={s('en', 'a11y.themeGroup')} data-label-es={s('es', 'a11y.themeGroup')}>
-            {[{ id: 'system', name: 'System', mode: 'auto', preview: DEFAULT_SKIN }, ...SKINS.map((skin) => ({ ...skin, preview: skin.id }))].map((skin) => (
+            {THEMES.map((theme) => (
               <button class="skin-card" type="button" role="radio" aria-checked="false" tabindex="-1"
-                data-skin-pick={skin.id} data-skin-name={skin.name}>
-                <span class="mini" data-skin={skin.preview} aria-hidden="true">
+                data-skin-pick={theme.id} data-skin-name={theme.name} data-skin-name-es={theme.nameEs}>
+                <span class="mini" data-skin={theme.id} aria-hidden="true">
                   <span><b>❯</b> /work</span>
                   <span class="mini__muted">● List(work/)</span>
                   <span class="mini__bar"><i></i><i></i><i></i></span>
                 </span>
-                <span>{skin.name}<small>{skin.mode}<span class="skin-card__cur" hidden><Bi en={` · ${s('en', 'tui.current')}`} es={` · ${s('es', 'tui.current')}`} /></span></small></span>
+                <span><Bi en={theme.name} es={theme.nameEs} /><small><Bi en={theme.credit.en} es={theme.credit.es} /><span class="skin-card__cur" hidden><Bi en={` · ${s('en', 'tui.current')}`} es={` · ${s('es', 'tui.current')}`} /></span></small></span>
               </button>
             ))}
           </div>
