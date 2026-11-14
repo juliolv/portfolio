@@ -4,7 +4,19 @@
     "sections": "Secciones",
     "language": "Idioma",
     "theme": "Tema",
-    "skip": "Saltar al contenido"
+    "skip": "Saltar al contenido",
+    "sidebar": "Barra lateral",
+    "files": "Archivos",
+    "themeGroup": "Tema",
+    "results": "Comandos y resultados",
+    "prompt": "Campo de búsqueda",
+    "context": "Ventana de contexto",
+    "mode": "Modo",
+    "model": "Modelo",
+    "variant": "Variante",
+    "tipMode": "modo",
+    "tipModel": "modelo",
+    "tipVariant": "variante"
   },
   "nav": {
     "work": "trabajo",

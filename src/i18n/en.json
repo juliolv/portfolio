@@ -4,7 +4,19 @@
     "sections": "Sections",
     "language": "Language",
     "theme": "Theme",
-    "skip": "Skip to content"
+    "skip": "Skip to content",
+    "sidebar": "Sidebar",
+    "files": "Files",
+    "themeGroup": "Theme",
+    "results": "Commands and results",
+    "prompt": "Prompt",
+    "context": "Context window",
+    "mode": "Mode",
+    "model": "Model",
+    "variant": "Variant",
+    "tipMode": "mode",
+    "tipModel": "model",
+    "tipVariant": "variant"
   },
   "nav": {
     "work": "work",

@@ -253,7 +253,7 @@ const kv: [string, string, string][] = [
             </span>julio<span class="brand__crumb" aria-hidden="true">/work</span>
           </a>
           <span class="titlebar__spacer"></span>
-          <div class="seg" role="radiogroup" aria-label={s(L, 'a11y.language')}>
+          <div class="seg" role="radiogroup" aria-label={s(L, 'a11y.language')} data-label-en={s('en', 'a11y.language')} data-label-es={s('es', 'a11y.language')}>
             <button class="seg__opt" type="button" role="radio" aria-checked="true" data-lang-to="en">EN</button>
             <button class="seg__opt" type="button" role="radio" aria-checked="false" data-lang-to="es">ES</button>
           </div>
@@ -261,9 +261,10 @@ const kv: [string, string, string][] = [
             <span class="sw" aria-hidden="true"><i style="background:var(--bg)"></i><i style="background:var(--accent)"></i><i style="background:var(--ok)"></i><i style="background:var(--warn)"></i></span>
             <span class="skinbtn__label">·</span>
           </button>
-          <button class="btn" type="button" id="palette-btn" data-open-dlg="palette" aria-haspopup="dialog" aria-label={s(L, 'palette.title')}><span class="kbd">Ctrl K</span></button>
+          <button class="btn" type="button" id="palette-btn" data-open-dlg="palette" aria-haspopup="dialog"
+    aria-label={s(L, 'palette.title')} data-label-en={s('en', 'palette.title')} data-label-es={s('es', 'palette.title')}><span class="kbd">Ctrl K</span></button>
         </div>
-        <nav class="tabstrip" aria-label="Sections">
+        <nav class="tabstrip" aria-label={s(L, 'a11y.sections')} data-label-en={s('en', 'a11y.sections')} data-label-es={s('es', 'a11y.sections')}>
           {sections.map((section) => (
             <a href={`#${section.id}`} data-nav={section.id} aria-current={section.id === 'work' ? 'true' : undefined}>{section.label}</a>
           ))}
@@ -281,7 +282,7 @@ const kv: [string, string, string][] = [
                 {/* One text node, one accessible name. The ghost reserves the width;
                     the visible copy is what types. There is no sr-only duplicate —
                     that copy was reaching selection and reading twice. */}
-                <p class="hero__role" aria-label={s(L, 'hero.role')}>
+                <p class="hero__role" aria-label={s(L, 'hero.role')} data-label-en={s('en', 'hero.role')} data-label-es={s('es', 'hero.role')}>
                   <span class="hero__ghost" aria-hidden="true"><span class="hero__role-glyph">›</span> <Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /><span class="caret"></span></span>
                   <span aria-hidden="true"><span class="hero__role-glyph">›</span> <span id="typed"><Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /></span><span class="caret"></span></span>
                 </p>
@@ -448,26 +449,34 @@ const kv: [string, string, string][] = [
 
           <div class="dock">
             <form class="prompt" autocomplete="off">
-              <div class="menu" id="menu" role="listbox" aria-label="Commands and results" hidden></div>
+              <div class="menu" id="menu" role="listbox" aria-label={s(L, 'a11y.results')} data-label-en={s('en', 'a11y.results')} data-label-es={s('es', 'a11y.results')} hidden></div>
               <div class="prompt__box">
                 <span class="prompt__glyph" aria-hidden="true">❯</span>
                 <input class="prompt__input" id="cmd" type="text" role="combobox" aria-expanded="false"
                   aria-controls="menu" aria-autocomplete="list" autocomplete="off" autocapitalize="off"
                   spellcheck="false" enterkeyhint="go"
-                  placeholder="Search projects and skills, or type / for commands…" aria-label="Prompt" />
+                  placeholder="Search projects and skills, or type / for commands…" aria-label={s(L, 'a11y.prompt')} data-label-en={s('en', 'a11y.prompt')} data-label-es={s('es', 'a11y.prompt')} />
               </div>
             </form>
             <div class="status-line">
               <span class="status-line__msg is-hint" id="st-msg" role="status" aria-live="polite">? shortcuts · / commands · Ctrl K palette</span>
-              <span class="status-line__right"><span class="mode">build</span><span class="model">julio-lopez</span><span class="muted" aria-hidden="true">/</span><span class="model">senior-full-stack</span></span>
+              <span class="status-line__right">
+              <span class="mode tip-up" data-tip-en={s('en', 'a11y.tipMode')} data-tip-es={s('es', 'a11y.tipMode')}
+                data-label-en={`${s('en', 'a11y.mode')}: build`} data-label-es={`${s('es', 'a11y.mode')}: build`}>build</span>
+              <span class="model tip-up" data-tip-en={s('en', 'a11y.tipModel')} data-tip-es={s('es', 'a11y.tipModel')}
+                data-label-en={`${s('en', 'a11y.model')}: julio-lopez`} data-label-es={`${s('es', 'a11y.model')}: julio-lopez`}>julio-lopez</span>
+              <span class="muted" aria-hidden="true">/</span>
+              <span class="model tip-up" data-tip-en={s('en', 'a11y.tipVariant')} data-tip-es={s('es', 'a11y.tipVariant')}
+                data-label-en={`${s('en', 'a11y.variant')}: senior-full-stack`} data-label-es={`${s('es', 'a11y.variant')}: senior-full-stack`}>senior-full-stack</span>
+            </span>
             </div>
           </div>
         </main>
 
-        <aside class="sidebar" aria-label="Sidebar">
+        <aside class="sidebar" aria-label={s(L, 'a11y.sidebar')} data-label-en={s('en', 'a11y.sidebar')} data-label-es={s('es', 'a11y.sidebar')}>
           <div class="side__block">
             <p class="side__title"><span><Bi en={s(L, 'side.files')} es={s('es', 'side.files')} /></span></p>
-            <nav class="files" aria-label="Files">
+            <nav class="files" aria-label={s(L, 'a11y.files')} data-label-en={s('en', 'a11y.files')} data-label-es={s('es', 'a11y.files')}>
               {sections.map((section) => (
                 <a href={`#${section.id}`} data-nav={section.id} aria-current={section.id === 'work' ? 'true' : undefined}><span class="files__cur" aria-hidden="true">❯</span><span>{section.file}</span></a>
               ))}
@@ -476,7 +485,7 @@ const kv: [string, string, string][] = [
           </div>
           <div class="side__block">
             <p class="side__title"><span><Bi en={s(L, 'side.context')} es={s('es', 'side.context')} /></span><span id="ctx-pct">0%</span></p>
-            <div class="ctx" role="progressbar" aria-label="Context window" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="ctx" role="progressbar" aria-label={s(L, 'a11y.context')} data-label-en={s('en', 'a11y.context')} data-label-es={s('es', 'a11y.context')} aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
               <span class="ctx__bar" aria-hidden="true"></span>
               <span class="ctx__nums"></span>
               <span class="ctx__read"></span>
@@ -537,9 +546,11 @@ const kv: [string, string, string][] = [
           <span class="prompt__glyph" aria-hidden="true">❯</span>
           <input class="prompt__input" id="pal-input" type="text" role="combobox" aria-expanded="true"
             aria-controls="pal-list" aria-autocomplete="list" autocomplete="off" spellcheck="false"
-            placeholder={s(L, 'palette.placeholder')} aria-label={s(L, 'palette.title')} />
+            placeholder={s(L, 'palette.placeholder')} aria-label={s(L, 'palette.title')}
+            data-label-en={s('en', 'palette.title')} data-label-es={s('es', 'palette.title')} />
         </div>
-        <div class="dialog__list" id="pal-list" role="listbox" aria-label={s(L, 'palette.title')}></div>
+        <div class="dialog__list" id="pal-list" role="listbox" aria-label={s(L, 'palette.title')}
+          data-label-en={s('en', 'palette.title')} data-label-es={s('es', 'palette.title')}></div>
         <p class="dialog__hint">
           <span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> <Bi en="move" es="moverse" /></span>
           <span><kbd class="kbd">Enter</kbd> <Bi en="run" es="ejecutar" /></span>
@@ -556,7 +567,7 @@ const kv: [string, string, string][] = [
           <button class="btn btn--ghost" type="button" data-dlg-close><Bi en={s('en', 'tui.dlgEsc')} es={s('es', 'tui.dlgEsc')} /></button>
         </div>
         <div class="dialog__list dialog__list--padded">
-          <div class="skins" role="radiogroup" aria-label="Theme">
+          <div class="skins" role="radiogroup" aria-label={s(L, 'a11y.themeGroup')} data-label-en={s('en', 'a11y.themeGroup')} data-label-es={s('es', 'a11y.themeGroup')}>
             {[{ id: 'system', name: 'System', mode: 'auto', preview: DEFAULT_SKIN }, ...SKINS.map((skin) => ({ ...skin, preview: skin.id }))].map((skin) => (
               <button class="skin-card" type="button" role="radio" aria-checked="false" tabindex="-1"
                 data-skin-pick={skin.id} data-skin-name={skin.name}>

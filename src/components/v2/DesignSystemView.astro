@@ -81,7 +81,7 @@ const specs = [
 
   <div class="tabpanel" role="tabpanel" id="panel-skins" aria-labelledby="tab-skins" tabindex="0" hidden>
     <p class="muted" style="margin-bottom:var(--sp-4);max-width:70ch"><Bi en={d('skinsNote').en} es={d('skinsNote').es} /></p>
-    <div class="skins">
+    <div class="skins" role="radiogroup" aria-label={d('skins').en} data-label-en={d('skins').en} data-label-es={d('skins').es}>
       {[{ id: 'system', name: 'System', mode: 'auto', preview: DEFAULT_SKIN }, ...SKINS.map((skin) => ({ ...skin, preview: skin.id }))].map((skin) => (
         <button class="skin-card" type="button" aria-pressed="false"
           data-skin-pick={skin.id} data-skin-name={skin.name}>
@@ -126,7 +126,7 @@ const specs = [
         <div class="spec__body">
           <a class="link" href="#design-system"><Bi en={d('link').en} es={d('link').es} /></a>
           <span class="kbd">ctrl</span><span class="kbd">k</span>
-          <button class="btn" type="button" data-tip={d('tip').en}><Bi en={d('tipTarget').en} es={d('tipTarget').es} /></button>
+          <button class="btn" type="button" data-tip={d('tip').en} data-tip-en={d('tip').en} data-tip-es={d('tip').es}><Bi en={d('tipTarget').en} es={d('tipTarget').es} /></button>
         </div>
       </section>
 
@@ -145,7 +145,7 @@ const specs = [
       <section class="spec">
         <div class="spec__bar"><b><Bi en={d('specSeg').en} es={d('specSeg').es} /></b><span>.seg</span></div>
         <div class="spec__body">
-          <div class="seg" role="radiogroup" aria-label={s(L, 'a11y.language')}>
+          <div class="seg" role="radiogroup" aria-label={s(L, 'a11y.language')} data-label-en={s('en', 'a11y.language')} data-label-es={s('es', 'a11y.language')}>
             <button class="seg__opt" type="button" role="radio" aria-checked="true" data-lang-to="en">EN</button>
             <button class="seg__opt" type="button" role="radio" aria-checked="false" data-lang-to="es">ES</button>
           </div>

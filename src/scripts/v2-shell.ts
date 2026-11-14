@@ -45,8 +45,23 @@ const promptInput = document.getElementById('cmd') as HTMLInputElement | null;
 const paletteButton = document.getElementById('palette-btn');
 const dock = document.querySelector<HTMLElement>('.dock');
 
+/**
+ * Attributes are copy too: aria-labels and tooltips were server-rendered in
+ * English and never swapped. Elements carry both languages in data attributes;
+ * this writes the active one.
+ */
+function applyAttributes() {
+  document.querySelectorAll<HTMLElement>('[data-label-en], [data-tip-en]').forEach((el) => {
+    const label = el.getAttribute(`data-label-${lang}`);
+    if (label) el.setAttribute('aria-label', label);
+    const tip = el.getAttribute(`data-tip-${lang}`);
+    if (tip) el.setAttribute('data-tip', tip);
+  });
+}
+
 /** Text and affordances that depend on the input device, not on the language alone. */
 function paintChrome() {
+  applyAttributes();
   if (TOUCH) root.classList.add('is-touch');
 
   const tips = document.getElementById('tips');
