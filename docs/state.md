@@ -93,7 +93,7 @@ line, because "looks fine" is what this section exists to replace.
 | Phone dock | pass — 94px → 45px scrolling down, back on scroll up, at either end, or on prompt focus |
 | Touch: chips, 44px targets, `menu` label | pass — chips 2×2, every tappable ≥44px |
 | Reduced motion | pass — full role text, no reveal, no cross-fade, caret static |
-| Theme picker by keyboard | pass — opens on the saved theme, arrows preview, Enter saves, Esc reverts |
+| Theme picker by keyboard | pass — opens on the saved theme, any arrow steps one card and wraps, Enter saves, Esc reverts |
 | Prompt: autofocus, Tab completes without losing focus, `/work ` matches | pass |
 | Spanish, visible copy | pass — 245 strings identical EN/ES, of which 42 are technology names, theme names, URLs and code samples; no prose left in English |
 | Command palette (§5.2) | pass — Ctrl K or the button; 25 entries in four groups, arrows/Enter/hover, language-aware placeholder |
@@ -119,7 +119,7 @@ decisions; they are the branch/test scaffolding coming down.
 
 | id | name | credit | ships |
 | --- | --- | --- | --- |
-| `custom` | Custom | this site — the default | dark + light |
+| `wave` | Wave | by juliolv — the default, after Tokyo Night | dark + light |
 | `ayu` | Ayu | by dempfi | dark + light |
 | `catppuccin` | Catppuccin | Mocha / Latte | dark + light |
 | `rose-pine` | Rosé Pine | by mvllow | Pine + Dawn |
@@ -131,6 +131,11 @@ either is a real choice: `tui.skin` holds the theme, `tui.mode` holds `dark` or
 `light`. Each preview forces its own `data-mode`, so a dark and a light palette
 can sit next to each other while the page renders one of them.
 
+**What the picker shows.** The saved choice is marked by its border alone — an
+accent border with an inset ring, so it reads heavier than the keyboard focus
+ring, which is also accent-coloured. There is no "current" label and no hover
+preview: colours change only when a card takes focus, and they revert on Esc.
+
 **What `prefers-color-scheme` decides.** Exactly one thing: when `tui.mode` is
 absent, the OS picks the variant — which means the default `custom` theme is dark
 or light according to the device, with no script and nothing to flash. The moment
@@ -139,7 +144,7 @@ a variant is chosen, `data-mode` is set and the media query has no say. Absence 
 
 Only themes with a real light variant are in the table. Dracula, Tokyo Night and
 Nord are dark-only, so they are not here. `themes.ts` maps the old nine-skin ids
-onto the six (`dracula` → `custom`): an unknown id means no tokens at all, which
+onto the six (`dracula` → `wave`): an unknown id means no tokens at all, which
 is an unstyled page.
 
 **Tokens are not a theme's business.** `tokens.css` opens with the reference's

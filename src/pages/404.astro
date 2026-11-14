@@ -14,7 +14,7 @@ const L = 'en' as const;
 ---
 
 <!doctype html>
-<html lang="en" data-lang="en" data-skin="custom">
+<html lang="en" data-lang="en" data-skin="wave">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -30,11 +30,11 @@ const L = 'en' as const;
     <script is:inline>
       (() => {
         const root = document.documentElement;
-        const themes = ['custom','ayu','catppuccin','rose-pine','solarized','gruvbox'];
+        const themes = ['wave','ayu','catppuccin','rose-pine','solarized','gruvbox'];
         let stored = null, lang = null;
         try { stored = localStorage.getItem('tui.skin'); lang = localStorage.getItem('tui.lang'); } catch {}
         const light = matchMedia('(prefers-color-scheme: light)').matches;
-        root.dataset.skin = themes.includes(stored) ? stored : 'custom';
+        root.dataset.skin = themes.includes(stored) || stored === 'custom' ? (stored === 'custom' ? 'wave' : stored) : 'wave';
         if (lang !== 'en' && lang !== 'es') lang = (navigator.language || '').toLowerCase().startsWith('es') ? 'es' : 'en';
         root.dataset.lang = lang;
         root.lang = lang;

@@ -21,10 +21,10 @@ const SKIN_KEY = 'tui.skin';
 const MODE_KEY = 'tui.mode';
 /** The theme table, from the same payload the boot script reads. */
 const THEME_DATA = JSON.parse(
-  (document.getElementById('v2-theme-data')?.textContent ?? '{"themes":[],"legacy":{},"fallback":"custom"}')
+  (document.getElementById('v2-theme-data')?.textContent ?? '{"themes":[],"legacy":{},"fallback":"wave"}')
 );
 const THEME_IDS: string[] = THEME_DATA.themes ?? [];
-const FALLBACK: string = THEME_DATA.fallback ?? 'custom';
+const FALLBACK: string = THEME_DATA.fallback ?? 'wave';
 const msg = document.getElementById('st-msg');
 /** The picker's own radiogroup. Scoped: the design-system view renders a second
  *  set of cards, and focusing or arrow-stepping through those (hidden, and
@@ -32,7 +32,6 @@ const msg = document.getElementById('st-msg');
 const pickerCards = [...document.querySelectorAll<HTMLElement>('.dialog[data-dlg="theme"] [data-skin-pick]')];
 /** Every card that mirrors the active choice, including the design-system view. */
 const allCards = [...document.querySelectorAll<HTMLElement>('[data-skin-pick]')];
-const HOVER_OK = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const LIGHT = window.matchMedia('(prefers-color-scheme: light)');
 
 type Mode = 'dark' | 'light';
@@ -87,17 +86,30 @@ function savedChoice(): Choice {
 }
 
 /**
- * Paint a choice: tokens, checked card, roving tabindex, label, current mark.
- * `data-mode` is removed, not set to "auto": its absence is what lets the media
- * query decide.
+ * Preview: the colours change, the selection does not. Looking at another theme
+ * must never move the "current" mark — the mark says "this is what is saved", and
+ * only saving can move it.
  */
-function paint(choice: Choice, announce = false) {
+function preview(choice: Choice) {
   const root = document.documentElement;
   root.dataset.skin = choice.id;
+  // Removing the attribute, rather than setting "auto", is what hands the mode
+  // back to the media query.
   if (choice.mode) root.dataset.mode = choice.mode;
   else delete root.dataset.mode;
 
   previewing = choice;
+  const label = document.querySelector<HTMLElement>('.skinbtn__label');
+  if (label) label.textContent = cardLabel(choice.id);
+  if (booted) window.dispatchEvent(new CustomEvent('tui:skin', { detail: choice.id }));
+}
+
+/**
+ * Selection: checked card and roving tabindex. The visible mark is the card's
+ * border, so there is no label to move — but aria-checked still says which card
+ * is saved, which is what a screen reader reads out. Called on open and on save.
+ */
+function mark(choice: Choice, announce = false) {
   const shown = effectiveMode(choice);
 
   allCards.forEach((card) => {
@@ -111,14 +123,9 @@ function paint(choice: Choice, announce = false) {
       // stays reachable by Tab and the state is pressed, not checked.
       card.setAttribute('aria-pressed', String(on));
     }
-    const mark = card.querySelector<HTMLElement>('.skin-card__cur');
-    if (mark) mark.hidden = !on;
   });
 
-  const label = document.querySelector<HTMLElement>('.skinbtn__label');
-  if (label) label.textContent = cardLabel(choice.id);
   if (announce && msg) msg.textContent = `theme: ${choiceName(choice)}`;
-  if (booted) window.dispatchEvent(new CustomEvent('tui:skin', { detail: choice.id }));
 }
 
 /** The theme's name alone: the button is small, and the variant is on the card. */
@@ -140,7 +147,8 @@ function save(choice: Choice) {
     /* private mode: the choice lasts for this page */
   }
   committed = choice;
-  paint(choice, true);
+  preview(choice);
+  mark(choice, true);
 }
 
 /* ------------------------------------------------------------ open/close -- */
@@ -160,7 +168,8 @@ function open(name: string, from?: HTMLElement) {
 
   if (name === 'theme') {
     committed = savedChoice(); // remember what to revert to
-    paint(committed);
+    preview(committed);
+    mark(committed);
   }
 
   dialog.hidden = false;
@@ -202,7 +211,7 @@ function close() {
 
 /** Esc, the close button and the backdrop: undo any preview, then close. */
 function dismiss() {
-  if (document.querySelector('.dialog[data-dlg="theme"]:not([hidden])')) paint(committed);
+  if (document.querySelector('.dialog[data-dlg="theme"]:not([hidden])')) preview(committed);
   close();
 }
 
@@ -216,22 +225,26 @@ function step(from: number, delta: number): number {
   return (from + delta + pickerCards.length) % pickerCards.length;
 }
 
-/** Arrow movement: one across, one theme down, wrapping at both ends. */
+/**
+ * Arrow movement, wrapping at both ends.
+ *
+ * Every arrow steps one card, in DOM order. The tempting alternative — ArrowDown
+ * jumping a whole theme (index ± 2) — keeps the variant column, so from a light
+ * card the vertical arrows only ever reach light cards, and the last theme is a
+ * dead end. Stepping one card means both variants of every theme are reachable
+ * with Up/Down alone.
+ */
 function neighbour(card: HTMLElement, key: string): HTMLElement | null {
   const index = pickerCards.indexOf(card);
   if (index < 0) return null;
-  // Two cards per theme, so a row is two wide however it wraps.
-  const perRow = 2;
 
   switch (key) {
     case 'ArrowRight':
+    case 'ArrowDown':
       return pickerCards[step(index, 1)];
     case 'ArrowLeft':
-      return pickerCards[step(index, -1)];
-    case 'ArrowDown':
-      return pickerCards[index + perRow] ?? pickerCards[index];
     case 'ArrowUp':
-      return pickerCards[index - perRow] ?? pickerCards[index];
+      return pickerCards[step(index, -1)];
     case 'Home':
       return pickerCards[0];
     case 'End':
@@ -307,7 +320,7 @@ document.addEventListener('keydown', (event) => {
     const next = neighbour(active, event.key);
     if (next) {
       event.preventDefault();
-      paint(choiceOf(next));
+      preview(choiceOf(next));
       next.focus();
       return;
     }
@@ -329,17 +342,6 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-// Hover previews too, but only where hovering is real (not on touch).
-if (HOVER_OK) {
-  pickerCards.forEach((card) => {
-    card.addEventListener('pointerenter', () => {
-      if (document.querySelector('.dialog[data-dlg="theme"]:not([hidden])')) {
-        paint(choiceOf(card));
-      }
-    });
-  });
-}
-
 window.addEventListener('tui:open-dialog', (event) => {
   const name = (event as CustomEvent<string>).detail;
   if (name) open(name);
@@ -357,14 +359,18 @@ window.addEventListener('tui:set-skin', (event) => {
 /* ------------------------------------------------------------ initial state -- */
 
 committed = savedChoice();
-paint(committed);
+preview(committed);
+mark(committed);
 booted = true;
 
-// With no explicit variant the palette follows the OS live, so the "current" mark
-// and the label have to move with it. The colours are CSS and need no help.
+// With no explicit variant the palette follows the OS live, so the checked card
+// has to move with it. The colours are CSS and need no help.
 LIGHT.addEventListener('change', () => {
   const saved = savedChoice();
-  if (!saved.mode) paint(saved);
+  if (!saved.mode) {
+    preview(saved);
+    mark(saved);
+  }
 });
 
 export {};

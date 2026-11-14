@@ -23,6 +23,9 @@
    for the OS default, one behind [data-mode="light"] for an explicit choice. A
    browser that does not support light-dark() still gets a correct page.
 
+   `wave` is this site's own theme, after Tokyo Night: a blue-cyan accent on a
+   near-black indigo, and a cool paper light variant.
+
    Contrast: scripts/check-contrast.mjs reads all twelve and fails on any pair
    below AA, so a new palette cannot be added without passing.
    ========================================================================== */
@@ -55,24 +58,24 @@
 
 /* ---- 2. themes ---------------------------------------------------------- */
 
-/* Custom — this site, and the default */
+/* Wave — this site, by juliolv, after Tokyo Night */
 :root,
-[data-skin="custom"] {
-  --bg: #0c0f14; --panel: #11151c; --element: #171c25; --border: #232a35; --border-strong: #6b7482; --text: #c9c7c1; --muted: #8f949c; --accent: #e8b86a; --accent-fg: #0c0f14; --accent-subtle: #2e2a22; --ok: #9ecb6a; --warn: #e8b86a; --danger: #e0736b; --select: #223243; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
+[data-skin="wave"] {
+  --bg: #16161e; --panel: #1a1b26; --element: #24283b; --border: #2f3549; --border-strong: #5d658e; --text: #c0caf5; --muted: #8e98bc; --accent: #7dcfff; --accent-fg: #16161e; --accent-subtle: #1f2b45; --ok: #9ece6a; --warn: #e0af68; --danger: #f7768e; --select: #283457; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
 }
 
 /* No explicit choice: the OS decides. */
 @media (prefers-color-scheme: light) {
   :root:not([data-mode]),
-  [data-skin="custom"]:not([data-mode]) {
-      --bg: #fbf9f5; --panel: #f6f2ea; --element: #efeae0; --border: #ded8cc; --border-strong: #6f6a61; --text: #31353b; --muted: #5f636a; --accent: #8a5a1e; --accent-fg: #fbf9f5; --accent-subtle: #f4e9d6; --ok: #4f6b14; --warn: #8a5a1e; --danger: #b4443c; --select: #dae3ef; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+  [data-skin="wave"]:not([data-mode]) {
+      --bg: #eef0f6; --panel: #e6e9f1; --element: #dde1ec; --border: #c9cedc; --border-strong: #626a8c; --text: #343b58; --muted: #565d78; --accent: #1a5e97; --accent-fg: #f4f6fb; --accent-subtle: #d6e5f4; --ok: #3f6b16; --warn: #84560f; --danger: #b03050; --select: #cad9ef; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
   }
 }
 
 /* Explicit choice: wins over the OS. */
 :root[data-mode="light"],
-[data-skin="custom"][data-mode="light"] {
-  --bg: #fbf9f5; --panel: #f6f2ea; --element: #efeae0; --border: #ded8cc; --border-strong: #6f6a61; --text: #31353b; --muted: #5f636a; --accent: #8a5a1e; --accent-fg: #fbf9f5; --accent-subtle: #f4e9d6; --ok: #4f6b14; --warn: #8a5a1e; --danger: #b4443c; --select: #dae3ef; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+[data-skin="wave"][data-mode="light"] {
+  --bg: #eef0f6; --panel: #e6e9f1; --element: #dde1ec; --border: #c9cedc; --border-strong: #626a8c; --text: #343b58; --muted: #565d78; --accent: #1a5e97; --accent-fg: #f4f6fb; --accent-subtle: #d6e5f4; --ok: #3f6b16; --warn: #84560f; --danger: #b03050; --select: #cad9ef; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
 }
 
 /* Ayu by dempfi */

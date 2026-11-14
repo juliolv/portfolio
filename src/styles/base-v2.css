@@ -338,3 +338,13 @@ html[data-lang='es'] [data-lang-block='en'] {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Selected card. The reference styles [aria-pressed="true"] for the design-system
+   cards, but the picker is a radiogroup and reports aria-checked — without this
+   the saved theme had no visible mark at all. The inset ring doubles the border
+   weight without moving anything: the keyboard focus ring is also accent-coloured,
+   so weight is what tells "saved" apart from "focused". */
+.dialog .skin-card[aria-checked="true"] {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}

@@ -23,12 +23,12 @@ export interface Theme {
 
 export const THEMES: Theme[] = [
   {
-    id: 'custom',
-    name: 'Custom',
-    nameEs: 'Personalizado',
-    credit: { en: 'this site', es: 'Esta web' },
-    dark: ['#0c0f14', '#11151c', '#c9c7c1', '#e8b86a'],
-    light: ['#fbf9f5', '#f6f2ea', '#31353b', '#8a5a1e'],
+    id: 'wave',
+    name: 'Wave',
+    nameEs: 'Wave',
+    credit: { en: 'by juliolv', es: 'de juliolv' },
+    dark: ['#16161e', '#1a1b26', '#c0caf5', '#7dcfff'],
+    light: ['#eef0f6', '#e6e9f1', '#343b58', '#1a5e97'],
   },
   {
     id: 'ayu',
@@ -72,7 +72,7 @@ export const THEMES: Theme[] = [
   },
 ];
 
-export const DEFAULT_THEME = 'custom';
+export const DEFAULT_THEME = 'wave';
 export const THEME_IDS: string[] = THEMES.map((t) => t.id);
 
 /**
@@ -84,7 +84,9 @@ export const LEGACY_SKINS: Record<string, string> = {
   'ayu-dark': 'ayu', 'ayu-light': 'ayu',
   'catppuccin-mocha': 'catppuccin', 'catppuccin-latte': 'catppuccin',
   'rose-pine': 'rose-pine', 'rose-pine-dawn': 'rose-pine',
-  system: 'custom', 'solarized-dark': 'solarized', 'solarized-light': 'solarized',
+  system: 'wave', custom: 'wave', 'solarized-dark': 'solarized', 'solarized-light': 'solarized',
   'gruvbox-dark': 'gruvbox', 'gruvbox-light': 'gruvbox',
-  dracula: 'custom', 'tokyo-night': 'custom', nord: 'custom',
+  // Dark-only themes land on Wave, which is the dark theme closest to what they
+  // were showing (Wave is Tokyo Night's descendant).
+  dracula: 'wave', 'tokyo-night': 'wave', nord: 'wave',
 };
