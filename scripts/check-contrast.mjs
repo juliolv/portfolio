@@ -19,10 +19,12 @@ const TEXT = 4.5;
 const UI = 3;
 
 /* --- parse: one entry per theme and mode -----------------------------------
-   A theme is a `[data-skin="id"]` block; its light palette is the same selector
-   inside `@media (prefers-color-scheme: light)`. Both are checked, because both
-   are what a reader actually sees — the mode follows the OS, not a setting. */
+   tokens.css declares each palette twice: once behind `prefers-color-scheme`
+   (the OS default) and once behind [data-mode="light"] (an explicit choice).
+   Both are what a reader can see, so both are checked, and a theme with only one
+   of them is a bug this script reports rather than skips. */
 const TOKENS = /(--[a-z0-9-]+)\s*:\s*([^;]+);/g;
+const RULE = /([^{}]*)\{([^{}]*)\}/g;
 
 function readTokens(css) {
   const tokens = {};
@@ -31,22 +33,16 @@ function readTokens(css) {
 }
 
 function blocks() {
-  const out = {};
-  const rule = /\[data-skin="([a-z-]+)"\]\s*\{([^}]*)\}/g;
-
-  // dark: everything outside a media query (the light ones are picked out below)
-  const lightRegions = [...CSS.matchAll(/@media \(prefers-color-scheme: light\)\s*\{([\s\S]*?)\n\}/g)].map((m) => m[1]);
-  const darkOnly = CSS.replace(/@media \(prefers-color-scheme: light\)\s*\{[\s\S]*?\n\}/g, '');
-
-  for (const m of darkOnly.matchAll(rule)) out[`${m[1]} · dark`] = readTokens(m[2]);
-
-  for (const region of lightRegions) {
-    for (const m of region.matchAll(rule)) {
-      const base = out[`${m[1]} · dark`] ?? {};
-      out[`${m[1]} · light`] = { ...base, ...readTokens(m[2]) };
-    }
+  const themes = {};
+  for (const m of CSS.matchAll(RULE)) {
+    const sel = m[1].replace(/\s+/g, ' ');
+    const id = /\[data-skin="([a-z-]+)"]/.exec(sel)?.[1];
+    if (!id) continue;
+    const light = sel.includes('data-mode="light"') || sel.includes(':not([data-mode])');
+    const key = `${id} · ${light ? 'light' : 'dark'}`;
+    themes[key] ??= readTokens(m[2]);
   }
-  return out;
+  return themes;
 }
 
 const hex = (v) => {

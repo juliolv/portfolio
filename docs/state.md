@@ -120,21 +120,33 @@ decisions; they are the branch/test scaffolding coming down.
 | id | name | credit | ships |
 | --- | --- | --- | --- |
 | `custom` | Custom | this site — the default | dark + light |
-| `ayu` | Ayu | Ayu by dempfi | dark + light |
-| `catppuccin` | Catppuccin | Catppuccin | Mocha + Latte |
+| `ayu` | Ayu | by dempfi | dark + light |
+| `catppuccin` | Catppuccin | Mocha / Latte | dark + light |
 | `rose-pine` | Rosé Pine | by mvllow | Pine + Dawn |
 | `solarized` | Solarized | by Ethan Schoonover | dark + light |
 | `gruvbox` | Gruvbox | by morhetz | dark + light |
 
-The mode is not a setting. `tokens.css` keeps each theme's light palette in a
-`prefers-color-scheme: light` query, so the browser picks it before first paint
-and the page follows the OS with no script and nothing to flash. There is no
-"System" card for the same reason: following the system is what a theme does.
+**Choosing.** The picker offers both variants of every theme side by side, and
+either is a real choice: `tui.skin` holds the theme, `tui.mode` holds `dark` or
+`light`. Each preview forces its own `data-mode`, so a dark and a light palette
+can sit next to each other while the page renders one of them.
+
+**What `prefers-color-scheme` decides.** Exactly one thing: when `tui.mode` is
+absent, the OS picks the variant — which means the default `custom` theme is dark
+or light according to the device, with no script and nothing to flash. The moment
+a variant is chosen, `data-mode` is set and the media query has no say. Absence of
+`data-mode` is the "follow the system" state; there is no third attribute value.
 
 Only themes with a real light variant are in the table. Dracula, Tokyo Night and
-Nord are dark-only, so they were dropped rather than shipped as half a theme.
-`themes.ts` maps the old nine-skin ids onto the six (`dracula` → `custom`, and so
-on): an unknown id means no tokens at all, which is an unstyled page.
+Nord are dark-only, so they are not here. `themes.ts` maps the old nine-skin ids
+onto the six (`dracula` → `custom`): an unknown id means no tokens at all, which
+is an unstyled page.
+
+**Tokens are not a theme's business.** `tokens.css` opens with the reference's
+typography, spacing, elevation, z-index and motion tokens. Replacing the file
+without them yields a page that looks broken rather than unstyled — no `--font`,
+no `--elev`, no `--side-w` — so the audit in `scripts/check-contrast.mjs` and the
+names in that block are the thing to check first if the layout goes strange.
 
 ## Known issues
 

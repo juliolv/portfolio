@@ -83,20 +83,29 @@ const specs = [
     <p class="muted" style="margin-bottom:var(--sp-4);max-width:70ch"><Bi en={d('skinsNote').en} es={d('skinsNote').es} /></p>
     <div class="skins" role="radiogroup" aria-label={d('skins').en} data-label-en={d('skins').en} data-label-es={d('skins').es}>
       {THEMES.map((theme) => (
-        <button class="skin-card" type="button" aria-pressed="false"
-          data-skin-pick={theme.id} data-skin-name={theme.name} data-skin-name-es={theme.nameEs}>
-          <span class="mini" data-skin={theme.id} aria-hidden="true">
-            <span><b>❯</b> /work</span>
-            <span class="mini__muted">● List(work/)</span>
-            <span class="mini__bar"><i></i><i></i><i></i></span>
-          </span>
-          <span><Bi en={theme.name} es={theme.nameEs} /><small><Bi en={theme.credit.en} es={theme.credit.es} /><span class="skin-card__cur" hidden> · <Bi en={s('en', 'tui.current')} es={s('es', 'tui.current')} /></span></small></span>
-          {/* Both palettes are shipped, so both are shown: bg, panel, text, accent. */}
-          <span class="pairs" aria-hidden="true">
-            <span class="pairs__row" title="dark">{theme.dark.map((c) => <i style={`background:${c}`} />)}</span>
-            <span class="pairs__row" title="light">{theme.light.map((c) => <i style={`background:${c}`} />)}</span>
-          </span>
-        </button>
+        <div class="theme-pick">
+          <p class="theme-pick__head">
+            <b><Bi en={theme.name} es={theme.nameEs} /></b>
+            <small><Bi en={theme.credit.en} es={theme.credit.es} /></small>
+          </p>
+          <div class="theme-pick__pair">
+            {(['dark', 'light'] as const).map((mode) => (
+              <button class="skin-card" type="button" aria-pressed="false"
+                data-skin-pick={theme.id} data-mode-pick={mode}
+                data-skin-name={`${theme.name} · ${mode}`} data-skin-name-es={`${theme.nameEs} · ${mode === 'dark' ? s('es', 'tui.modeDark') : s('es', 'tui.modeLight')}`}>
+                <span class="mini" data-skin={theme.id} data-mode={mode} aria-hidden="true">
+                  <span><b>❯</b> /work</span>
+                  <span class="mini__muted">● List(work/)</span>
+                  <span class="mini__bar"><i></i><i></i><i></i></span>
+                </span>
+                <span class="skin-card__mode">
+                  {mode === 'dark' ? <Bi en={s('en', 'tui.modeDark')} es={s('es', 'tui.modeDark')} />
+                                   : <Bi en={s('en', 'tui.modeLight')} es={s('es', 'tui.modeLight')} />}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
       ))}
     </div>
   </div>

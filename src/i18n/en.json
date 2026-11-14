@@ -240,7 +240,7 @@
     "placeholder": "Search projects and skills, or type / for commands…",
     "placeholderPhone": "Search, or type /…",
     "current": "● current",
-    "savedNote": "Saved in this browser. Every theme follows your device's light or dark setting.",
+    "savedNote": "Saved in this browser. Until you pick one, the site follows your device's light or dark setting.",
     "dlgTheme": "Theme",
     "dlgKeys": "Keyboard",
     "dlgCommands": "Commands",
@@ -276,7 +276,9 @@
       "help": "keyboard shortcuts"
     },
     "kPalette": "open the command palette",
-    "keysWhich": "letters t · l · j · k · ?"
+    "keysWhich": "letters t · l · j · k · ?",
+    "modeDark": "dark",
+    "modeLight": "light"
   },
   "side": {
     "agents": "Agents",

@@ -240,7 +240,7 @@
     "placeholder": "Busca proyectos y tecnologías, o escribe / para comandos…",
     "placeholderPhone": "Busca, o escribe /…",
     "current": "● actual",
-    "savedNote": "Se guarda en este navegador. Cada tema sigue el ajuste claro u oscuro de tu dispositivo.",
+    "savedNote": "Se guarda en este navegador. Mientras no elijas, el sitio sigue el ajuste claro u oscuro de tu dispositivo.",
     "dlgTheme": "Tema",
     "dlgKeys": "Teclado",
     "dlgCommands": "Comandos",
@@ -276,7 +276,9 @@
       "help": "atajos de teclado"
     },
     "kPalette": "abrir la paleta de comandos",
-    "keysWhich": "las teclas t · l · j · k · ?"
+    "keysWhich": "las teclas t · l · j · k · ?",
+    "modeDark": "oscuro",
+    "modeLight": "claro"
   },
   "side": {
     "agents": "Agentes",

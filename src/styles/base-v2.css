@@ -278,3 +278,63 @@ html[data-lang='es'] [data-lang-block='en'] {
     display: none;
   }
 }
+
+/* Content stops above the dock instead of scrolling under it: the shell measures
+   the dock into --dock-h (it is taller on a phone when the status line wraps).
+   `.main > .transcript` is two classes because components.css sets the padding at
+   one, and it is imported after this file. */
+.main > .transcript {
+  padding-bottom: calc(var(--dock-h, 96px) + var(--sp-5));
+}
+
+/* Theme picker: both variants of a theme sit side by side, because both ship and
+   either can be chosen. Each preview forces its own data-mode, so a dark and a
+   light palette can be on screen together while the page shows one of them. */
+.theme-pick {
+  display: grid;
+  gap: var(--sp-2);
+  padding-bottom: var(--sp-4);
+  border-bottom: var(--bw) solid var(--border);
+}
+.theme-pick:last-child {
+  border-bottom: 0;
+}
+.theme-pick__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin: 0;
+  font-size: var(--fs-2);
+}
+.theme-pick__head b {
+  font-weight: 600;
+  color: var(--text);
+}
+.theme-pick__head small {
+  color: var(--muted);
+  font-size: var(--fs-1);
+}
+.theme-pick__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+}
+.skin-card__mode {
+  font-size: var(--fs-1);
+  color: var(--muted);
+}
+
+/* Six themes: three pairs a row reads as a grid, four-plus-two reads as a mistake.
+   The dialog is narrower, so it keeps two. Both are two classes deep because
+   components.css sets the .skins grid at one. */
+#panel-skins .skins {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.dialog .skins {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 640px) {
+  #panel-skins .skins {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

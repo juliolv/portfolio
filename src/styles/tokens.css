@@ -1,254 +1,161 @@
 /* ============================================================================
-   tokens.css — six themes, each with a dark and a light palette.
+   tokens.css — six themes, twelve palettes.
 
-   The mode is never a setting: it comes from the operating system. Every theme
-   ships both palettes, and the light one lives in a `prefers-color-scheme: light`
-   query, so the browser switches before first paint and there is nothing to
-   flash. `data-skin` on <html> picks the theme; nothing else picks the mode.
+   Two layers, and they answer different questions:
 
-   Five of the six are open-source ports, chosen because they have a real light
-   variant as well as a dark one — Dracula, Tokyo Night and Nord do not, so they
-   are not here. `custom` is this site's own palette, and it is the default.
+   1. THE TOKENS (typography, spacing, elevation, z-index, motion). Ported from
+      the handoff's reference and not a theme's business. If a name here goes
+      missing the page does not look "unstyled", it looks broken in ways that are
+      hard to trace, so these names are the reference's exactly.
 
-   Contrast is enforced by scripts/check-contrast.mjs against every documented
-   pair (AA text, 3:1 borders) in both modes. Where a port's own accent or muted
-   ink missed AA on its own surfaces it was darkened or lightened by the smallest
-   step that clears it; those are the only departures from upstream.
+   2. THE THEMES. Each has a dark and a light palette and can be shown in either.
+      `data-skin` picks the theme. `data-mode` picks the variant, and is only
+      written when the reader chooses one explicitly:
+
+         no data-mode        → the OS decides (prefers-color-scheme)
+         data-mode="dark"    → dark, whatever the OS says
+         data-mode="light"   → light, whatever the OS says
+
+      That is the whole rule. `prefers-color-scheme` does not pick a theme, and
+      after an explicit choice it does not pick the mode either.
+
+   The light palettes are duplicated on purpose: one copy inside the media query
+   for the OS default, one behind [data-mode="light"] for an explicit choice. A
+   browser that does not support light-dark() still gets a correct page.
+
+   Contrast: scripts/check-contrast.mjs reads all twelve and fails on any pair
+   below AA, so a new palette cannot be added without passing.
    ========================================================================== */
 
+/* ---- 1. tokens ---------------------------------------------------------- */
 :root {
-  --font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-  --fs-1: 12px; --fs-2: 13px; --fs-3: 14px; --fs-4: 15px; --fs-5: 18px;
-  --fs-6: 22px; --fs-7: 28px; --fs-8: 36px;
-  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
-  --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
-  --bw: 1px;
-  --radius: 4px; --radius-lg: 6px;
-  --bar-h: 44px;
-  --z-tip: 60; --z-dialog: 80;
-  --dur-1: 120ms; --dur-2: 200ms; --ease: cubic-bezier(.4, 0, .2, 1);
+  --font: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "JetBrains Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+  --fs-1: 12px; --fs-2: 13px; --fs-3: 14px; --fs-4: 16px; --fs-5: 20px; --fs-6: 28px;
+  --fs-7: clamp(30px, 6.2vw, 48px);
+  --lh-tight: 1.1; --lh-snug: 1.4; --lh-body: 1.6;
+  --ls-tight: -0.02em; --ls-wide: 0.08em;
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 72px;
+  --r-0: 0; --r-1: 2px; --r-box: 6px; --bw: 1px; --bw-2: 2px;
+  --elev: 0 20px 50px -20px var(--shadow);
+  --z-bar: 20; --z-dock: 30; --z-menu: 35; --z-dialog: 50; --z-tip: 60;
+  --dur-fast: 120ms; --dur-base: 220ms; --dur-slow: 520ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.6, 0, 0.2, 1);
+  --bar-h: 49px; --side-w: 288px;
 }
+@media (max-width: 899px) { :root { --bar-h: 89px; } }
+/* Desktop scale: text grows with the screen so a 1440–1920px monitor isn't reading 12–14px type. */
+@media (min-width: 1200px) {
+  :root { --fs-1: 13px; --fs-2: 14px; --fs-3: 15px; --fs-4: 17px; --fs-5: 21px; --fs-7: clamp(40px, 3.4vw, 54px); --side-w: 304px; --app-w: 1360px; }
+}
+@media (min-width: 1600px) {
+  :root { --fs-1: 14px; --fs-2: 15px; --fs-3: 16px; --fs-4: 18px; --fs-5: 22px; --fs-7: clamp(48px, 3.2vw, 60px); --side-w: 336px; --app-w: 1520px; }
+}
+@media (prefers-reduced-motion: reduce) { :root { --dur-fast: 0ms; --dur-base: 0ms; --dur-slow: 0ms; } }
 
-/* ---- the default theme: ours, and it follows the system like the rest ------ */
+/* ---- 2. themes ---------------------------------------------------------- */
+
+/* Custom — this site, and the default */
 :root,
 [data-skin="custom"] {
-  --bg: #0c0f14;
-  --panel: #11151c;
-  --element: #171c25;
-  --border: #232a35;
-  --border-strong: #6b7482;
-  --text: #c9c7c1;
-  --muted: #8f949c;
-  --accent: #e8b86a;
-  --accent-fg: #0c0f14;
-  --accent-subtle: #2e2a22;
-  --ok: #9ecb6a;
-  --warn: #e8b86a;
-  --danger: #e0736b;
-  --select: #223243;
+  --bg: #0c0f14; --panel: #11151c; --element: #171c25; --border: #232a35; --border-strong: #6b7482; --text: #c9c7c1; --muted: #8f949c; --accent: #e8b86a; --accent-fg: #0c0f14; --accent-subtle: #2e2a22; --ok: #9ecb6a; --warn: #e8b86a; --danger: #e0736b; --select: #223243; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
 }
 
+/* No explicit choice: the OS decides. */
 @media (prefers-color-scheme: light) {
-  :root,
-  [data-skin="custom"] {
-    --bg: #fbf9f5;
-    --panel: #f6f2ea;
-    --element: #efeae0;
-    --border: #ded8cc;
-    --border-strong: #6f6a61;
-    --text: #31353b;
-    --muted: #5f636a;
-    --accent: #8a5a1e;
-    --accent-fg: #fbf9f5;
-    --accent-subtle: #f4e9d6;
-    --ok: #4f6b14;
-    --warn: #8a5a1e;
-    --danger: #b4443c;
-    --select: #dae3ef;
+  :root:not([data-mode]),
+  [data-skin="custom"]:not([data-mode]) {
+      --bg: #fbf9f5; --panel: #f6f2ea; --element: #efeae0; --border: #ded8cc; --border-strong: #6f6a61; --text: #31353b; --muted: #5f636a; --accent: #8a5a1e; --accent-fg: #fbf9f5; --accent-subtle: #f4e9d6; --ok: #4f6b14; --warn: #8a5a1e; --danger: #b4443c; --select: #dae3ef; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
   }
 }
 
-/* ---- Ayu — Ayu by dempfi ------------------------------------- */
+/* Explicit choice: wins over the OS. */
+:root[data-mode="light"],
+[data-skin="custom"][data-mode="light"] {
+  --bg: #fbf9f5; --panel: #f6f2ea; --element: #efeae0; --border: #ded8cc; --border-strong: #6f6a61; --text: #31353b; --muted: #5f636a; --accent: #8a5a1e; --accent-fg: #fbf9f5; --accent-subtle: #f4e9d6; --ok: #4f6b14; --warn: #8a5a1e; --danger: #b4443c; --select: #dae3ef; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+}
+
+/* Ayu by dempfi */
 [data-skin="ayu"] {
-  --bg: #0d1017;
-  --panel: #0f131a;
-  --element: #131721;
-  --border: #1c212b;
-  --border-strong: #6c7380;
-  --text: #bfbdb6;
-  --muted: #9499a2;
-  --accent: #e6b450;
-  --accent-fg: #0d1017;
-  --accent-subtle: #312d23;
-  --ok: #aad94c;
-  --warn: #ffb454;
-  --danger: #d95757;
-  --select: #273747;
+  --bg: #0d1017; --panel: #0f131a; --element: #131721; --border: #1c212b; --border-strong: #6c7380; --text: #bfbdb6; --muted: #9499a2; --accent: #e6b450; --accent-fg: #0d1017; --accent-subtle: #312d23; --ok: #aad94c; --warn: #ffb454; --danger: #d95757; --select: #273747; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
 }
 
+/* No explicit choice: the OS decides. */
 @media (prefers-color-scheme: light) {
-  [data-skin="ayu"] {
-      --bg: #fcfcfc;
-      --panel: #f8f9fa;
-      --element: #f3f4f5;
-      --border: #e7eaed;
-      --border-strong: #868d94;
-      --text: #3e4348;
-      --muted: #656a70;
-      --accent: #8c5e1c;
-      --accent-fg: #fcfcfc;
-      --accent-subtle: #f9f0e2;
-      --ok: #5a7800;
-      --warn: #8c652a;
-      --danger: #c44444;
-      --select: #d8e6f6;
+  [data-skin="ayu"]:not([data-mode]) {
+      --bg: #fcfcfc; --panel: #f8f9fa; --element: #f3f4f5; --border: #e7eaed; --border-strong: #868d94; --text: #3e4348; --muted: #656a70; --accent: #8c5e1c; --accent-fg: #fcfcfc; --accent-subtle: #f9f0e2; --ok: #5a7800; --warn: #8c652a; --danger: #c44444; --select: #d8e6f6; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
   }
 }
 
-/* ---- Catppuccin — Catppuccin ------------------------------------- */
+/* Explicit choice: wins over the OS. */
+[data-skin="ayu"][data-mode="light"] {
+  --bg: #fcfcfc; --panel: #f8f9fa; --element: #f3f4f5; --border: #e7eaed; --border-strong: #868d94; --text: #3e4348; --muted: #656a70; --accent: #8c5e1c; --accent-fg: #fcfcfc; --accent-subtle: #f9f0e2; --ok: #5a7800; --warn: #8c652a; --danger: #c44444; --select: #d8e6f6; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+}
+
+/* Catppuccin (Mocha / Latte) */
 [data-skin="catppuccin"] {
-  --bg: #1e1e2e;
-  --panel: #181825;
-  --element: #313244;
-  --border: #45475a;
-  --border-strong: #7f849c;
-  --text: #cdd6f4;
-  --muted: #a6adc8;
-  --accent: #cba6f7;
-  --accent-fg: #1e1e2e;
-  --accent-subtle: #302a45;
-  --ok: #a6e3a1;
-  --warn: #f9e2af;
-  --danger: #f38ba8;
-  --select: #313244;
+  --bg: #1e1e2e; --panel: #181825; --element: #313244; --border: #45475a; --border-strong: #7f849c; --text: #cdd6f4; --muted: #a6adc8; --accent: #cba6f7; --accent-fg: #1e1e2e; --accent-subtle: #302a45; --ok: #a6e3a1; --warn: #f9e2af; --danger: #f38ba8; --select: #313244; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
 }
 
+/* No explicit choice: the OS decides. */
 @media (prefers-color-scheme: light) {
-  [data-skin="catppuccin"] {
-      --bg: #eff1f5;
-      --panel: #e6e9ef;
-      --element: #dce0e8;
-      --border: #ccd0da;
-      --border-strong: #818494;
-      --text: #4c4f69;
-      --muted: #5c5e71;
-      --accent: #7d35dc;
-      --accent-fg: #eff1f5;
-      --accent-subtle: #e6dcf5;
-      --ok: #2f751f;
-      --warn: #8f5b13;
-      --danger: #b6385a;
-      --select: #d8e1f2;
+  [data-skin="catppuccin"]:not([data-mode]) {
+      --bg: #eff1f5; --panel: #e6e9ef; --element: #dce0e8; --border: #ccd0da; --border-strong: #818494; --text: #4c4f69; --muted: #5c5e71; --accent: #7d35dc; --accent-fg: #eff1f5; --accent-subtle: #e6dcf5; --ok: #2f751f; --warn: #8f5b13; --danger: #b6385a; --select: #d8e1f2; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
   }
 }
 
-/* ---- Rosé Pine — Rosé Pine by mvllow ------------------------------------- */
+/* Explicit choice: wins over the OS. */
+[data-skin="catppuccin"][data-mode="light"] {
+  --bg: #eff1f5; --panel: #e6e9ef; --element: #dce0e8; --border: #ccd0da; --border-strong: #818494; --text: #4c4f69; --muted: #5c5e71; --accent: #7d35dc; --accent-fg: #eff1f5; --accent-subtle: #e6dcf5; --ok: #2f751f; --warn: #8f5b13; --danger: #b6385a; --select: #d8e1f2; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+}
+
+/* Rosé Pine (Pine / Dawn) */
 [data-skin="rose-pine"] {
-  --bg: #191724;
-  --panel: #1f1d2e;
-  --element: #26233a;
-  --border: #403d52;
-  --border-strong: #6e6a86;
-  --text: #e0def4;
-  --muted: #908caa;
-  --accent: #ebbcba;
-  --accent-fg: #191724;
-  --accent-subtle: #2b2536;
-  --ok: #9ccfd8;
-  --warn: #f6c177;
-  --danger: #eb6f92;
-  --select: #2b2a3e;
+  --bg: #191724; --panel: #1f1d2e; --element: #26233a; --border: #403d52; --border-strong: #6e6a86; --text: #e0def4; --muted: #908caa; --accent: #ebbcba; --accent-fg: #191724; --accent-subtle: #2b2536; --ok: #9ccfd8; --warn: #f6c177; --danger: #eb6f92; --select: #2b2a3e; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
 }
 
+/* No explicit choice: the OS decides. */
 @media (prefers-color-scheme: light) {
-  [data-skin="rose-pine"] {
-      --bg: #faf4ed;
-      --panel: #f2e9e1;
-      --element: #ece0d6;
-      --border: #dfd2c4;
-      --border-strong: #7f6f66;
-      --text: #575279;
-      --muted: #635f78;
-      --accent: #8a5451;
-      --accent-fg: #faf4ed;
-      --accent-subtle: #f3e3dd;
-      --ok: #286983;
-      --warn: #8a5c1e;
-      --danger: #99545a;
-      --select: #e2e6ee;
+  [data-skin="rose-pine"]:not([data-mode]) {
+      --bg: #faf4ed; --panel: #f2e9e1; --element: #ece0d6; --border: #dfd2c4; --border-strong: #7f6f66; --text: #575279; --muted: #635f78; --accent: #8a5451; --accent-fg: #faf4ed; --accent-subtle: #f3e3dd; --ok: #286983; --warn: #8a5c1e; --danger: #99545a; --select: #e2e6ee; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
   }
 }
 
-/* ---- Solarized — Solarized by Ethan Schoonover ------------------------------------- */
+/* Explicit choice: wins over the OS. */
+[data-skin="rose-pine"][data-mode="light"] {
+  --bg: #faf4ed; --panel: #f2e9e1; --element: #ece0d6; --border: #dfd2c4; --border-strong: #7f6f66; --text: #575279; --muted: #635f78; --accent: #8a5451; --accent-fg: #faf4ed; --accent-subtle: #f3e3dd; --ok: #286983; --warn: #8a5c1e; --danger: #99545a; --select: #e2e6ee; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+}
+
+/* Solarized by Ethan Schoonover */
 [data-skin="solarized"] {
-  --bg: #002b36;
-  --panel: #073642;
-  --element: #0b4050;
-  --border: #14495a;
-  --border-strong: #5f7e8a;
-  --text: #9facac;
-  --muted: #9eabad;
-  --accent: #c5a337;
-  --accent-fg: #002b36;
-  --accent-subtle: #233b2c;
-  --ok: #93a51d;
-  --warn: #cd900a;
-  --danger: #e97c7a;
-  --select: #0d4a5c;
+  --bg: #002b36; --panel: #073642; --element: #0b4050; --border: #14495a; --border-strong: #5f7e8a; --text: #9facac; --muted: #9eabad; --accent: #c5a337; --accent-fg: #002b36; --accent-subtle: #233b2c; --ok: #93a51d; --warn: #cd900a; --danger: #e97c7a; --select: #0d4a5c; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
 }
 
+/* No explicit choice: the OS decides. */
 @media (prefers-color-scheme: light) {
-  [data-skin="solarized"] {
-      --bg: #fdf6e3;
-      --panel: #f7f0dd;
-      --element: #eee8d5;
-      --border: #d9d2bd;
-      --border-strong: #7a7563;
-      --text: #3f4d52;
-      --muted: #56686f;
-      --accent: #7f6400;
-      --accent-fg: #fdf6e3;
-      --accent-subtle: #f2e8c9;
-      --ok: #5f6f00;
-      --warn: #846900;
-      --danger: #b3302c;
-      --select: #dfe7ef;
+  [data-skin="solarized"]:not([data-mode]) {
+      --bg: #fdf6e3; --panel: #f7f0dd; --element: #eee8d5; --border: #d9d2bd; --border-strong: #7a7563; --text: #3f4d52; --muted: #56686f; --accent: #7f6400; --accent-fg: #fdf6e3; --accent-subtle: #f2e8c9; --ok: #5f6f00; --warn: #846900; --danger: #b3302c; --select: #dfe7ef; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
   }
 }
 
-/* ---- Gruvbox — Gruvbox by morhetz ------------------------------------- */
+/* Explicit choice: wins over the OS. */
+[data-skin="solarized"][data-mode="light"] {
+  --bg: #fdf6e3; --panel: #f7f0dd; --element: #eee8d5; --border: #d9d2bd; --border-strong: #7a7563; --text: #3f4d52; --muted: #56686f; --accent: #7f6400; --accent-fg: #fdf6e3; --accent-subtle: #f2e8c9; --ok: #5f6f00; --warn: #846900; --danger: #b3302c; --select: #dfe7ef; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
+}
+
+/* Gruvbox by morhetz */
 [data-skin="gruvbox"] {
-  --bg: #282828;
-  --panel: #1d2021;
-  --element: #32302f;
-  --border: #3c3836;
-  --border-strong: #81756a;
-  --text: #ebdbb2;
-  --muted: #bdae93;
-  --accent: #fabd2f;
-  --accent-fg: #282828;
-  --accent-subtle: #3a3226;
-  --ok: #b8bb26;
-  --warn: #fabd2f;
-  --danger: #fb5e4b;
-  --select: #3a4a52;
+  --bg: #282828; --panel: #1d2021; --element: #32302f; --border: #3c3836; --border-strong: #81756a; --text: #ebdbb2; --muted: #bdae93; --accent: #fabd2f; --accent-fg: #282828; --accent-subtle: #3a3226; --ok: #b8bb26; --warn: #fabd2f; --danger: #fb5e4b; --select: #3a4a52; --shadow: rgba(0, 0, 0, 0.55); color-scheme: dark;
 }
 
+/* No explicit choice: the OS decides. */
 @media (prefers-color-scheme: light) {
-  [data-skin="gruvbox"] {
-      --bg: #fbf1c7;
-      --panel: #f2e5bc;
-      --element: #ebdbb2;
-      --border: #d5c4a1;
-      --border-strong: #7c6f64;
-      --text: #3c3836;
-      --muted: #665c54;
-      --accent: #80570f;
-      --accent-fg: #fbf1c7;
-      --accent-subtle: #f0e0b8;
-      --ok: #636700;
-      --warn: #855b0f;
-      --danger: #a8321f;
-      --select: #d6e4ec;
+  [data-skin="gruvbox"]:not([data-mode]) {
+      --bg: #fbf1c7; --panel: #f2e5bc; --element: #ebdbb2; --border: #d5c4a1; --border-strong: #7c6f64; --text: #3c3836; --muted: #665c54; --accent: #80570f; --accent-fg: #fbf1c7; --accent-subtle: #f0e0b8; --ok: #636700; --warn: #855b0f; --danger: #a8321f; --select: #d6e4ec; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
   }
+}
+
+/* Explicit choice: wins over the OS. */
+[data-skin="gruvbox"][data-mode="light"] {
+  --bg: #fbf1c7; --panel: #f2e5bc; --element: #ebdbb2; --border: #d5c4a1; --border-strong: #7c6f64; --text: #3c3836; --muted: #665c54; --accent: #80570f; --accent-fg: #fbf1c7; --accent-subtle: #f0e0b8; --ok: #636700; --warn: #855b0f; --danger: #a8321f; --select: #d6e4ec; --shadow: rgba(40, 40, 60, 0.18); color-scheme: light;
 }

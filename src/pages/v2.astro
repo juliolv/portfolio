@@ -171,13 +171,20 @@ const kv: [string, string, string][] = [
         const data = JSON.parse(document.getElementById('v2-theme-data').textContent);
 
         let stored = null;
-        try { stored = localStorage.getItem('tui.skin'); } catch {}
+        let storedMode = null;
+        try {
+          stored = localStorage.getItem('tui.skin');
+          storedMode = localStorage.getItem('tui.mode');
+        } catch {}
         // A stored id from the old nine-skin build is mapped, not trusted: an
         // unknown id means no tokens, which is an unstyled page.
         const theme = data.themes.includes(stored)
           ? stored
           : (data.legacy[stored] ?? data.fallback);
         root.setAttribute('data-skin', theme);
+        // data-mode only exists when the reader chose a variant. Without it the
+        // media query decides, which is the whole point of leaving it off.
+        if (storedMode === 'dark' || storedMode === 'light') root.setAttribute('data-mode', storedMode);
         root.classList.add('js');
 
         let lang = null;
@@ -294,10 +301,12 @@ const kv: [string, string, string][] = [
               <aside class="welcome__side">
                 <p class="side__label"><Bi en={s('en', 'hero.cardLabel')} es={s('es', 'hero.cardLabel')} /></p>
                 <dl class="kv">
-                  {kv.map(([label, value]) => (
+                  {/* [short label, label key, value key] — the dd used the label
+                      key, so every placeholder read "experience experience". */}
+                  {kv.map(([label, labelKey, valueKey]) => (
                     <>
-                      <dt><Bi en={s('en', `hero.kvLabel${label[0].toUpperCase()}${label.slice(1)}`)} es={s('es', `hero.kvLabel${label[0].toUpperCase()}${label.slice(1)}`)} /></dt>
-                      <dd><Bi en={s('en', value)} es={s('es', value)} /></dd>
+                      <dt><Bi en={s('en', labelKey)} es={s('es', labelKey)} /></dt>
+                      <dd><Bi en={s('en', valueKey)} es={s('es', valueKey)} /></dd>
                     </>
                   ))}
                 </dl>
@@ -565,15 +574,33 @@ const kv: [string, string, string][] = [
         <div class="dialog__list dialog__list--padded">
           <div class="skins" role="radiogroup" aria-label={s(L, 'a11y.themeGroup')} data-label-en={s('en', 'a11y.themeGroup')} data-label-es={s('es', 'a11y.themeGroup')}>
             {THEMES.map((theme) => (
-              <button class="skin-card" type="button" role="radio" aria-checked="false" tabindex="-1"
-                data-skin-pick={theme.id} data-skin-name={theme.name} data-skin-name-es={theme.nameEs}>
-                <span class="mini" data-skin={theme.id} aria-hidden="true">
-                  <span><b>❯</b> /work</span>
-                  <span class="mini__muted">● List(work/)</span>
-                  <span class="mini__bar"><i></i><i></i><i></i></span>
-                </span>
-                <span><Bi en={theme.name} es={theme.nameEs} /><small><Bi en={theme.credit.en} es={theme.credit.es} /><span class="skin-card__cur" hidden><Bi en={` · ${s('en', 'tui.current')}`} es={` · ${s('es', 'tui.current')}`} /></span></small></span>
-              </button>
+              <div class="theme-pick">
+                <p class="theme-pick__head">
+                  <b><Bi en={theme.name} es={theme.nameEs} /></b>
+                  <small><Bi en={theme.credit.en} es={theme.credit.es} /></small>
+                </p>
+                <div class="theme-pick__pair">
+                  {(['dark', 'light'] as const).map((mode) => (
+                    <button class="skin-card" type="button" role="radio" aria-checked="false" tabindex="-1"
+                      data-skin-pick={theme.id} data-mode-pick={mode}
+                      data-skin-name={`${theme.name} · ${mode}`} data-skin-name-es={`${theme.nameEs} · ${mode === 'dark' ? s('es', 'tui.modeDark') : s('es', 'tui.modeLight')}`}>
+                      {/* The preview forces its own mode: [data-skin][data-mode] is
+                          matched at any depth, so both palettes can sit side by side
+                          while the page keeps whichever one the reader chose. */}
+                      <span class="mini" data-skin={theme.id} data-mode={mode} aria-hidden="true">
+                        <span><b>❯</b> /work</span>
+                        <span class="mini__muted">● List(work/)</span>
+                        <span class="mini__bar"><i></i><i></i><i></i></span>
+                      </span>
+                      <span class="skin-card__mode">
+                        {mode === 'dark' ? <Bi en={s('en', 'tui.modeDark')} es={s('es', 'tui.modeDark')} />
+                                         : <Bi en={s('en', 'tui.modeLight')} es={s('es', 'tui.modeLight')} />}
+                        <span class="skin-card__cur" hidden> · <Bi en={s('en', 'tui.current')} es={s('es', 'tui.current')} /></span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>

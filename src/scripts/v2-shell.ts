@@ -374,3 +374,13 @@ paintMeter(0);
 update();
 
 export {};
+
+
+/* The dock is sticky over the transcript, so the last section can sit behind it.
+   Measure it rather than guess: it is 96px at 1440 and taller on a phone once the
+   status line wraps, and `.main > .transcript` reserves exactly this much. */
+if (dock) {
+  const reportDock = () => root.style.setProperty('--dock-h', `${Math.round(dock.getBoundingClientRect().height)}px`);
+  reportDock();
+  new ResizeObserver(reportDock).observe(dock);
+}
