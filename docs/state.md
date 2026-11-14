@@ -84,6 +84,10 @@ After that: the devlog mirroring real GitHub issues.
   design change; the routes are `noindex` and stay out of the sitemap.
 - `/design-system/` is still the v1 page; the v2 view lives at `#design-system`.
   The 404 already links to the hash — reconcile at merge.
+- **Port pitfall:** a component rendered twice (skin cards in the picker and in
+  the design-system view) makes `querySelectorAll` return two populations. Scope
+  the query to the surface that owns the behaviour, or a hidden copy silently
+  absorbs focus and arrow steps.
 - **Handoff bug:** §5.5 specifies `rootMargin: '0 0 -8% 0'` for the reveal
   observer. IntersectionObserver rejects negative percentages, and the throw
   takes the whole motion module with it. Implemented as -8% of the viewport in
