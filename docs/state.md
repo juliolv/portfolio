@@ -47,8 +47,9 @@ After that: the devlog mirroring real GitHub issues.
    `tui.skin`, live OS follow), keyboard, commands; §5.3/§5.4 section tracking,
    the sidebar reading meter and the EN/ES switch; §7 phones — touch chips, 44px
    targets, the compact dock, gutters; §6 motion — typed role line, reveal,
-   prompt flash, theme cross-fade, reduced motion. Next: §8 sidebar extras
-   (agents, todo), then §10 the design-system view.
+   prompt flash, theme cross-fade, reduced motion; §8 sidebar extras — agents
+   from SITE.agents and the compact todo from the devlog. Next: §10 the
+   design-system view (tabs, live tokens, skins, component specimens).
 2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
 2. Open issues #1–#4 so the devlog has something to mirror (owner approval).
