@@ -97,7 +97,7 @@ line, because "looks fine" is what this section exists to replace.
 | Spanish, visible copy | pass — 245 strings identical EN/ES, of which 42 are technology names, theme names, URLs and code samples; no prose left in English |
 | Command palette (§5.2) | pass — Ctrl K or the button; 25 entries in four groups, arrows/Enter/hover, language-aware placeholder |
 | Single keys `t` `l` `j` `k` `?` + switch (`tui.keys`) | pass — ignored while typing, in a dialog, or with a modifier; hint changes when off; Ctrl K unaffected |
-| aria-labels, `data-tip` tooltips | partial — visible copy is translated, attribute strings stay English |
+| aria-labels, `data-tip` tooltips | pass — attributes carry both languages in data attributes and swap with the shell; 0 identical strings left between EN and ES |
 | `/design-system/` | v1 page still served; v2 lives at `#design-system` |
 
 ## Known issues
@@ -107,6 +107,9 @@ line, because "looks fine" is what this section exists to replace.
   design change; the routes are `noindex` and stay out of the sitemap.
 - `/design-system/` is still the v1 page; the v2 view lives at `#design-system`.
   The 404 already links to the hash — reconcile at merge.
+- **Testing note:** the browser harness reports `hover: none`, so the reference's
+  `@media (hover: none)` rule hides every tooltip there. Tooltips have to be
+  checked with that override forced, or they look broken when they are not.
 - **Port pitfall:** a component rendered twice (skin cards in the picker and in
   the design-system view) makes `querySelectorAll` return two populations. Scope
   the query to the surface that owns the behaviour, or a hidden copy silently
