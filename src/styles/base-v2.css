@@ -46,15 +46,24 @@ html[data-lang='es'] [data-lang-block='en'] {
 }
 
 /* --- theme picker ---
-   The card states use aria-checked (radiogroup semantics), not aria-pressed. */
+   The card states use aria-checked (radiogroup semantics), not aria-pressed.
+   The reference CSS sets .dialog__list to `padding: var(--sp-1) 0`, which is
+   right for a plain text list and wrong for a card grid: cards then touch the
+   panel edges. The picker gets its own padding. */
+.dialog .dialog__list--padded {
+  /* specificity: components.css is loaded after this file and sets
+     .dialog__list { padding: var(--sp-1) 0 } */
+  padding: var(--sp-4);
+}
+
 .skin-card[aria-checked='true'] {
   border-color: var(--accent);
 }
 
+/* Inline with the mode label, so every card keeps the same two text lines and
+   the grid rows line up. */
 .skin-card__cur {
-  display: block;
   color: var(--accent);
-  font-size: var(--fs-1);
 }
 
 /* The previewed card is also the checked one, so the accent border and the focus

@@ -379,7 +379,7 @@ const kv: [string, string][] = [
           <h2 class="dialog__title" id="dlg-theme-title">Theme</h2>
           <button class="btn btn--ghost" type="button" data-dlg-close>esc</button>
         </div>
-        <div class="dialog__list">
+        <div class="dialog__list dialog__list--padded">
           <div class="skins" role="radiogroup" aria-label="Theme">
             {[{ id: 'system', name: 'System', mode: 'auto', preview: DEFAULT_SKIN }, ...SKINS.map((skin) => ({ ...skin, preview: skin.id }))].map((skin) => (
               <button class="skin-card" type="button" role="radio" aria-checked="false" tabindex="-1"
@@ -389,11 +389,16 @@ const kv: [string, string][] = [
                   <span class="mini__muted">● List(work/)</span>
                   <span class="mini__bar"><i></i><i></i><i></i></span>
                 </span>
-                <span>{skin.name}<small>{skin.mode}</small><span class="skin-card__cur" hidden>● current</span></span>
+                <span>{skin.name}<small>{skin.mode}<span class="skin-card__cur" hidden> · ● current</span></small></span>
               </button>
             ))}
           </div>
         </div>
+        <p class="dialog__hint">
+          <span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd><kbd class="kbd">←</kbd><kbd class="kbd">→</kbd> preview</span>
+          <span><kbd class="kbd">Enter</kbd> apply</span>
+          <span><kbd class="kbd">Esc</kbd> revert</span>
+        </p>
         <p class="dialog__note">Saved as <code>tui.skin</code>. Until you pick one, the page follows your system.</p>
       </div>
     </div>
