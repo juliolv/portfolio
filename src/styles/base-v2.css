@@ -25,3 +25,16 @@ h1[tabindex="-1"]:focus:not(:focus-visible), h2[tabindex="-1"]:focus:not(:focus-
 .reveal { transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
 .reveal.is-pending { opacity: 0; transform: translateY(10px); }
 .app { max-width: var(--app-w, 1280px); margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* --- bilingual content ---
+   Both languages render at build time; the active one is a CSS switch, so the
+   shell has no re-render and no layout shift. */
+html[data-lang='en'] .bi--es,
+html[data-lang='es'] .bi--en {
+  display: none !important;
+}
+
+html[data-lang='en'] [data-lang-block='es'],
+html[data-lang='es'] [data-lang-block='en'] {
+  display: none;
+}

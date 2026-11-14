@@ -166,5 +166,19 @@
     "sRole": "[Nombre del rol]",
     "sOrg": "[Empresa] · [Lugar]",
     "sElsewhere": "Las tarjetas se usan en Trabajo seleccionado, las pestañas controlan esta vista y la barra de estado queda fija al pie de cada página."
+  },
+  "tui": {
+    "qWork": "¿Qué ha construido Julio?",
+    "qDevlog": "¿En qué está trabajando?",
+    "qExperience": "¿Dónde ha trabajado?",
+    "qStack": "¿Con qué trabaja?",
+    "qAbout": "¿Quién es?",
+    "qContact": "¿Cómo lo contacto?",
+    "toolList": "List",
+    "toolTodos": "Actualizar Todos",
+    "toolBashLog": "Bash",
+    "toolTree": "Bash",
+    "toolRead": "Read",
+    "assistant": "Asistente"
   }
 }

@@ -166,5 +166,19 @@
     "sRole": "[Role title]",
     "sOrg": "[Company] · [Place]",
     "sElsewhere": "Cards are used in Selected work, tabs drive this view, and the status bar is pinned to the bottom of every page."
+  },
+  "tui": {
+    "qWork": "What has Julio built?",
+    "qDevlog": "What is he working on?",
+    "qExperience": "Where has he worked?",
+    "qStack": "What does he reach for?",
+    "qAbout": "Who is he?",
+    "qContact": "How do I reach him?",
+    "toolList": "List",
+    "toolTodos": "Update Todos",
+    "toolBashLog": "Bash",
+    "toolTree": "Bash",
+    "toolRead": "Read",
+    "assistant": "Assistant"
   }
 }

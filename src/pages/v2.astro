@@ -7,9 +7,22 @@
 import '../styles/tokens.css';
 import '../styles/base-v2.css';
 import '../styles/components.css';
-import { s, SITE } from '../lib/i18n';
+import { getCollection } from 'astro:content';
+import Bi from '../components/Bi.astro';
+import { s, t, SITE } from '../lib/i18n';
+import devlog from '../data/devlog.json';
+import experience from '../data/experience.json';
+import stack from '../data/stack.json';
 
 const L = 'en' as const;
+
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const groupsEn = t('en', 'stack.groups') as string[];
+const groupsEs = t('es', 'stack.groups') as string[];
+const aboutEn = t('en', 'about.body') as string[];
+const aboutEs = t('es', 'about.body') as string[];
+
+const STATUS_GLYPH: Record<string, string> = { done: '●', progress: '◐', planned: '○' };
 
 const sections = [
   { id: 'work', label: s(L, 'nav.work') },
@@ -30,7 +43,7 @@ const kv: [string, string][] = [
 ---
 
 <!doctype html>
-<html lang="en" data-skin="ayu-dark">
+<html lang="en" data-lang="en" data-skin="ayu-dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -122,13 +135,123 @@ const kv: [string, string][] = [
             </section>
 
             <section class="turn" id="work">
-              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> What has Julio built?<span class="turn__cmd">/work</span></h2>
-              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">List</span><span class="tool__arg">(work/)</span></p>
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qWork')} es={s('es', 'tui.qWork')} /><span class="turn__cmd">/work</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolList')}</span><span class="tool__arg">(work/)</span></p>
               <div class="result">
-                <p class="muted">{s(L, 'work.note')}</p>
+                <p class="muted"><Bi en={s(L, 'work.note')} es={s('es', 'work.note')} /></p>
                 <ul class="rows">
-                  <li><span class="tag">TypeScript</span><span class="tag">React</span></li>
+                  {work.map(({ id, data }, i) => (
+                    <li class={`row${i === 0 ? ' is-open' : ''}`}>
+                      <button class="row__head" type="button" aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`proj-${i}`}>
+                        <span class="row__mark" aria-hidden="true">{i === 0 ? '▾' : '▸'}</span>
+                        <span class="row__name"><Bi en={data.name} es={data.nameEs} /></span>
+                        <span class="row__meta"><Bi en={data.period} es={data.periodEs} /></span>
+                      </button>
+                      <p class="row__sum"><Bi en={data.problem} es={data.problemEs} /></p>
+                      <div class="row__body" id={`proj-${i}`} hidden={i !== 0}>
+                        <div class="row__inner">
+                          <dl class="man">
+                            <dt>{s(L, 'work.labels.role')}</dt>
+                            <dd><Bi en={data.role} es={data.roleEs} /></dd>
+                            <dt>{s(L, 'work.labels.stack')}</dt>
+                            <dd><span class="tags">{data.stack.map((tech) => <span class="tag">{tech}</span>)}</span></dd>
+                            <dt>{s(L, 'work.labels.outcome')}</dt>
+                            <dd><Bi en={data.outcome} es={data.outcomeEs} /></dd>
+                          </dl>
+                          <p class="row__foot"><span class="tag tag--dashed"><Bi en={s(L, 'work.soon')} es={s('es', 'work.soon')} /></span></p>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
                 </ul>
+              </div>
+            </section>
+
+            <section class="turn" id="devlog">
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qDevlog')} es={s('es', 'tui.qDevlog')} /><span class="turn__cmd">/devlog</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTodos')}</span><span class="tool__arg">(TODO.md)</span></p>
+              <div class="result">
+                <p class="muted"><Bi en={s(L, 'devlog.intro')} es={s('es', 'devlog.intro')} /></p>
+                <ul class="todo">
+                  {devlog.map((entry) => (
+                    <li class="todo__item">
+                      <span class="todo__id">#{entry.issue}</span>
+                      <span class={`todo__st status status--${entry.status}`}>
+                        <span aria-hidden="true">{STATUS_GLYPH[entry.status]}</span>{' '}
+                        <Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} />
+                      </span>
+                      {entry.date
+                        ? <time class="todo__date" datetime={entry.date}>{entry.date}</time>
+                        : <span class="todo__date"><Bi en={s(L, 'status.tbd')} es={s('es', 'status.tbd')} /></span>}
+                      <span class="todo__title"><Bi en={entry.title} es={entry.titleEs} /></span>
+                      <p class="todo__note"><Bi en={entry.note} es={entry.noteEs} /></p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+
+            <section class="turn" id="experience">
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qExperience')} es={s('es', 'tui.qExperience')} /><span class="turn__cmd">/experience</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolBashLog')}</span><span class="tool__arg">(git log --graph --career)</span></p>
+              <div class="result">
+                <ul class="glog">
+                  {experience.map((row, i) => (
+                    <li class={`glog__item${i === experience.length - 1 ? ' glog__item--edu' : ''}`}>
+                      <p class="glog__role"><Bi en={row.role} es={row.roleEs} /> <span class="glog__org">· <Bi en={row.org} es={row.orgEs} /></span></p>
+                      <p class="glog__when"><Bi en={row.when} es={row.whenEs} /></p>
+                      <p class="glog__text"><Bi en={row.text} es={row.textEs} /></p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+
+            <section class="turn" id="stack">
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qStack')} es={s('es', 'tui.qStack')} /><span class="turn__cmd">/stack</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTree')}</span><span class="tool__arg">(tree stack/)</span></p>
+              <div class="result">
+                <div class="trees">
+                  {stack.map((group, i) => (
+                    <section class="tree">
+                      <h3 class="tree__name">{group.dir}/ <span class="tree__sub"><Bi en={groupsEn[i]} es={groupsEs[i]} /></span></h3>
+                      <ul>{group.items.map((item) => <li>{item}</li>)}</ul>
+                    </section>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            <section class="turn" id="about">
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qAbout')} es={s('es', 'tui.qAbout')} /><span class="turn__cmd">/about</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.assistant')}</span></p>
+              <div class="result msg">
+                {aboutEn.map((paragraph, i) => (
+                  <p class={i ? 'muted' : undefined}><Bi en={paragraph} es={aboutEs[i]} /></p>
+                ))}
+              </div>
+            </section>
+
+            <section class="turn" id="contact">
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qContact')} es={s('es', 'tui.qContact')} /><span class="turn__cmd">/contact</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolRead')}</span><span class="tool__arg">(contact.md)</span></p>
+              <div class="result">
+                <p class="muted" style="margin-bottom:var(--sp-4)"><Bi en={s(L, 'contact.lede')} es={s('es', 'contact.lede')} /></p>
+                <dl class="contact">
+                  <dt>email</dt>
+                  <dd class="contact__email">
+                    <span class="contact__addr" id="email-text">{SITE.email}</span>
+                    <button class="btn" type="button"><Bi en={s(L, 'contact.copy')} es={s('es', 'contact.copy')} /></button>
+                    <a class="btn btn--ghost" href={`mailto:${SITE.email}`}><Bi en={s(L, 'contact.open')} es={s('es', 'contact.open')} /></a>
+                  </dd>
+                  <dt>github</dt>
+                  <dd><a class="link" href={SITE.links.github} target="_blank" rel="noopener">github.com/juliolv ↗</a></dd>
+                  <dt>linkedin</dt>
+                  <dd><a class="link" href={SITE.links.linkedin} target="_blank" rel="noopener">linkedin.com/in/your-handle ↗</a></dd>
+                  <dt>cv</dt>
+                  <dd><a class="link" href={SITE.links.cv} target="_blank" rel="noopener"><Bi en={s(L, 'hero.cv')} es={s('es', 'hero.cv')} /> ↓</a></dd>
+                </dl>
+                <p class="colophon"><Bi en={s(L, 'contact.colophon')} es={s('es', 'contact.colophon')} /></p>
               </div>
             </section>
           </div>
