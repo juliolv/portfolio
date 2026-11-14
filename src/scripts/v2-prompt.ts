@@ -192,11 +192,10 @@ if (input && menu) {
   }
 
   function toggleLang() {
-    const root = document.documentElement;
-    const next = root.dataset.lang === 'es' ? 'en' : 'es';
-    root.dataset.lang = next;
-    root.lang = next;
-    if (msg) msg.textContent = next.toUpperCase();
+    // The shell owns language state: title, description, aria-checked and
+    // tui.lang all live there. Flipping data-lang here would leave them stale.
+    const next = document.documentElement.dataset.lang === 'es' ? 'en' : 'es';
+    window.dispatchEvent(new CustomEvent('tui:set-lang', { detail: next }));
   }
 
   function runCommand(cmd: string) {
@@ -286,6 +285,7 @@ if (input && menu) {
     window.clearTimeout(announceTimer); // a pending "N matches" must not overwrite a command result
     menu!.hidden = true;
     input!.setAttribute('aria-expanded', 'false');
+    input!.removeAttribute('aria-activedescendant'); // it points at a removed option
     results = [];
     cursor = 0;
     mode = 'idle';

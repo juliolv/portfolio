@@ -191,6 +191,7 @@ document.addEventListener('keydown', (event) => {
   // Ctrl/⌘ K focuses the prompt: the palette in v1, the prompt itself here
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
     event.preventDefault();
+    if (isOpen()) return; // focus stays in the dialog; its trap owns the keyboard
     document.getElementById('cmd')?.focus();
     return;
   }

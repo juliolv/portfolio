@@ -221,6 +221,10 @@ function onScroll() {
 window.addEventListener('scroll', onScroll, { passive: true });
 window.addEventListener('resize', onScroll);
 window.addEventListener('tui:lang', onScroll);
+window.addEventListener('tui:set-lang', (event) => {
+  const next = (event as CustomEvent<string>).detail;
+  if (next === 'en' || next === 'es') applyLang(next);
+});
 
 applyLang(readLang(), false);
 paintMeter(0);

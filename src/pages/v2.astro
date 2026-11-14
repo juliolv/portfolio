@@ -26,12 +26,12 @@ const aboutEs = t('es', 'about.body') as string[];
 const STATUS_GLYPH: Record<string, string> = { done: '●', progress: '◐', planned: '○' };
 
 const sections = [
-  { id: 'work', label: s(L, 'nav.work') },
-  { id: 'devlog', label: s(L, 'nav.devlog') },
-  { id: 'experience', label: s(L, 'nav.experience') },
-  { id: 'stack', label: s(L, 'nav.stack') },
-  { id: 'about', label: s(L, 'nav.about') },
-  { id: 'contact', label: s(L, 'nav.contact') },
+  { id: 'work', label: s(L, 'nav.work'), file: 'work/' },
+  { id: 'devlog', label: s(L, 'nav.devlog'), file: 'devlog/' },
+  { id: 'experience', label: s(L, 'nav.experience'), file: 'experience.md' },
+  { id: 'stack', label: s(L, 'nav.stack'), file: 'stack/' },
+  { id: 'about', label: s(L, 'nav.about'), file: 'about.md' },
+  { id: 'contact', label: s(L, 'nav.contact'), file: 'contact.md' },
 ];
 
 /* ---------------------------------------------------------------- search --
@@ -369,7 +369,7 @@ const kv: [string, string][] = [
             <p class="side__title">Files</p>
             <nav class="files" aria-label="Files">
               {sections.map((section) => (
-                <a href={`#${section.id}`} data-nav={section.id} aria-current={section.id === 'work' ? 'true' : undefined}><span class="files__cur" aria-hidden="true">❯</span><span>{section.label}</span>/</a>
+                <a href={`#${section.id}`} data-nav={section.id} aria-current={section.id === 'work' ? 'true' : undefined}><span class="files__cur" aria-hidden="true">❯</span><span>{section.file}</span></a>
               ))}
               <span class="files__ind" aria-hidden="true"></span>
             </nav>
