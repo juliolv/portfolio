@@ -1,0 +1,1793 @@
+<title>Julio's Portfolio TUI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cstyle%3E.t%7Bfill:%230d1017%7D.j%7Bfill:%23e6b450%7D.h%7Bstroke:%23e6b450%7D.c%7Bfill:%23bfbdb6%7D%40media %28prefers-color-scheme: light%29%7B.t%7Bfill:%23fcfcfc%3Bstroke:%23e7eaed%7D.j%7Bfill:%238c5e1c%7D.h%7Bstroke:%238c5e1c%7D.c%7Bfill:%233e4348%7D%7D%3C/style%3E%3Crect class=%22t%22 x=%220.5%22 y=%220.5%22 width=%2223%22 height=%2223%22 rx=%225%22/%3E%3Cg transform=%22translate%280.75 -0.25%29%22%3E%3Crect class=%22j%22 x=%227%22 y=%223.5%22 width=%223%22 height=%223%22/%3E%3Cpath class=%22h%22 d=%22M8.5 9.5V18a3 3 0 0 1-3 3H3%22 fill=%22none%22 stroke-width=%223%22/%3E%3Crect class=%22c%22 x=%2213%22 y=%223.5%22 width=%227%22 height=%2214.5%22/%3E%3C/g%3E%3C/svg%3E">
+<script>
+(function () {
+  var skins = ['ayu-dark', 'ayu-light', 'catppuccin-mocha', 'catppuccin-latte', 'dracula', 'tokyo-night', 'nord', 'rose-pine', 'rose-pine-dawn'], c = null, r = document.documentElement;
+  try { c = localStorage.getItem('tui.skin'); } catch (e) {}
+  var n = skins.indexOf(c) > -1 ? c : 'system';
+  if (n === 'system') {
+    var ht = r.getAttribute('data-theme');
+    n = (ht === 'light' || (ht !== 'dark' && window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches)) ? 'ayu-light' : 'ayu-dark';
+  }
+  r.setAttribute('data-skin', n);
+  r.classList.add('js');
+})();
+</script>
+<style>
+/* ==========================================================================
+   TOKENS
+   Layout concept: a TUI. Transcript column (prompt lines, tool calls, results)
+   beside a file/todo sidebar, with a prompt + status line docked at the bottom.
+   Skins are open-source themes (Catppuccin, Dracula, Tokyo Night, Nord, Rosé Pine,
+   Ayu) mapped onto the same tokens and scoped by [data-skin], so any element can
+   preview one. Each theme keeps its own official accent, green, yellow and red; values
+   that fail WCAG AA are darkened or lightened just enough to pass.
+   ========================================================================== */
+:root, [data-skin="ayu-dark"] {
+  --bg: #0d1017; --panel: #0f131a; --element: #131721; --border: #1c212b; --border-strong: #6c7380;
+  --text: #bfbdb6; --muted: #9499a2; --accent: #e6b450; --accent-fg: #0d1017; --accent-subtle: #312d23;
+  --ok: #aad94c; --warn: #ffb454; --danger: #d95757; --select: #273747; --shadow: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+[data-skin="ayu-light"] {
+  --bg: #fcfcfc; --panel: #f8f9fa; --element: #f3f4f5; --border: #e7eaed; --border-strong: #868d94;
+  --text: #3e4348; --muted: #656a70; --accent: #8c5e1c; --accent-fg: #fcfcfc; --accent-subtle: #f9f0e2;
+  --ok: #5a7800; --warn: #8c652a; --danger: #c44444; --select: #d8e6f6; --shadow: rgba(40, 40, 60, 0.18);
+  color-scheme: light;
+}
+/* no JavaScript: follow the OS with Ayu Light */
+@media (prefers-color-scheme: light) { :root:not([data-skin]) {
+  --bg: #fcfcfc; --panel: #f8f9fa; --element: #f3f4f5; --border: #e7eaed; --border-strong: #868d94;
+  --text: #3e4348; --muted: #656a70; --accent: #8c5e1c; --accent-fg: #fcfcfc; --accent-subtle: #f9f0e2;
+  --ok: #5a7800; --warn: #8c652a; --danger: #c44444; --select: #d8e6f6; --shadow: rgba(40, 40, 60, 0.18);
+  color-scheme: light;
+} }
+[data-skin="catppuccin-mocha"] {
+  --bg: #1e1e2e; --panel: #181825; --element: #313244; --border: #45475a; --border-strong: #7f849c;
+  --text: #cdd6f4; --muted: #a6adc8; --accent: #cba6f7; --accent-fg: #11111b; --accent-subtle: #352f47;
+  --ok: #a6e3a1; --warn: #f9e2af; --danger: #f38ba8; --select: #45475a; --shadow: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+[data-skin="catppuccin-latte"] {
+  --bg: #eff1f5; --panel: #e6e9ef; --element: #dce0e8; --border: #ccd0da; --border-strong: #7f8293;
+  --text: #4c4f69; --muted: #565970; --accent: #7832d2; --accent-fg: #eff1f5; --accent-subtle: #dbd4ef;
+  --ok: #2f751f; --warn: #8f5b13; --danger: #cc0f37; --select: #bcc0cc; --shadow: rgba(40, 40, 60, 0.18);
+  color-scheme: light;
+}
+[data-skin="dracula"] {
+  --bg: #282a36; --panel: #21222c; --element: #343746; --border: #44475a; --border-strong: #6776a7;
+  --text: #f8f8f2; --muted: #9ba5c5; --accent: #bd93f9; --accent-fg: #282a36; --accent-subtle: #3a344d;
+  --ok: #50fa7b; --warn: #f1fa8c; --danger: #ff5a5a; --select: #44475a; --shadow: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+[data-skin="tokyo-night"] {
+  --bg: #1a1b26; --panel: #16161e; --element: #292e42; --border: #3b4261; --border-strong: #737aa2;
+  --text: #c0caf5; --muted: #a9b1d6; --accent: #7aa2f7; --accent-fg: #1a1b26; --accent-subtle: #262c41;
+  --ok: #9ece6a; --warn: #e0af68; --danger: #f7768e; --select: #283457; --shadow: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+[data-skin="nord"] {
+  --bg: #2e3440; --panel: #3b4252; --element: #3b4252; --border: #434c5e; --border-strong: #8791a5;
+  --text: #eceff4; --muted: #d8dee9; --accent: #acd3de; --accent-fg: #2e3440; --accent-subtle: #475666;
+  --ok: #a3be8c; --warn: #ebcb8b; --danger: #daa3a9; --select: #4c566a; --shadow: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+[data-skin="rose-pine"] {
+  --bg: #191724; --panel: #1f1d2e; --element: #26233a; --border: #403d52; --border-strong: #6e6a86;
+  --text: #e0def4; --muted: #a7a4bc; --accent: #ebbcba; --accent-fg: #191724; --accent-subtle: #403644;
+  --ok: #9ccfd8; --warn: #f6c177; --danger: #eb6f92; --select: #403d52; --shadow: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+[data-skin="rose-pine-dawn"] {
+  --bg: #faf4ed; --panel: #fffaf3; --element: #f2e9e1; --border: #dfdad9; --border-strong: #8a8696;
+  --text: #575279; --muted: #67637d; --accent: #905754; --accent-fg: #fffaf3; --accent-subtle: #faece5;
+  --ok: #286983; --warn: #966421; --danger: #9e576b; --select: #dfdad9; --shadow: rgba(40, 40, 60, 0.18);
+  color-scheme: light;
+}
+:root {
+  --font: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "JetBrains Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+  --fs-1: 12px; --fs-2: 13px; --fs-3: 14px; --fs-4: 16px; --fs-5: 20px; --fs-6: 28px;
+  --fs-7: clamp(30px, 6.2vw, 48px);
+  --lh-tight: 1.1; --lh-snug: 1.4; --lh-body: 1.6;
+  --ls-tight: -0.02em; --ls-wide: 0.08em;
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 72px;
+  --r-0: 0; --r-1: 2px; --r-box: 6px; --bw: 1px; --bw-2: 2px;
+  --elev: 0 20px 50px -20px var(--shadow);
+  --z-bar: 20; --z-dock: 30; --z-menu: 35; --z-dialog: 50; --z-tip: 60;
+  --dur-fast: 120ms; --dur-base: 220ms; --dur-slow: 520ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.6, 0, 0.2, 1);
+  --bar-h: 49px; --side-w: 288px;
+}
+@media (max-width: 899px) { :root { --bar-h: 89px; } }
+/* Desktop scale: text grows with the screen so a 1440–1920px monitor isn't reading 12–14px type. */
+@media (min-width: 1200px) {
+  :root { --fs-1: 13px; --fs-2: 14px; --fs-3: 15px; --fs-4: 17px; --fs-5: 21px; --fs-7: clamp(40px, 3.4vw, 54px); --side-w: 304px; --app-w: 1360px; }
+}
+@media (min-width: 1600px) {
+  :root { --fs-1: 14px; --fs-2: 15px; --fs-3: 16px; --fs-4: 18px; --fs-5: 22px; --fs-7: clamp(48px, 3.2vw, 60px); --side-w: 336px; --app-w: 1520px; }
+}
+@media (prefers-reduced-motion: reduce) { :root { --dur-fast: 0ms; --dur-base: 0ms; --dur-slow: 0ms; } }
+
+@keyframes blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sweep { from { box-shadow: inset 0 0 0 1px var(--accent); } to { box-shadow: inset 0 0 0 1px transparent; } }
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: var(--fs-3); line-height: var(--lh-body); -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: var(--z-dialog); background: var(--bg); }
+::selection { background: var(--select); color: var(--text); }
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: var(--bw-2) solid var(--accent); outline-offset: 2px; }
+h1[tabindex="-1"]:focus:not(:focus-visible), h2[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.muted { color: var(--muted); }
+.theme-anim, .theme-anim *, .theme-anim *::before, .theme-anim *::after {
+  transition: background-color var(--dur-base) var(--ease-in-out), color var(--dur-base) var(--ease-in-out),
+    border-color var(--dur-base) var(--ease-in-out), fill var(--dur-base) var(--ease-in-out) !important;
+}
+.reveal { transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
+.reveal.is-pending { opacity: 0; transform: translateY(10px); }
+.app { max-width: var(--app-w, 1280px); margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* ==========================================================================
+   COMPONENTS: link, button, kbd, tag, status, tooltip, segmented switch
+   ========================================================================== */
+.link { color: var(--text); text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 0.22em; transition: color var(--dur-fast), text-decoration-color var(--dur-fast); }
+.link:hover { color: var(--accent); text-decoration-color: var(--accent); }
+/* Touch: comfortable tap targets for buttons and inline links */
+@media (pointer: coarse) {
+  .btn, .seg__opt { min-height: 44px; }
+  .seg__opt { min-width: 44px; }
+  .brand, .todo__link, .row__foot .link, .contact .link, .devlog-meta .link, .colophon .link { display: inline-flex; align-items: center; min-height: 44px; }
+  .row__head { min-height: 44px; }
+}
+.btn { display: inline-flex; align-items: center; gap: var(--sp-2); min-height: 36px; padding: 0 var(--sp-3); font: inherit; font-size: var(--fs-2); line-height: 1; text-decoration: none; white-space: nowrap; color: var(--text); background: var(--panel); border: var(--bw) solid var(--border-strong); border-radius: var(--r-1); transition: background-color var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform var(--dur-fast); }
+.btn:hover { border-color: var(--text); }
+.btn:active { transform: translateY(1px); }
+.btn--primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.btn--ghost { background: transparent; border-color: transparent; color: var(--muted); }
+.btn--ghost:hover { color: var(--text); border-color: var(--border-strong); }
+.btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+.kbd { display: inline-block; padding: 0 6px; font-size: var(--fs-1); line-height: 1.5; color: var(--muted); background: var(--panel); border: var(--bw) solid var(--border-strong); border-bottom-width: 2px; border-radius: var(--r-1); }
+.tag { display: inline-flex; padding: 0 7px; font-size: var(--fs-1); line-height: 1.6; color: var(--muted); border: var(--bw) solid var(--border); border-radius: var(--r-1); white-space: nowrap; }
+.tag--dashed { border-style: dashed; border-color: var(--border-strong); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-1); white-space: nowrap; color: var(--muted); }
+.status--done { color: var(--ok); } .status--progress { color: var(--accent); } .status--planned { color: var(--muted); }
+.status--warn { color: var(--warn); } .status--error { color: var(--danger); }
+[data-tip] { position: relative; }
+[data-tip]::after { content: attr(data-tip); position: absolute; top: calc(100% + 7px); right: 0; z-index: var(--z-tip); padding: 2px 7px; font-size: var(--fs-1); line-height: 1.6; white-space: nowrap; color: var(--bg); background: var(--text); border-radius: var(--r-1); opacity: 0; transform: translateY(-2px); pointer-events: none; transition: opacity var(--dur-fast), transform var(--dur-fast); }
+[data-tip].tip-start::after { right: auto; left: 0; }
+[data-tip].tip-up::after { top: auto; bottom: calc(100% + 7px); transform: translateY(2px); }
+[data-tip].tip-up:hover::after { transform: none; }
+[data-tip]:hover::after, [data-tip]:focus-visible::after { opacity: 1; transform: none; }
+@media (hover: none) { [data-tip]::after { display: none; } }
+.seg { display: inline-flex; border: var(--bw) solid var(--border-strong); border-radius: var(--r-1); background: var(--panel); }
+.seg__opt { min-width: 34px; height: 34px; padding: 0 var(--sp-2); font-size: var(--fs-1); color: var(--muted); background: transparent; border: 0; transition: background-color var(--dur-fast), color var(--dur-fast); }
+.seg__opt + .seg__opt { border-left: var(--bw) solid var(--border); }
+.seg__opt:hover { color: var(--text); }
+.seg__opt[aria-checked="true"] { background: var(--text); color: var(--bg); }
+.sw { display: inline-flex; border: var(--bw) solid var(--border-strong); flex: none; }
+.sw i { display: block; width: 10px; height: 14px; }
+
+/* ==========================================================================
+   TITLE BAR + NAV
+   ========================================================================== */
+.titlebar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: var(--z-bar); background: var(--bg); border-bottom: var(--bw) solid var(--border); }
+.titlebar__row { display: flex; align-items: center; gap: var(--sp-3); height: 48px; }
+.brand { display: inline-flex; align-items: baseline; gap: var(--sp-2); text-decoration: none; white-space: nowrap; font-size: var(--fs-3); }
+/* jl mark: j + block cursor. Colors come from the skin tokens. */
+.logo { display: block; width: 1.3em; height: 1.3em; }
+.brand { align-items: center; }
+.brand__logo { display: inline-flex; }
+.mark { display: inline-flex; align-items: center; justify-content: center; min-width: 1.3em; height: 1.3em; color: var(--accent); font-size: 1.15em; line-height: 1; vertical-align: -0.2em; }
+.mark .logo { width: 1em; height: 1em; }
+.welcome__title .mark { margin-right: var(--sp-2); }
+.logo-row { display: flex; align-items: flex-end; gap: var(--sp-5); }
+.logo-row .logo { color: var(--accent); }
+.brand__crumb { color: var(--muted); }
+.titlebar__spacer { flex: 1; }
+.skinbtn { gap: var(--sp-2); }
+.tabstrip { display: none; position: relative; height: 40px; overflow-x: auto; scrollbar-width: none; gap: var(--sp-1); }
+.tabstrip::-webkit-scrollbar { display: none; }
+.tabstrip a, .files a { display: inline-flex; align-items: center; gap: var(--sp-2); color: var(--muted); text-decoration: none; white-space: nowrap; transition: color var(--dur-fast); }
+.tabstrip a { padding: 0 var(--sp-2); font-size: var(--fs-2); }
+.tabstrip a:hover, .tabstrip a[aria-current="true"], .files a:hover, .files a[aria-current="true"] { color: var(--text); }
+.tabstrip__ind { position: absolute; left: 0; bottom: 0; width: 1px; height: 2px; background: var(--accent); transform-origin: left center; transform: scaleX(0); transition: transform var(--dur-base) var(--ease-out); pointer-events: none; }
+@media (max-width: 899px) { .tabstrip { display: flex; } .skinbtn__label { display: none; } }
+
+/* ==========================================================================
+   SHELL: transcript + sidebar + dock
+   ========================================================================== */
+.shell { display: grid; grid-template-columns: minmax(0, 1fr) var(--side-w); align-items: start; }
+.main { min-width: 0; display: flex; flex-direction: column; min-height: calc(100vh - var(--bar-h)); }
+.transcript { flex: 1; padding: var(--sp-5) var(--sp-5) var(--sp-7) 0; }
+.sidebar { position: sticky; top: calc(var(--bar-h) + env(safe-area-inset-top, 0px)); max-height: calc(100vh - var(--bar-h)); overflow-y: auto; border-left: var(--bw) solid var(--border); padding: var(--sp-5) var(--sp-1) var(--sp-5) var(--sp-5); }
+@media (max-width: 899px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .sidebar { display: none; }
+  .transcript { padding-right: 0; }
+}
+.side__title { margin-bottom: var(--sp-2); font-size: var(--fs-1); letter-spacing: var(--ls-wide); text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
+.side__block { padding-bottom: var(--sp-5); }
+.files { position: relative; display: flex; flex-direction: column; }
+.files a { padding: 3px var(--sp-3); font-size: var(--fs-2); }
+.files__cur { width: 1ch; color: var(--accent); opacity: 0; }
+.files a[aria-current="true"] .files__cur { opacity: 1; }
+.files__ind { position: absolute; left: 0; top: 0; width: 2px; height: 1px; background: var(--accent); transform-origin: top; transform: translateY(0) scaleY(0); transition: transform var(--dur-base) var(--ease-out); pointer-events: none; }
+.mini-todo a { display: flex; gap: var(--sp-2); padding: 2px 0; font-size: var(--fs-2); color: var(--muted); text-decoration: none; }
+.mini-todo a:hover { color: var(--text); }
+/* Focus rings inside scrolling or clipped containers draw inward so they are never cut off. */
+.sidebar :focus-visible, .tabstrip :focus-visible, .tabs :focus-visible, .row__inner :focus-visible { outline-offset: -2px; }
+/* sidebar: context meter + agents */
+.ctx { display: flex; flex-direction: column; gap: 2px; font-size: var(--fs-2); }
+.ctx__bar { color: var(--accent); letter-spacing: 0.06em; white-space: nowrap; overflow: hidden; }
+.ctx__bar i { font-style: normal; color: var(--border-strong); }
+.ctx__nums, .ctx__read { font-size: var(--fs-1); color: var(--muted); font-variant-numeric: tabular-nums; }
+.ctx__read { margin-top: 2px; }
+.agents { display: flex; flex-direction: column; gap: var(--sp-2); font-size: var(--fs-2); }
+.agent { display: grid; grid-template-columns: 2ch minmax(0, 1fr); gap: 0 var(--sp-1); }
+.agent__name { color: var(--text); }
+.agent__desc { grid-column: 2; font-size: var(--fs-1); color: var(--muted); line-height: 1.45; }
+.agent__subs { grid-column: 2; font-size: var(--fs-1); color: var(--muted); }
+.agent__subs li::before { content: "├ "; content: "├ " / ""; color: var(--border-strong); }
+.agent__subs li:last-child::before { content: "└ "; content: "└ " / ""; }
+.dots { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.dotbtn { padding: 3px; background: transparent; border: var(--bw) solid transparent; border-radius: var(--r-1); }
+.dotbtn[aria-pressed="true"] { border-color: var(--accent); }
+.dotbtn:hover { border-color: var(--border-strong); }
+
+.dock { position: sticky; bottom: 0; z-index: var(--z-dock); background: var(--bg); border-top: var(--bw) solid var(--border); padding: var(--sp-3) var(--sp-5) calc(var(--sp-2) + env(safe-area-inset-bottom, 0px)) 0; }
+@media (max-width: 899px) { .dock { padding-right: 0; } }
+.prompt { position: relative; }
+.prompt__box { display: flex; align-items: center; gap: var(--sp-3); padding: 0 var(--sp-3); background: var(--panel); border: var(--bw) solid var(--border-strong); border-radius: var(--r-box); transition: border-color var(--dur-fast); }
+.prompt__box:focus-within { border-color: var(--accent); outline: var(--bw-2) solid var(--accent); outline-offset: 2px; }
+.prompt__glyph { color: var(--accent); }
+.prompt__input { flex: 1; min-width: 0; height: 44px; font: inherit; font-size: var(--fs-3); color: var(--text); background: transparent; border: 0; outline: 0; caret-color: var(--accent); caret-shape: block; }
+.prompt__input::placeholder { color: var(--muted); opacity: 1; }
+@media (max-width: 899px) { .prompt__input { font-size: 16px; } }
+.menu { position: absolute; left: 0; right: 0; bottom: calc(100% + var(--sp-2)); z-index: var(--z-menu); max-height: min(40vh, 320px); overflow-y: auto; padding: var(--sp-1) 0; background: var(--panel); border: var(--bw) solid var(--border-strong); border-radius: var(--r-box); box-shadow: var(--elev); }
+.opt { display: flex; align-items: center; gap: var(--sp-4); padding: 6px var(--sp-3); cursor: pointer; border-left: var(--bw-2) solid transparent; font-size: var(--fs-2); }
+.opt[aria-selected="true"] { background: var(--accent-subtle); border-left-color: var(--accent); }
+.opt__key { min-width: 16ch; color: var(--text); }
+.opt__desc { flex: 1; min-width: 0; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opt__end { margin-left: auto; color: var(--accent); }
+.opt mark { background: none; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.opt-note { padding: var(--sp-1) var(--sp-3) var(--sp-2); font-size: var(--fs-1); color: var(--muted); }
+.tips--chips { flex-direction: row; flex-wrap: wrap; gap: var(--sp-2); }
+@media (max-width: 899px) {
+  .dock { transition: padding var(--dur-base) var(--ease-out); }
+  .dock .prompt__input { transition: height var(--dur-base) var(--ease-out); }
+  .dock.is-compact { padding-top: var(--sp-1); padding-bottom: calc(var(--sp-1) + env(safe-area-inset-bottom, 0px)); }
+  .dock.is-compact .prompt__input { height: 34px; }
+  .dock.is-compact .status-line { display: none; }
+}
+.opt-group { padding: var(--sp-2) var(--sp-3) var(--sp-1); font-size: var(--fs-1); letter-spacing: var(--ls-wide); text-transform: uppercase; color: var(--muted); }
+.status-line { display: flex; justify-content: space-between; gap: var(--sp-4); padding: var(--sp-2) var(--sp-1) 0; font-size: var(--fs-1); color: var(--muted); }
+.status-line__msg { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* model line: agent mode · model/variant · experience · language (like OpenCode's status) */
+.status-line__right { display: inline-flex; align-items: center; gap: var(--sp-2); white-space: nowrap; }
+.mode { padding: 0 6px; line-height: 1.6; color: var(--accent-fg); background: var(--accent); border-radius: var(--r-1); }
+.model { color: var(--text); }
+.opt-show { display: none; }
+@media (max-width: 640px) { .status-line__right .opt-hide { display: none; } .status-line__right .opt-show { display: inline; } }
+.spin { display: inline-block; width: 1.5ch; color: var(--accent); }
+
+/* without JavaScript: content stays readable, controls that need JS are hidden */
+html:not(.js) .needs-js { display: none !important; }
+.switch { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); width: 100%; padding: var(--sp-3) var(--sp-4); background: none; border: 0; border-bottom: var(--bw) solid var(--border); text-align: left; font-size: var(--fs-2); }
+.switch__state { min-width: 5ch; padding: 0 var(--sp-2); text-align: center; border: var(--bw) solid var(--border-strong); border-radius: var(--r-1); color: var(--muted); }
+.switch[aria-checked="true"] .switch__state { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.helptable__note { grid-column: 1 / -1; color: var(--muted); font-size: var(--fs-1); }
+
+/* ==========================================================================
+   DIALOG (palette, theme picker, help)
+   ========================================================================== */
+.dialog { position: fixed; inset: 0; z-index: var(--z-dialog); display: flex; justify-content: center; align-items: flex-start; padding: max(10vh, 56px) 16px 16px; }
+.dialog__backdrop { position: absolute; inset: 0; background: var(--bg); opacity: 0.82; animation: fade var(--dur-base) var(--ease-out); }
+.dialog__panel { position: relative; width: min(600px, 100%); max-height: min(560px, 78vh); display: flex; flex-direction: column; background: var(--panel); border: var(--bw) solid var(--border-strong); border-radius: var(--r-box); box-shadow: var(--elev); animation: rise var(--dur-base) var(--ease-out); }
+.dialog__head { display: flex; align-items: center; justify-content: space-between; padding: var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-4); border-bottom: var(--bw) solid var(--border); }
+.dialog__title { font-size: var(--fs-2); font-weight: 700; }
+.dialog__field { display: flex; align-items: center; gap: var(--sp-3); padding: 0 var(--sp-4); border-bottom: var(--bw) solid var(--border); }
+.dialog__list { overflow-y: auto; flex: 1; padding: var(--sp-1) 0; }
+.dialog__list:focus-visible { outline-offset: -2px; }
+.dialog__note, .dialog__hint { padding: var(--sp-2) var(--sp-4); font-size: var(--fs-1); color: var(--muted); }
+.dialog__hint { display: flex; flex-wrap: wrap; gap: var(--sp-4); border-top: var(--bw) solid var(--border); }
+.helptable { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--sp-2) var(--sp-5); padding: var(--sp-4); font-size: var(--fs-2); overflow-y: auto; }
+.helptable h3 { grid-column: 1 / -1; font-size: var(--fs-1); letter-spacing: var(--ls-wide); text-transform: uppercase; color: var(--muted); font-weight: 400; margin-top: var(--sp-2); }
+
+/* ==========================================================================
+   TRANSCRIPT: welcome box, turns, tool calls, results
+   ========================================================================== */
+.welcome { position: relative; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); margin-top: var(--sp-3); border: var(--bw) solid var(--border-strong); border-radius: var(--r-box); scroll-margin-top: calc(var(--bar-h) + var(--sp-5)); }
+.welcome__title { position: absolute; top: -0.85em; left: var(--sp-4); padding: 0 var(--sp-2); background: var(--bg); color: var(--accent); font-size: var(--fs-2); }
+.welcome__main { display: flex; flex-direction: column; gap: var(--sp-4); min-width: 0; padding: var(--sp-6) var(--sp-5) var(--sp-5); }
+.welcome__main > * { animation: rise var(--dur-slow) var(--ease-out) backwards; }
+.welcome__main > *:nth-child(2) { animation-delay: 60ms; } .welcome__main > *:nth-child(3) { animation-delay: 120ms; }
+.welcome__main > *:nth-child(4) { animation-delay: 180ms; } .welcome__main > *:nth-child(5) { animation-delay: 240ms; }
+.welcome__main > *:nth-child(6) { animation-delay: 300ms; }
+.welcome__side { min-width: 0; padding: var(--sp-6) var(--sp-5) var(--sp-5); border-left: var(--bw) solid var(--border); animation: rise var(--dur-slow) var(--ease-out) 200ms backwards; }
+@media (max-width: 899px) {
+  .welcome { grid-template-columns: minmax(0, 1fr); }
+  .welcome__side { border-left: 0; border-top: var(--bw) solid var(--border); padding-top: var(--sp-5); }
+}
+@media (prefers-reduced-motion: reduce) { .welcome__main > *, .welcome__side { animation: none; } }
+.welcome__hello { color: var(--muted); font-size: var(--fs-2); }
+.welcome__hello b { color: var(--accent); font-weight: 400; }
+.hero__name { font-size: var(--fs-7); line-height: var(--lh-tight); letter-spacing: var(--ls-tight); font-weight: 700; overflow-wrap: anywhere; }
+.hero__role { display: grid; font-size: var(--fs-4); line-height: var(--lh-snug); }
+.hero__role > span { grid-area: 1 / 1; }
+.hero__ghost { visibility: hidden; }
+.caret { display: inline-block; width: 0.6em; height: 1.1em; margin-left: 2px; vertical-align: -0.2em; background: var(--accent); animation: blink 1.1s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
+.hero__pitch { max-width: 62ch; }
+.actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.avail { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1) var(--sp-3); font-size: var(--fs-2); color: var(--muted); }
+.side__label { margin-bottom: var(--sp-2); font-size: var(--fs-1); letter-spacing: var(--ls-wide); text-transform: uppercase; color: var(--muted); }
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--sp-1) var(--sp-4); font-size: var(--fs-2); line-height: 1.5; margin-bottom: var(--sp-5); }
+.kv dt { color: var(--muted); }
+.kv dd { overflow-wrap: anywhere; }
+.tips { display: flex; flex-direction: column; }
+.tip { display: flex; gap: var(--sp-3); width: 100%; padding: 3px 0; background: none; border: 0; text-align: left; font-size: var(--fs-2); color: var(--text); }
+.tip__key { min-width: 9ch; color: var(--accent); }
+.tip__desc { color: var(--muted); }
+.tip:hover .tip__desc { color: var(--text); }
+
+.turn { margin-top: var(--sp-7); scroll-margin-top: calc(var(--bar-h) + var(--sp-4) + env(safe-area-inset-top, 0px)); }
+.turn__prompt { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); background: var(--element); border-radius: var(--r-1); font-size: var(--fs-3); font-weight: 600; }
+.turn__glyph { color: var(--accent); }
+/* Each prompt sticks under the title bar while its answer scrolls, then the next prompt pushes it out (like Claude Code). */
+.turn > .turn__prompt { position: sticky; top: calc(var(--bar-h) + env(safe-area-inset-top, 0px)); z-index: 5; }
+.turn__cmd { margin-left: auto; font-size: var(--fs-2); font-weight: 400; color: var(--muted); }
+.turn.is-current > .turn__prompt { box-shadow: inset 2px 0 0 var(--accent); }
+.turn.is-flash > .turn__prompt { animation: sweep 900ms var(--ease-out); }
+.tool { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-2); margin-top: var(--sp-4); }
+.tool__dot, .say__dot { color: var(--accent); }
+.tool__name { font-weight: 700; }
+.tool__arg { color: var(--muted); }
+.say { display: flex; gap: var(--sp-2); margin-top: var(--sp-4); }
+.say__dot { color: var(--muted); }
+.prose { max-width: 70ch; display: flex; flex-direction: column; gap: var(--sp-3); }
+.result { position: relative; margin-top: 2px; padding: var(--sp-1) 0 0 3ch; }
+.result::before { content: ""; position: absolute; left: 0.5ch; top: 0; width: 1.5ch; height: 0.9em; border-left: var(--bw) solid var(--border-strong); border-bottom: var(--bw) solid var(--border-strong); }
+
+/* project rows */
+.rows { display: flex; flex-direction: column; gap: var(--sp-3); }
+.row { padding-left: var(--sp-3); border-left: var(--bw-2) solid var(--border); transition: border-color var(--dur-fast); }
+.row:hover, .row.is-open { border-left-color: var(--accent); }
+.row__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-2); width: 100%; padding: var(--sp-1) 0; background: none; border: 0; text-align: left; }
+.row__mark { width: 2ch; color: var(--accent); }
+.row__name { font-size: var(--fs-4); font-weight: 700; }
+.row__meta { margin-left: auto; font-size: var(--fs-2); color: var(--muted); }
+.row__sum { margin-left: calc(2ch + var(--sp-2)); color: var(--muted); max-width: 70ch; }
+.row__body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows var(--dur-base) var(--ease-out), visibility 0s; }
+.js .row:not(.is-open) .row__body { grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base); }
+.row__inner { min-width: 0; overflow: hidden; margin-left: calc(2ch + var(--sp-2)); padding: var(--sp-3) var(--sp-1) var(--sp-1); }
+.js .row:not(.is-open) .row__inner { padding-top: 0; padding-bottom: 0; }
+html:not(.js) .row__mark { visibility: hidden; }
+.man { display: grid; grid-template-columns: 10ch minmax(0, 1fr); gap: var(--sp-2) var(--sp-3); font-size: var(--fs-2); line-height: 1.5; max-width: 74ch; }
+.man dt { font-size: var(--fs-1); letter-spacing: var(--ls-wide); text-transform: uppercase; color: var(--muted); padding-top: 2px; }
+.row__foot { margin-top: var(--sp-3); }
+@media (max-width: 480px) { .man { grid-template-columns: minmax(0, 1fr); gap: 0; } .man dd { margin-bottom: var(--sp-2); } }
+
+/* devlog todo */
+.todo { display: flex; flex-direction: column; }
+.todo__item { display: grid; grid-template-columns: 4ch 14ch 11ch minmax(0, 1fr) auto; gap: 0 var(--sp-3); align-items: baseline; padding: var(--sp-3) 0; border-top: var(--bw) solid var(--border); }
+.todo__item:first-child { border-top: 0; padding-top: 0; }
+.todo__id { color: var(--accent); }
+.todo__date { font-size: var(--fs-1); color: var(--muted); font-variant-numeric: tabular-nums; }
+.todo__title { font-weight: 700; }
+.todo__link { font-size: var(--fs-2); }
+.todo__note { grid-column: 4 / -1; margin-top: 2px; font-size: var(--fs-2); color: var(--muted); max-width: 64ch; }
+@media (max-width: 640px) {
+  .todo__item { grid-template-columns: 4ch auto minmax(0, 1fr); }
+  .todo__title, .todo__note, .todo__link { grid-column: 1 / -1; }
+  .todo__title { margin-top: var(--sp-1); }
+}
+.devlog-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-2) var(--sp-4); margin-top: var(--sp-4); font-size: var(--fs-2); }
+
+/* experience, git-graph style */
+.glog { margin-left: 6px; border-left: var(--bw) solid var(--border-strong); }
+.glog__item { position: relative; padding: 0 0 var(--sp-5) var(--sp-5); }
+.glog__item:last-child { padding-bottom: 0; }
+.glog__item::before { content: ""; position: absolute; left: -4px; top: 0.6em; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.glog__item--edu::before { background: var(--muted); }
+.glog__role { font-size: var(--fs-4); font-weight: 700; }
+.glog__org { color: var(--muted); }
+.glog__when { font-size: var(--fs-2); color: var(--muted); font-variant-numeric: tabular-nums; }
+.glog__text { margin-top: var(--sp-2); max-width: 66ch; color: var(--muted); }
+
+/* stack trees */
+.trees { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-5) var(--sp-5); }
+@media (max-width: 560px) { .trees { grid-template-columns: minmax(0, 1fr); } }
+.tree__name { font-size: var(--fs-3); font-weight: 700; }
+.tree__sub { font-weight: 400; color: var(--muted); font-size: var(--fs-2); }
+.tree li { font-size: var(--fs-2); }
+.tree li::before { content: "├── "; content: "├── " / ""; color: var(--border-strong); white-space: pre; }
+.tree li:last-child::before { content: "└── "; content: "└── " / ""; }
+
+/* contact + search hits */
+.contact { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--sp-3) var(--sp-5); align-items: center; }
+.contact dt { color: var(--muted); font-size: var(--fs-2); }
+.contact__email { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); }
+.contact__addr { font-size: var(--fs-3); overflow-wrap: anywhere; user-select: all; }
+.colophon { margin-top: var(--sp-5); padding-top: var(--sp-4); border-top: var(--bw) solid var(--border); font-size: var(--fs-1); color: var(--muted); }
+.hits { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-2); }
+
+/* ==========================================================================
+   DESIGN SYSTEM VIEW
+   ========================================================================== */
+.tabs { display: flex; margin-top: var(--sp-5); border-bottom: var(--bw) solid var(--border); overflow-x: auto; }
+.tab { padding: var(--sp-2) var(--sp-4); font-size: var(--fs-2); white-space: nowrap; color: var(--muted); background: transparent; border: 0; border-bottom: var(--bw-2) solid transparent; margin-bottom: -1px; transition: color var(--dur-fast), border-color var(--dur-base); }
+.tab:hover, .tab[aria-selected="true"] { color: var(--text); }
+.tab[aria-selected="true"] { border-bottom-color: var(--accent); }
+.tabpanel { padding-top: var(--sp-5); }
+.tabpanel:not([hidden]) { animation: fade var(--dur-base) var(--ease-out); }
+.ds-group { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: var(--sp-3) var(--sp-5); padding-block: var(--sp-5); border-top: var(--bw) solid var(--border); }
+.ds-group:first-child { border-top: 0; padding-top: 0; }
+.ds-group > h3 { font-size: var(--fs-2); font-weight: 400; color: var(--muted); }
+.ds-group > div { min-width: 0; }
+@media (max-width: 700px) { .ds-group { grid-template-columns: minmax(0, 1fr); } }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--sp-3); }
+.swatch { border: var(--bw) solid var(--border); border-radius: var(--r-1); background: var(--panel); }
+.swatch__chip { height: 40px; border-bottom: var(--bw) solid var(--border); }
+.swatch__meta { padding: var(--sp-2) var(--sp-3); font-size: var(--fs-1); line-height: 1.5; }
+.swatch__meta span { display: block; color: var(--muted); }
+.rows2 { display: flex; flex-direction: column; }
+.row2 { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: var(--sp-4); align-items: center; padding: var(--sp-2) 0; border-top: var(--bw) solid var(--border); width: 100%; background: none; border-left: 0; border-right: 0; border-bottom: 0; text-align: left; }
+.row2:first-child { border-top: 0; }
+.row2 code { font: inherit; font-size: var(--fs-1); color: var(--muted); }
+.row2__bar { height: 10px; background: var(--accent); }
+.row2__sample { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.track { position: relative; height: 10px; border-bottom: var(--bw) solid var(--border-strong); }
+.track i { position: absolute; left: 0; bottom: -1px; width: 10px; height: 10px; background: var(--accent); transition-property: left; }
+.is-on .track i { left: calc(100% - 10px); }
+.shapes { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+.shape { width: 56px; height: 40px; display: inline-flex; align-items: center; justify-content: center; font-size: var(--fs-1); color: var(--muted); background: var(--panel); border: var(--bw) solid var(--border-strong); }
+.skins { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: var(--sp-4); }
+.skin-card { display: flex; flex-direction: column; gap: var(--sp-2); padding: var(--sp-2); text-align: left; background: transparent; border: var(--bw) solid var(--border); border-radius: var(--r-box); transition: border-color var(--dur-fast); }
+.skin-card:hover { border-color: var(--border-strong); }
+.skin-card[aria-pressed="true"] { border-color: var(--accent); }
+.skin-card small { display: block; color: var(--muted); }
+.mini { display: flex; flex-direction: column; gap: 4px; padding: var(--sp-3); background: var(--bg); color: var(--text); border: var(--bw) solid var(--border); border-radius: var(--r-1); font-size: var(--fs-1); line-height: 1.4; }
+.mini b { color: var(--accent); font-weight: 400; }
+.mini__muted { color: var(--muted); }
+.mini__bar { display: flex; gap: 4px; margin-top: 4px; }
+.mini__bar i { height: 6px; flex: 1; background: var(--element); }
+.mini__bar i:nth-child(1) { background: var(--accent); } .mini__bar i:nth-child(2) { background: var(--ok); } .mini__bar i:nth-child(3) { background: var(--warn); }
+.specs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-4); }
+@media (max-width: 700px) { .specs { grid-template-columns: minmax(0, 1fr); } }
+.spec { min-width: 0; background: var(--panel); border: var(--bw) solid var(--border); border-radius: var(--r-box); }
+.spec--wide { grid-column: 1 / -1; }
+.spec__bar { display: flex; justify-content: space-between; gap: var(--sp-3); padding: 6px var(--sp-3); border-bottom: var(--bw) solid var(--border); font-size: var(--fs-1); color: var(--muted); }
+.spec__bar b { font-weight: 400; color: var(--text); }
+.spec__body { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); padding: var(--sp-4); }
+.spec__body--col { flex-direction: column; align-items: stretch; }
+.code { margin: 0; padding: var(--sp-3) var(--sp-4); overflow-x: auto; font: inherit; font-size: var(--fs-2); line-height: 1.7; background: var(--bg); border: var(--bw) solid var(--border); border-radius: var(--r-1); }
+.code .c { color: var(--muted); } .code .k { color: var(--accent); } .code .s { color: var(--ok); } .code .h { color: var(--warn); }
+@media (max-width: 640px) { .turn > .turn__prompt .turn__cmd { display: none; } }
+/* Phones (placed last so it overrides the base component rules) */
+@media (max-width: 640px) {
+  .welcome__main { gap: var(--sp-3); padding: var(--sp-5) var(--sp-4) var(--sp-4); }
+  .welcome__side { padding: var(--sp-4); }
+  .hero__name { font-size: clamp(28px, 8.6vw, 38px); }
+  .actions { gap: var(--sp-2); }
+  .kv { margin-bottom: var(--sp-4); }
+  .transcript { padding-top: var(--sp-4); }
+  .turn { margin-top: var(--sp-6); }
+  .status-line__msg.is-hint { display: none; }
+  .status-line { justify-content: flex-end; }
+}
+</style>
+
+<div class="app">
+  <!-- COMPONENT: title bar -->
+  <header class="titlebar">
+    <div class="titlebar__row">
+      <a class="brand" href="#top" data-i18n-attr="aria-label:a11y.home" aria-label="Julio, back to top"><span class="brand__logo" aria-hidden="true"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="7" y="3.5" width="3" height="3" fill="var(--accent)"></rect><path d="M8.5 9.5V18a3 3 0 0 1-3 3H3" fill="none" stroke="var(--accent)" stroke-width="3"></path><rect x="13" y="3.5" width="7" height="14.5" fill="var(--text)"></rect></svg></span>julio<span class="brand__crumb" id="crumb" aria-hidden="true"></span></a>
+      <span class="titlebar__spacer"></span>
+      <div class="seg needs-js" role="radiogroup" data-seg="lang" data-i18n-attr="aria-label:a11y.language" aria-label="Language">
+        <button class="seg__opt" type="button" role="radio" data-value="en" aria-label="English" aria-checked="true" tabindex="0">EN</button>
+        <button class="seg__opt" type="button" role="radio" data-value="es" aria-label="Español" aria-checked="false" tabindex="-1">ES</button>
+      </div>
+      <button class="btn skinbtn needs-js" type="button" data-act="themes" aria-haspopup="dialog" data-i18n-attr="aria-label:a11y.theme;data-tip:a11y.theme" aria-label="Theme" data-tip="Theme">
+        <span class="sw" aria-hidden="true"><i style="background:var(--bg)"></i><i style="background:var(--accent)"></i><i style="background:var(--ok)"></i><i style="background:var(--warn)"></i></span>
+        <span class="skinbtn__label" id="skin-name">system</span>
+      </button>
+      <button class="btn needs-js" type="button" data-act="palette" aria-haspopup="dialog" data-i18n-attr="aria-label:palette.title;data-tip:palette.title" aria-label="Command palette" data-tip="Command palette"><span class="kbd-label" data-kbd="">Ctrl K</span></button>
+    </div>
+    <nav class="tabstrip" id="tabstrip" data-i18n-attr="aria-label:a11y.files" aria-label="Sections">
+      <a href="#work" data-nav="work" data-i18n="nav.work">work</a>
+      <a href="#devlog" data-nav="devlog" data-i18n="nav.devlog">devlog</a>
+      <a href="#experience" data-nav="experience" data-i18n="nav.experience">experience</a>
+      <a href="#stack" data-nav="stack" data-i18n="nav.stack">stack</a>
+      <a href="#about" data-nav="about" data-i18n="nav.about">about</a>
+      <a href="#contact" data-nav="contact" data-i18n="nav.contact">contact</a>
+      <a class="needs-js" href="#design-system" data-nav="design-system" data-i18n="nav.design">design-system</a>
+      <span class="tabstrip__ind" id="tabstrip-ind" aria-hidden="true"></span>
+    </nav>
+  </header>
+
+  <div class="shell">
+    <main class="main" id="main">
+
+      <!-- ===================== VIEW: home ===================== -->
+      <div class="transcript" id="view-home" data-view="home">
+        <section class="welcome" id="top" aria-labelledby="hero-name">
+          <span class="welcome__title" aria-hidden="true"><span class="mark" id="boot-mark" hidden=""></span>portfolio v1.0</span>
+          <div class="welcome__main">
+            <h1 class="hero__name" id="hero-name">Julio López</h1>
+            <p class="hero__role">
+              <span class="hero__ghost" aria-hidden="true">› <span data-i18n="hero.role">senior full-stack software engineer</span><span class="caret"></span></span>
+              <span><span aria-hidden="true">› </span><span class="sr-only" data-i18n="hero.role">senior full-stack software engineer</span><span id="typed" aria-hidden="true">senior full-stack software engineer</span><span class="caret" aria-hidden="true"></span></span>
+            </p>
+            <p class="hero__pitch" data-i18n="hero.pitch">Senior engineer with 10+ years across the full development lifecycle. I turn legacy systems into fast, cloud-native web platforms and build the internal tools teams run on. Lately I focus on agentic developer tooling, like AI-assisted code review that runs in GitHub Actions.</p>
+            <div class="actions">
+              <a class="btn btn--primary" data-href="cv" target="_blank" rel="noopener" href="https://example.com/your-cv.pdf"><span aria-hidden="true">↓</span><span data-i18n="hero.cv">Download CV</span></a>
+              <button class="btn needs-js" type="button" data-copy-email=""><span aria-hidden="true">@</span><span data-i18n="hero.email">Copy email</span></button>
+              <a class="btn" data-href="github" target="_blank" rel="noopener" href="https://github.com/juliolv">GitHub <span aria-hidden="true">↗</span></a>
+              <a class="btn" data-href="linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/your-handle">LinkedIn <span aria-hidden="true">↗</span></a>
+            </div>
+            <p class="avail"><span class="status status--done"><span aria-hidden="true">●</span> <span data-i18n="hero.available">available</span></span><span data-i18n="hero.availableNote">for senior full-stack roles · [City, time zone] · remote friendly</span></p>
+          </div>
+          <aside class="welcome__side">
+            <p class="side__label" data-i18n="hero.profile">Profile</p>
+            <dl class="kv" id="hero-kv"><dt>role</dt><dd>Senior software engineer</dd><dt>experience</dt><dd>10+ years, since 2015</dd><dt>focus</dt><dd>Web platforms, internal tools, AI-assisted dev workflows</dd><dt>stack</dt><dd>TypeScript · React · Next.js · Node.js · AWS</dd><dt>speaks</dt><dd>Spanish (native) · English (professional)</dd><dt>based</dt><dd>[City, country]</dd></dl>
+            <p class="side__label needs-js" data-i18n="hero.tipsTitle">Try this</p>
+            <ul class="tips needs-js" id="tips"><li><button type="button" class="tip" data-act="cmd:/work"><span class="tip__key">/work</span><span class="tip__desc">See selected work</span></button></li><li><button type="button" class="tip" data-act="cmd:/theme"><span class="tip__key">/theme</span><span class="tip__desc">Try a color theme</span></button></li><li><button type="button" class="tip" data-act="palette"><span class="tip__key">Ctrl K</span><span class="tip__desc">Command palette</span></button></li><li><button type="button" class="tip" data-act="help"><span class="tip__key">?</span><span class="tip__desc">Keyboard shortcuts</span></button></li></ul>
+          </aside>
+        </section>
+
+        <section class="turn reveal" id="work" aria-labelledby="work-h" data-turn="">
+          <h2 class="turn__prompt" id="work-h"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="work.q">What has Julio built?</span><span class="turn__cmd">/work</span></h2>
+          <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">List</span><span class="tool__arg">(work/)</span></p>
+          <div class="result">
+            <p class="muted" data-i18n="work.note">Placeholder projects for now. Select a row to expand it. Full case studies are in progress.</p>
+            <ul class="rows" id="work-list" style="margin-top:var(--sp-4)"><li class="row is-open" data-i="0"><button class="row__head" type="button" aria-expanded="true" aria-controls="proj-0"><span class="row__mark" aria-hidden="true">▾</span><span class="row__name">Operations platform</span><span class="row__meta">20XX — present</span></button><p class="row__sum">An enterprise operations platform outgrew its legacy framework and the web interfaces built on top of it.</p><div class="row__body" id="proj-0"><div class="row__inner"><dl class="man"><dt>Role</dt><dd>[Placeholder.] Senior engineer leading a multi-year migration.</dd><dt>Stack</dt><dd><span class="tags"><span class="tag">TypeScript</span><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">AWS</span></span></dd><dt>Outcome</dt><dd>Modern full-stack ecosystem with internal tools for proprietary workflows. [Add one metric.]</dd></dl><p class="row__foot"><span class="tag tag--dashed">case study in progress</span></p></div></div></li><li class="row" data-i="1"><button class="row__head" type="button" aria-expanded="false" aria-controls="proj-1"><span class="row__mark" aria-hidden="true">▸</span><span class="row__name">Booking and scheduling system</span><span class="row__meta">20XX — present</span></button><p class="row__sum">One business needed a single system for records, scheduling and billing instead of three disconnected tools.</p><div class="row__body" id="proj-1"><div class="row__inner"><dl class="man"><dt>Role</dt><dd>[Placeholder.] Freelance engineer. Designed the monorepo behind the client and admin apps.</dd><dt>Stack</dt><dd><span class="tags"><span class="tag">MongoDB</span><span class="tag">Express</span><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">Monorepo</span></span></dd><dt>Outcome</dt><dd>Shared data models across apps and dual-entry accounting. [Add one metric.]</dd></dl><p class="row__foot"><span class="tag tag--dashed">case study in progress</span></p></div></div></li><li class="row" data-i="2"><button class="row__head" type="button" aria-expanded="false" aria-controls="proj-2"><span class="row__mark" aria-hidden="true">▸</span><span class="row__name">E-commerce storefront</span><span class="row__meta">planned</span></button><p class="row__sum">A small retailer needed fast pages, strong SEO, secure payments and automated inventory.</p><div class="row__body" id="proj-2"><div class="row__inner"><dl class="man"><dt>Role</dt><dd>[Placeholder.] Built from scratch as a technical showcase.</dd><dt>Stack</dt><dd><span class="tags"><span class="tag">Next.js</span><span class="tag">Prisma</span><span class="tag">Tailwind CSS</span><span class="tag">shadcn/ui</span></span></dd><dt>Outcome</dt><dd>In progress. Payments, inventory and storefront are being built in the open.</dd></dl><p class="row__foot"><span class="tag tag--dashed">case study in progress</span></p></div></div></li><li class="row" data-i="3"><button class="row__head" type="button" aria-expanded="false" aria-controls="proj-3"><span class="row__mark" aria-hidden="true">▸</span><span class="row__name">This portfolio</span><span class="row__meta">2026</span></button><p class="row__sum">I wanted to learn an agent-driven workflow on a real project and show the process, not only the result.</p><div class="row__body" id="proj-3"><div class="row__inner"><dl class="man"><dt>Role</dt><dd>Design, engineering and writing, with the agent as a pair.</dd><dt>Stack</dt><dd><span class="tags"><span class="tag">Astro</span><span class="tag">CSS</span><span class="tag">TypeScript</span><span class="tag">Hermes Agent</span></span></dd><dt>Outcome</dt><dd>A bilingual site with a public design system. [Add one metric.]</dd></dl><p class="row__foot"><a class="link" href="https://github.com/juliolv/portfolio" target="_blank" rel="noopener">View the repo ↗</a></p></div></div></li></ul>
+          </div>
+        </section>
+
+        <section class="turn reveal" id="devlog" aria-labelledby="devlog-h" data-turn="">
+          <h2 class="turn__prompt" id="devlog-h"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="devlog.q">How is he learning Hermes Agent?</span><span class="turn__cmd">/devlog</span></h2>
+          <div class="say"><span class="say__dot" aria-hidden="true">●</span><p class="prose" data-i18n="devlog.intro">I am learning Hermes Agent, the open-source agent from Nous Research, by using it to build this site. Each phase is a GitHub issue, and this list follows them.</p></div>
+          <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">Update Todos</span><span class="tool__arg">(TODO.md)</span></p>
+          <div class="result">
+            <ol class="todo" id="todo-list"><li class="todo__item"><span class="todo__id">#1</span><span class="todo__st status status--done"><span aria-hidden="true">●</span> done</span><time class="todo__date" datetime="2026-11-13">2026-11-13</time><span class="todo__title">Environment setup</span><a class="link todo__link" href="https://github.com/juliolv/portfolio/issues/1" target="_blank" rel="noopener">issue #1 ↗</a><p class="todo__note">Run Hermes Agent in Docker with a reproducible config, and write down what tripped me up.</p></li><li class="todo__item"><span class="todo__id">#2</span><span class="todo__st status status--progress"><span aria-hidden="true">◐</span> in progress</span><time class="todo__date" datetime="2026-11-13">2026-11-13</time><span class="todo__title">Design system</span><a class="link todo__link" href="https://github.com/juliolv/portfolio/issues/2" target="_blank" rel="noopener">issue #2 ↗</a><p class="todo__note">Tokens, skins and components for the TUI design language. You are looking at the first pass.</p></li><li class="todo__item"><span class="todo__id">#3</span><span class="todo__st status status--planned"><span aria-hidden="true">○</span> planned</span><span class="todo__date">TBD</span><span class="todo__title">Content and case studies</span><a class="link todo__link" href="https://github.com/juliolv/portfolio/issues/3" target="_blank" rel="noopener">issue #3 ↗</a><p class="todo__note">Replace placeholders with real projects, experience and a CV.</p></li><li class="todo__item"><span class="todo__id">#4</span><span class="todo__st status status--planned"><span aria-hidden="true">○</span> planned</span><span class="todo__date">TBD</span><span class="todo__title">Publish</span><a class="link todo__link" href="https://github.com/juliolv/portfolio/issues/4" target="_blank" rel="noopener">issue #4 ↗</a><p class="todo__note">Port to the final stack, deploy to GitHub Pages and write the retrospective.</p></li></ol>
+            <p class="devlog-meta"><a class="link" data-href="repo" target="_blank" rel="noopener" href="https://github.com/juliolv/portfolio"><span data-i18n="devlog.repo">Public repo</span> ↗</a><span class="muted"><span data-i18n="devlog.hosted">Published from the repo with</span> <a class="link" data-href="pages" target="_blank" rel="noopener" href="https://juliolv.github.io/portfolio/">GitHub Pages ↗</a></span></p>
+          </div>
+        </section>
+
+        <section class="turn reveal" id="experience" aria-labelledby="exp-h" data-turn="">
+          <h2 class="turn__prompt" id="exp-h"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="experience.q">Where has he worked?</span><span class="turn__cmd">/experience</span></h2>
+          <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">Bash</span><span class="tool__arg">(git log --graph --career)</span></p>
+          <div class="result"><ol class="glog" id="exp-list"><li class="glog__item"><p class="glog__role">Senior Software Engineer <span class="glog__org">· Example Corp</span></p><p class="glog__when">20XX — present</p><p class="glog__text">[Scope, the systems you own, and one measurable outcome.]</p></li><li class="glog__item"><p class="glog__role">Mid-Level Software Engineer <span class="glog__org">· Example Inc</span></p><p class="glog__when">20XX — 20XX</p><p class="glog__text">[End-to-end feature ownership and the consolidation of a fragmented codebase.]</p></li><li class="glog__item"><p class="glog__role">Junior Software Engineer <span class="glog__org">· Example Ltd</span></p><p class="glog__when">20XX — 20XX</p><p class="glog__text">[Building and maintaining modules for business applications.]</p></li><li class="glog__item glog__item--edu"><p class="glog__role">BSc in Computer Science <span class="glog__org">· Example University</span></p><p class="glog__when">20XX — 20XX</p><p class="glog__text">[Thesis topic or honours.]</p></li></ol></div>
+        </section>
+
+        <section class="turn reveal" id="stack" aria-labelledby="stack-h" data-turn="">
+          <h2 class="turn__prompt" id="stack-h"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="stack.q">What does he build with?</span><span class="turn__cmd">/stack</span></h2>
+          <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">Bash</span><span class="tool__arg">(tree stack/)</span></p>
+          <div class="result"><div class="trees" id="stack-list"><section class="tree"><h3 class="tree__name">languages/ <span class="tree__sub">Languages</span></h3><ul><li>TypeScript</li><li>JavaScript (ES6+)</li><li>HTML5 / CSS3</li></ul></section><section class="tree"><h3 class="tree__name">frontend/ <span class="tree__sub">Frontend</span></h3><ul><li>React</li><li>Next.js</li><li>Tailwind CSS</li><li>shadcn/ui</li><li>TanStack Table</li><li>Redux Toolkit / Zustand</li><li>MUI</li></ul></section><section class="tree"><h3 class="tree__name">backend/ <span class="tree__sub">Backend and data</span></h3><ul><li>Node.js</li><li>REST APIs</li><li>Prisma / Drizzle</li><li>PostgreSQL / MySQL</li><li>MongoDB</li><li>Zod / Yup</li></ul></section><section class="tree"><h3 class="tree__name">infra-tooling/ <span class="tree__sub">Infrastructure, tooling and AI-assisted workflows</span></h3><ul><li>AWS (Amplify, Lambda, S3, SES)</li><li>Vercel</li><li>Docker</li><li>GitHub Actions</li><li>Monorepos</li><li>Git · WSL2 Ubuntu</li><li>OpenCode · Claude Code</li><li>Hermes Agent (learning)</li></ul></section></div></div>
+        </section>
+
+        <section class="turn reveal" id="about" aria-labelledby="about-h" data-turn="">
+          <h2 class="turn__prompt" id="about-h"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="about.q">Who is Julio?</span><span class="turn__cmd">/about</span></h2>
+          <div class="say"><span class="say__dot" aria-hidden="true">●</span><div class="prose" id="about-body"><p>I am Julio, a software engineer with a decade of shipping web products. I like software that feels obvious to use and stays calm to maintain, and I care about the small details that make both true.</p><p class="muted">Lately most of my curiosity goes into agentic developer tooling. I designed an automated code review workflow for GitHub Actions, with a read-only orchestrator, specialist subagents and review comments that update in place instead of piling up. I work from WSL2 on Ubuntu, and I am learning Hermes Agent by building this site in public.</p><p class="muted">[Add one or two sentences: what you value in a team and what you do away from the keyboard.]</p></div></div>
+        </section>
+
+        <section class="turn reveal" id="contact" aria-labelledby="contact-h" data-turn="">
+          <h2 class="turn__prompt" id="contact-h"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="contact.q">How do I reach him?</span><span class="turn__cmd">/contact</span></h2>
+          <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">Read</span><span class="tool__arg">(contact.md)</span></p>
+          <div class="result">
+            <p class="muted" data-i18n="contact.lede" style="margin-bottom:var(--sp-4)">The fastest way is email. I usually reply within a day.</p>
+            <dl class="contact">
+              <dt>email</dt>
+              <dd class="contact__email"><span class="contact__addr" id="email-text">you@example.com</span><button class="btn needs-js" type="button" data-copy-email="" data-i18n="contact.copy">Copy</button><a class="btn btn--ghost" id="email-link" data-i18n="contact.open" href="mailto:you@example.com">Open in mail app</a></dd>
+              <dt>github</dt><dd><a class="link" data-href="github" target="_blank" rel="noopener" href="https://github.com/juliolv">github.com/juliolv ↗</a></dd>
+              <dt>linkedin</dt><dd><a class="link" data-href="linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/in/your-handle">linkedin.com/in/your-handle ↗</a></dd>
+              <dt>cv</dt><dd><a class="link" data-href="cv" target="_blank" rel="noopener" href="https://example.com/your-cv.pdf"><span data-i18n="hero.cv">Download CV</span> ↓</a></dd>
+            </dl>
+            <p class="colophon"><span data-i18n="contact.colophon">Built in public with Hermes Agent. No frameworks, no trackers.</span> <a class="link needs-js" href="#design-system" data-i18n="contact.colophonLink">See the design system</a></p>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ===================== VIEW: design system ===================== -->
+      <div class="transcript" id="view-system" data-view="system" hidden="">
+        <h1 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="ds.q">Show me the design system.</span><span class="turn__cmd">/design</span></h1>
+        <p class="muted" style="margin-top:var(--sp-4);max-width:70ch" data-i18n="ds.lede">The tokens, skins and components this site is built from. Values are read live from the page, so they change with the skin.</p>
+        <div class="tabs" role="tablist" data-i18n-attr="aria-label:ds.title" aria-label="Design system">
+          <button class="tab" type="button" role="tab" id="tab-tokens" aria-controls="panel-tokens" aria-selected="true" data-i18n="ds.tabTokens">tokens</button>
+          <button class="tab" type="button" role="tab" id="tab-skins" aria-controls="panel-skins" aria-selected="false" tabindex="-1" data-i18n="ds.tabSkins">skins</button>
+          <button class="tab" type="button" role="tab" id="tab-components" aria-controls="panel-components" aria-selected="false" tabindex="-1" data-i18n="ds.tabComponents">components</button>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-tokens" aria-labelledby="tab-tokens" tabindex="0">
+          <div class="ds-group"><h3 data-i18n="ds.color">color</h3><div><div class="swatches" id="ds-swatches"></div><p class="muted" style="margin-top:var(--sp-3);font-size:var(--fs-2)" data-i18n="ds.colorNote">Each theme keeps its own accent, used for what is active or actionable. Status colors are the theme’s own green, yellow and red, and always come with a glyph and a label.</p></div></div>
+          <div class="ds-group"><h3 data-i18n="ds.type">type (mono)</h3><div class="rows2" id="ds-type"></div></div>
+          <div class="ds-group"><h3 data-i18n="ds.space">space (4px base)</h3><div class="rows2" id="ds-space"></div></div>
+          <div class="ds-group"><h3 data-i18n="ds.shape">radius and border</h3><div class="shapes" id="ds-shape"></div></div>
+          <div class="ds-group"><h3 data-i18n="ds.motion">motion</h3><div><div class="rows2" id="ds-motion"></div><p class="muted" style="margin-top:var(--sp-3);font-size:var(--fs-2)" data-i18n="ds.motionNote">Select a row to play it. Durations drop to zero under prefers-reduced-motion.</p></div></div>
+          <div class="ds-group"><h3 data-i18n="ds.layers">z-index</h3><div class="rows2" id="ds-layers"></div></div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-skins" aria-labelledby="tab-skins" tabindex="0" hidden="">
+          <p class="muted" style="margin-bottom:var(--sp-4);max-width:70ch" data-i18n="ds.skinsNote">Nine open-source themes plus system, which uses Ayu Dark or Ayu Light to match your OS. Each keeps its official palette, mapped onto the same tokens. Colors that fail WCAG AA are adjusted just enough to pass, mostly in the light themes. Select a card to apply it.</p>
+          <div class="skins" id="ds-skins"></div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-components" aria-labelledby="tab-components" tabindex="0" hidden="">
+          <div class="specs">
+            <section class="spec"><div class="spec__bar"><b>button</b><span>.btn</span></div><div class="spec__body">
+              <button class="btn btn--primary" type="button" data-i18n="ds.sPrimary">Primary</button><button class="btn" type="button" data-i18n="ds.sDefault">Default</button><button class="btn btn--ghost" type="button">ghost</button><button class="btn" type="button" disabled="" data-i18n="ds.sDisabled">Disabled</button></div></section>
+            <section class="spec spec--wide"><div class="spec__bar"><b>logo · loading mark</b><span>.logo .mark</span></div><div class="spec__body spec__body--col">
+              <div class="logo-row"><span style="font-size:48px"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="7" y="3.5" width="3" height="3" fill="var(--accent)"></rect><path d="M8.5 9.5V18a3 3 0 0 1-3 3H3" fill="none" stroke="var(--accent)" stroke-width="3"></path><rect x="13" y="3.5" width="7" height="14.5" fill="var(--text)"></rect></svg></span><span style="font-size:24px"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="7" y="3.5" width="3" height="3" fill="var(--accent)"></rect><path d="M8.5 9.5V18a3 3 0 0 1-3 3H3" fill="none" stroke="var(--accent)" stroke-width="3"></path><rect x="13" y="3.5" width="7" height="14.5" fill="var(--text)"></rect></svg></span><span style="font-size:16px"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="7" y="3.5" width="3" height="3" fill="var(--accent)"></rect><path d="M8.5 9.5V18a3 3 0 0 1-3 3H3" fill="none" stroke="var(--accent)" stroke-width="3"></path><rect x="13" y="3.5" width="7" height="14.5" fill="var(--text)"></rect></svg></span><span class="mark" style="font-size:28px">⠚</span></div>
+              <p class="muted" style="font-size:var(--fs-2)" data-i18n="ds.sLogo">The jl mark: a j followed by a block cursor that doubles as the l. It is the title bar logo and the favicon, which switches between Ayu Dark and Ayu Light with your OS. ⠚, the letter j in Braille, appears only while something is loading.</p></div></section>
+            <section class="spec"><div class="spec__bar"><b>link · kbd · tooltip</b><span>.link .kbd</span></div><div class="spec__body">
+              <a class="link" href="#design-system" data-i18n="ds.sLink">Inline link</a><span class="kbd">ctrl</span><span class="kbd">k</span>
+              <button class="btn tip-start" type="button" data-i18n="ds.sTipTarget" data-i18n-attr="data-tip:ds.sTip" data-tip="Tooltip text">Hover or focus me</button></div></section>
+            <section class="spec"><div class="spec__bar"><b>tag · status</b><span>.tag .status</span></div><div class="spec__body">
+              <span class="tag">TypeScript</span><span class="tag tag--dashed">placeholder</span>
+              <span class="status status--done"><span aria-hidden="true">●</span> <span data-i18n="status.done">done</span></span>
+              <span class="status status--progress"><span aria-hidden="true">◐</span> <span data-i18n="status.progress">in progress</span></span>
+              <span class="status status--planned"><span aria-hidden="true">○</span> <span data-i18n="status.planned">planned</span></span>
+              <span class="status status--warn"><span aria-hidden="true">▲</span> warning</span><span class="status status--error"><span aria-hidden="true">✕</span> danger</span></div></section>
+            <section class="spec"><div class="spec__bar"><b>language · theme</b><span>.seg</span></div><div class="spec__body">
+              <div class="seg" role="radiogroup" data-seg="lang" data-i18n-attr="aria-label:a11y.language" aria-label="Language"><button class="seg__opt" type="button" role="radio" data-value="en" aria-label="English" aria-checked="true" tabindex="0">EN</button><button class="seg__opt" type="button" role="radio" data-value="es" aria-label="Español" aria-checked="false" tabindex="-1">ES</button></div>
+              <button class="btn" type="button" data-act="themes" aria-haspopup="dialog" data-i18n="ds.sThemeBtn">Theme picker</button>
+              <button class="btn" type="button" data-act="palette" aria-haspopup="dialog" data-i18n="ds.sPaletteBtn">Command palette</button></div></section>
+            <section class="spec spec--wide"><div class="spec__bar"><b>prompt · tool call · result</b><span>.turn .tool .result</span></div><div class="spec__body spec__body--col">
+              <p class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="ds.sPrompt">What has Julio built?</span><span class="turn__cmd">/work</span></p>
+              <p class="tool" style="margin-top:0"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">List</span><span class="tool__arg">(work/)</span></p>
+              <div class="result"><span class="muted" data-i18n="ds.sResult">Result text sits under the tool call.</span></div></div></section>
+            <section class="spec"><div class="spec__bar"><b>todo item</b><span>.todo__item</span></div><div class="spec__body spec__body--col">
+              <div class="todo"><div class="todo__item" style="border:0;padding:0"><span class="todo__id">#2</span><span class="status status--progress todo__st"><span aria-hidden="true">◐</span> <span data-i18n="status.progress">in progress</span></span><span class="todo__date">2026-11-12</span><span class="todo__title" data-i18n="ds.sTodo">Design system</span></div></div></div></section>
+            <section class="spec"><div class="spec__bar"><b>timeline item</b><span>.glog__item</span></div><div class="spec__body spec__body--col">
+              <div class="glog"><div class="glog__item"><p class="glog__role" data-i18n="ds.sRole">[Role title]</p><p class="glog__org" data-i18n="ds.sOrg">[Company] · [Place]</p><p class="glog__when">20XX — 20XX</p></div></div></div></section>
+            <section class="spec spec--wide"><div class="spec__bar"><b>code block</b><span>.code</span></div><div class="spec__body spec__body--col">
+<pre class="code"><code><span class="c"># tokens only, never literals</span>
+<span class="h">[button.primary]</span>
+<span class="k">background</span> = <span class="s">"var(--accent)"</span>
+<span class="k">color</span>      = <span class="s">"var(--accent-fg)"</span>
+<span class="k">transition</span> = <span class="s">"border-color var(--dur-fast)"</span></code></pre></div></section>
+            <section class="spec spec--wide"><div class="spec__bar"><b>status bar</b><span>.status-line</span></div><div class="spec__body spec__body--col">
+              <div class="status-line" style="padding:0"><span>? shortcuts · / commands</span><span class="status-line__right"><span class="mode">build</span><span class="model">julio-lopez<span class="muted">/</span>senior-full-stack</span></span></div></div></section>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPONENT: dock (prompt + status line) -->
+      <div class="dock needs-js">
+        <form class="prompt" id="prompt" autocomplete="off">
+          <div class="menu" id="menu" role="listbox" hidden="" data-i18n-attr="aria-label:a11y.menu" aria-label="Commands"></div>
+          <div class="prompt__box">
+            <span class="prompt__glyph" aria-hidden="true">❯</span>
+            <input class="prompt__input" id="cmd" type="text" role="combobox" aria-expanded="false" aria-controls="menu" aria-autocomplete="list" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" data-i18n-attr="placeholder:ui.placeholder;aria-label:a11y.prompt" placeholder="Search projects and skills, or type / for commands…" aria-label="Command prompt">
+          </div>
+        </form>
+        <div class="status-line">
+          <span class="status-line__msg is-hint" id="st-msg" role="status" aria-live="polite">? shortcuts · / commands · Ctrl K palette</span>
+          <span class="status-line__right"><span class="mode tip-up" data-i18n-attr="data-tip:ui.tipMode" data-tip="Mode"><span class="sr-only" data-i18n="ui.srMode">Mode: </span>build</span><span class="model tip-up" data-i18n-attr="data-tip:ui.tipModel" data-tip="Model"><span class="sr-only" data-i18n="ui.srModel">Model: </span>julio-lopez</span><span class="muted" aria-hidden="true">/</span><span class="model tip-up" data-i18n-attr="data-tip:ui.tipVariant" data-tip="Variant"><span class="sr-only" data-i18n="ui.srVariant">Variant: </span><span class="opt-hide">senior-full-stack</span><span class="opt-show">sr-fs</span></span></span>
+        </div>
+      </div>
+    </main>
+
+    <!-- COMPONENT: sidebar -->
+    <aside class="sidebar" data-i18n-attr="aria-label:a11y.sidebar" aria-label="Session">
+      <div class="side__block">
+        <p class="side__title" data-i18n="side.files">Files</p>
+        <nav class="files" id="files" data-i18n-attr="aria-label:a11y.files" aria-label="Sections">
+          <a href="#work" data-nav="work"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.work">work</span>/</a>
+          <a href="#devlog" data-nav="devlog"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.devlog">devlog</span>/</a>
+          <a href="#experience" data-nav="experience"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.experience">experience</span>.md</a>
+          <a href="#stack" data-nav="stack"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.stack">stack</span>/</a>
+          <a href="#about" data-nav="about"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.about">about</span>.md</a>
+          <a href="#contact" data-nav="contact"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.contact">contact</span>.md</a>
+          <a class="needs-js" href="#design-system" data-nav="design-system"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.design">design-system</span>/</a>
+          <span class="files__ind" id="files-ind" aria-hidden="true"></span>
+        </nav>
+      </div>
+      <div class="side__block needs-js">
+        <p class="side__title"><span data-i18n="side.context">Context</span><span id="ctx-pct">17%</span></p>
+        <div class="ctx" id="ctx" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="17" data-i18n-attr="aria-label:side.contextLabel" aria-label="How much of the page you have read">
+          <span class="ctx__bar" id="ctx-bar" aria-hidden="true">██<i>░░░░░░░░░░░░</i></span>
+          <span class="ctx__nums" id="ctx-nums">≈ 211 / 1.3k tokens</span>
+        </div>
+        <p class="ctx__read" id="ctx-read">1/7 sections read</p>
+      </div>
+      <div class="side__block">
+        <p class="side__title"><span data-i18n="side.agents">Agents</span><span id="agents-count">3</span></p>
+        <ul class="agents" id="agents"><li class="agent"><span class="status status--progress" aria-hidden="true">◐</span><span class="agent__name">hermes <span class="muted">· learning</span></span><p class="agent__desc">building this site · #2 Design system</p></li><li class="agent"><span class="status status--done" aria-hidden="true">●</span><span class="agent__name">opencode <span class="muted">· active</span></span><p class="agent__desc">AI code review in GitHub Actions</p><ul class="agent__subs"><li>orchestrator · read-only</li><li>specialist reviewers</li></ul></li><li class="agent"><span class="status status--done" aria-hidden="true">●</span><span class="agent__name">claude code <span class="muted">· active</span></span><p class="agent__desc">everyday coding, remote sessions</p></li></ul>
+      </div>
+      <div class="side__block">
+        <p class="side__title"><span data-i18n="side.todo">Todo </span><span id="todo-count">1/4</span></p>
+        <ul class="mini-todo" id="mini-todo"><li><a href="#devlog"><span class="status status--done" aria-hidden="true">●</span><span class="sr-only">done </span><span>#1 Environment setup</span></a></li><li><a href="#devlog"><span class="status status--progress" aria-hidden="true">◐</span><span class="sr-only">in progress </span><span>#2 Design system</span></a></li><li><a href="#devlog"><span class="status status--planned" aria-hidden="true">○</span><span class="sr-only">planned </span><span>#3 Content and case studies</span></a></li><li><a href="#devlog"><span class="status status--planned" aria-hidden="true">○</span><span class="sr-only">planned </span><span>#4 Publish</span></a></li></ul>
+      </div>
+      <button class="tip needs-js" type="button" data-act="help"><span class="kbd">?</span><span class="tip__desc" data-i18n="side.keys">keyboard shortcuts</span></button>
+    </aside>
+  </div>
+</div>
+
+<div class="dialog" id="dlg" hidden="">
+  <div class="dialog__backdrop" data-dlg-close=""></div>
+  <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
+    <div class="dialog__head"><h2 class="dialog__title" id="dlg-title"></h2><button class="btn btn--ghost" type="button" data-dlg-close="" data-i18n-attr="aria-label:ui.close" aria-label="Close">esc</button></div>
+    <div id="dlg-body" style="display:flex;flex-direction:column;min-height:0;flex:1"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ========================================================================
+     SITE DATA: language-neutral values. Replace placeholders here.
+     ======================================================================== */
+  var SITE = {
+    email: 'you@example.com',
+    links: {
+      github: 'https://github.com/juliolv',
+      linkedin: 'https://www.linkedin.com/in/your-handle',
+      cv: 'https://example.com/your-cv.pdf',
+      repo: 'https://github.com/juliolv/portfolio',
+      pages: 'https://juliolv.github.io/portfolio/'
+    },
+    work: [
+      { slug: 'operations-platform', stack: ['TypeScript', 'React', 'Node.js', 'AWS'], href: null },
+      { slug: 'booking-system', stack: ['MongoDB', 'Express', 'React', 'Node.js', 'Monorepo'], href: null },
+      { slug: 'storefront', stack: ['Next.js', 'Prisma', 'Tailwind CSS', 'shadcn/ui'], href: null },
+      { slug: 'this-site', stack: ['Astro', 'CSS', 'TypeScript', 'Hermes Agent'], href: 'https://github.com/juliolv/portfolio' }
+    ],
+    devlog: [
+      { issue: 1, status: 'done', date: '2026-11-13' },
+      { issue: 2, status: 'progress', date: '2026-11-13' },
+      { issue: 3, status: 'planned', date: null },
+      { issue: 4, status: 'planned', date: null }
+    ],
+    stack: [
+      { dir: 'languages', items: ['TypeScript', 'JavaScript (ES6+)', 'HTML5 / CSS3'] },
+      { dir: 'frontend', items: ['React', 'Next.js', 'Tailwind CSS', 'shadcn/ui', 'TanStack Table', 'Redux Toolkit / Zustand', 'MUI'] },
+      { dir: 'backend', items: ['Node.js', 'REST APIs', 'Prisma / Drizzle', 'PostgreSQL / MySQL', 'MongoDB', 'Zod / Yup'] },
+      { dir: 'infra-tooling', items: ['AWS (Amplify, Lambda, S3, SES)', 'Vercel', 'Docker', 'GitHub Actions', 'Monorepos', 'Git · WSL2 Ubuntu', 'OpenCode · Claude Code', 'Hermes Agent (learning)'] }
+    ],
+    chips: ['/work', '/devlog', '/contact', '/theme'],
+    /* the agents I actually use; 'learning' or 'active' */
+    agents: [
+      { id: 'hermes', name: 'hermes', status: 'learning' },
+      { id: 'opencode', name: 'opencode', status: 'active', subs: ['orchestrator', 'specialists'] },
+      { id: 'claude', name: 'claude code', status: 'active' }
+    ],
+    tips: [
+      { id: 'work', label: '/work', act: 'cmd:/work' },
+      { id: 'theme', label: '/theme', act: 'cmd:/theme' },
+      { id: 'palette', label: '{k}', act: 'palette' },
+      { id: 'help', label: '?', act: 'help' }
+    ]
+  };
+  /* Open-source themes mapped onto the token set (see the CSS skin blocks). */
+  var SKINS = [
+    { id: 'ayu-dark', name: 'Ayu Dark', kind: 'dark', by: 'ayu' },
+    { id: 'ayu-light', name: 'Ayu Light', kind: 'light', by: 'ayu' },
+    { id: 'catppuccin-mocha', name: 'Catppuccin Mocha', kind: 'dark', by: 'Catppuccin' },
+    { id: 'catppuccin-latte', name: 'Catppuccin Latte', kind: 'light', by: 'Catppuccin' },
+    { id: 'dracula', name: 'Dracula', kind: 'dark', by: 'Dracula' },
+    { id: 'tokyo-night', name: 'Tokyo Night', kind: 'dark', by: 'enkia' },
+    { id: 'nord', name: 'Nord', kind: 'dark', by: 'Arctic Ice Studio' },
+    { id: 'rose-pine', name: 'Rosé Pine', kind: 'dark', by: 'Rosé Pine' },
+    { id: 'rose-pine-dawn', name: 'Rosé Pine Dawn', kind: 'light', by: 'Rosé Pine' }
+  ];
+  var SKIN_IDS = SKINS.map(function (s) { return s.id; });
+
+  /* ========================================================================
+     I18N: every piece of copy, keyed by section.
+     ======================================================================== */
+  var I18N = {};
+  I18N.en = {
+    meta: {
+      title: 'Julio López · Senior full-stack software engineer',
+      description: 'Portfolio of Julio López, a senior full-stack engineer with 10+ years building web platforms and internal tools, now focused on agentic developer tooling. Built in public with Hermes Agent.'
+    },
+    a11y: { home: 'Julio, back to top', files: 'Sections', sidebar: 'Session', language: 'Language', theme: 'Theme', prompt: 'Command prompt', menu: 'Commands', skins: 'Quick theme switch' },
+    ui: {
+      placeholder: 'Search projects and skills, or type / for commands…', hintTouch: 'tap ❯ to search · / commands', menuShort: 'menu', tipMode: 'Mode', tipModel: 'Model', tipVariant: 'Variant', srMode: 'Mode: ', srModel: 'Model: ', srVariant: 'Variant: ', placeholderShort: 'Search, or type /…', hint: '? shortcuts · / commands · {k} palette', hintOff: '{k} palette · /help shortcuts', hintShort: '/ commands',
+      copied: 'copied', copyFailed: 'select the address to copy it', close: 'Close', ready: 'ready', matches: 'matches', current: 'current'
+    },
+    nav: { work: 'work', devlog: 'devlog', experience: 'experience', stack: 'stack', about: 'about', contact: 'contact', design: 'design-system' },
+    side: { files: 'Files', todo: 'Todo ', theme: 'Theme', keys: 'keyboard shortcuts', context: 'Context', contextLabel: 'How much of the page you have read',
+      tokens: 'tokens', read: 'sections read', agents: 'Agents', learning: 'learning', active: 'active' },
+    agents: {
+      hermes: 'building this site · {issue}', opencode: 'AI code review in GitHub Actions', claude: 'everyday coding, remote sessions',
+      orchestrator: 'orchestrator · read-only', specialists: 'specialist reviewers'
+    },
+    status: { done: 'done', progress: 'in progress', planned: 'planned', tbd: 'TBD' },
+    hero: {
+      role: 'senior full-stack software engineer',
+      pitch: 'Senior engineer with 10+ years across the full development lifecycle. I turn legacy systems into fast, cloud-native web platforms and build the internal tools teams run on. Lately I focus on agentic developer tooling, like AI-assisted code review that runs in GitHub Actions.',
+      cv: 'Download CV', email: 'Copy email',
+      available: 'available', availableNote: 'for senior full-stack roles · [City, time zone] · remote friendly',
+      profile: 'Profile', tipsTitle: 'Try this',
+      card: [['role', 'Senior software engineer'], ['experience', '10+ years, since 2015'], ['focus', 'Web platforms, internal tools, AI-assisted dev workflows'], ['stack', 'TypeScript · React · Next.js · Node.js · AWS'], ['speaks', 'Spanish (native) · English (professional)'], ['based', '[City, country]']],
+      tips: { work: 'See selected work', theme: 'Try a color theme', palette: 'Command palette', help: 'Keyboard shortcuts' }
+    },
+    work: {
+      q: 'What has Julio built?', note: 'Placeholder projects for now. Select a row to expand it. Full case studies are in progress.', view: 'View the repo', soon: 'case study in progress',
+      labels: { problem: 'Problem', role: 'Role', stack: 'Stack', outcome: 'Outcome' },
+      items: [
+        { period: '20XX — present', name: 'Operations platform', problem: 'An enterprise operations platform outgrew its legacy framework and the web interfaces built on top of it.', role: '[Placeholder.] Senior engineer leading a multi-year migration.', outcome: 'Modern full-stack ecosystem with internal tools for proprietary workflows. [Add one metric.]' },
+        { period: '20XX — present', name: 'Booking and scheduling system', problem: 'One business needed a single system for records, scheduling and billing instead of three disconnected tools.', role: '[Placeholder.] Freelance engineer. Designed the monorepo behind the client and admin apps.', outcome: 'Shared data models across apps and dual-entry accounting. [Add one metric.]' },
+        { period: 'planned', name: 'E-commerce storefront', problem: 'A small retailer needed fast pages, strong SEO, secure payments and automated inventory.', role: '[Placeholder.] Built from scratch as a technical showcase.', outcome: 'In progress. Payments, inventory and storefront are being built in the open.' },
+        { period: '2026', name: 'This portfolio', problem: 'I wanted to learn an agent-driven workflow on a real project and show the process, not only the result.', role: 'Design, engineering and writing, with the agent as a pair.', outcome: 'A bilingual site with a public design system. [Add one metric.]' }
+      ]
+    },
+    devlog: {
+      q: 'How is he learning Hermes Agent?', issue: 'issue', repo: 'Public repo', hosted: 'Published from the repo with',
+      intro: 'I am learning Hermes Agent, the open-source agent from Nous Research, by using it to build this site. Each phase is a GitHub issue, and this list follows them.',
+      items: [
+        { title: 'Environment setup', note: 'Run Hermes Agent in Docker with a reproducible config, and write down what tripped me up.' },
+        { title: 'Design system', note: 'Tokens, skins and components for the TUI design language. You are looking at the first pass.' },
+        { title: 'Content and case studies', note: 'Replace placeholders with real projects, experience and a CV.' },
+        { title: 'Publish', note: 'Port to the final stack, deploy to GitHub Pages and write the retrospective.' }
+      ]
+    },
+    experience: {
+      q: 'Where has he worked?',
+      items: [
+        { when: '20XX — present', role: 'Senior Software Engineer', org: 'Example Corp', text: '[Scope, the systems you own, and one measurable outcome.]' },
+        { when: '20XX — 20XX', role: 'Mid-Level Software Engineer', org: 'Example Inc', text: '[End-to-end feature ownership and the consolidation of a fragmented codebase.]' },
+        { when: '20XX — 20XX', role: 'Junior Software Engineer', org: 'Example Ltd', text: '[Building and maintaining modules for business applications.]' },
+        { when: '20XX — 20XX', role: 'BSc in Computer Science', org: 'Example University', text: '[Thesis topic or honours.]', edu: true }
+      ]
+    },
+    stack: { q: 'What does he build with?', groups: ['Languages', 'Frontend', 'Backend and data', 'Infrastructure, tooling and AI-assisted workflows'] },
+    about: {
+      q: 'Who is Julio?',
+      body: ['I am Julio, a software engineer with a decade of shipping web products. I like software that feels obvious to use and stays calm to maintain, and I care about the small details that make both true.', 'Lately most of my curiosity goes into agentic developer tooling. I designed an automated code review workflow for GitHub Actions, with a read-only orchestrator, specialist subagents and review comments that update in place instead of piling up. I work from WSL2 on Ubuntu, and I am learning Hermes Agent by building this site in public.', '[Add one or two sentences: what you value in a team and what you do away from the keyboard.]']
+    },
+    contact: {
+      q: 'How do I reach him?', lede: 'The fastest way is email. I usually reply within a day.',
+      copy: 'Copy', open: 'Open in mail app', colophon: 'Built in public with Hermes Agent. No frameworks, no trackers.', colophonLink: 'See the design system'
+    },
+    cmd: {
+      work: 'Selected work', devlog: 'Building in public', experience: 'Experience', stack: 'Stack', about: 'About', contact: 'Contact', design: 'Design system',
+      theme: 'Choose a color theme', lang: 'Switch language', copy: 'Copy email address', hire: 'Jump to contact and copy email', help: 'Keyboard shortcuts',
+      clear: 'Clear search results', github: 'Open GitHub', linkedin: 'Open LinkedIn', cv: 'Open CV', repo: 'Open the portfolio repo'
+    },
+    search: { result: '{n} matches for "{q}"', none: 'No matches for "{q}". Try a skill like react, or type / for commands.', unknown: 'Unknown command {c}. Type / to see all commands.', badarg: 'Unknown option {a} for {c}.', running: 'running' },
+    palette: {
+      title: 'Command palette', placeholder: 'Type a command or search…', empty: 'No matching commands.', hNav: 'navigate', hRun: 'run', hClose: 'close',
+      gGo: 'Go to', gApp: 'Appearance', gLinks: 'Links', gActions: 'Actions', themePrefix: 'Theme: ', langPrefix: 'Language: '
+    },
+    themes: {
+      title: 'Choose a theme', note: 'Colors preview as you move.', hMove: 'preview', hApply: 'apply', hCancel: 'cancel',
+      dark: 'dark', light: 'light', desc: { system: 'follows your OS · Ayu' }
+    },
+    help: {
+      title: 'Keyboard shortcuts', inPrompt: 'In the prompt', always: 'Always on', single: 'Single-key shortcuts',
+      toggle: 'Single-key shortcuts', on: 'on', off: 'off',
+      toggleNote: 'These fire on one key press. Turn them off if they get in the way of a screen reader, voice control or typing.',
+      alwaysRows: [['{k}', 'Command palette'], ['esc', 'Close, or leave the prompt']],
+      singleRows: [['/', 'Focus the prompt'], ['?', 'Show this help'], ['t', 'Choose a theme'], ['l', 'Switch language'], ['j / k', 'Next / previous section']],
+      prompt: [['↑ ↓', 'Move in the command list'], ['tab', 'Complete the command'], ['enter', 'Run it']]
+    },
+    ds: {
+      q: 'Show me the design system.', title: 'Design system', lede: 'The tokens, skins and components this site is built from. Values are read live from the page, so they change with the skin.',
+      tabTokens: 'tokens', tabSkins: 'skins', tabComponents: 'components',
+      color: 'color', colorNote: 'Each theme keeps its own accent, used for what is active or actionable. Status colors are the theme’s own green, yellow and red, and always come with a glyph and a label.',
+      type: 'type (mono)', space: 'space (4px base)', shape: 'radius and border', motion: 'motion', motionNote: 'Select a row to play it. Durations drop to zero under prefers-reduced-motion.', layers: 'z-index',
+      sample: 'Sharp, quiet, confident.', skinsNote: 'Nine open-source themes plus system, which uses Ayu Dark or Ayu Light to match your OS. Each keeps its official palette, mapped onto the same tokens. Colors that fail WCAG AA are adjusted just enough to pass, mostly in the light themes. Select a card to apply it.',
+      sPrimary: 'Primary', sDefault: 'Default', sDisabled: 'Disabled', sLink: 'Inline link', sTipTarget: 'Hover or focus me', sTip: 'Tooltip text',
+      sThemeBtn: 'Theme picker', sPaletteBtn: 'Command palette', sPrompt: 'What has Julio built?', sResult: 'Result text sits under the tool call.',
+      sLogo: 'The jl mark: a j followed by a block cursor that doubles as the l. It is the title bar logo and the favicon, which switches between Ayu Dark and Ayu Light with your OS. ⠚, the letter j in Braille, appears only while something is loading.',
+      sTodo: 'Design system', sRole: '[Role title]', sOrg: '[Company] · [Place]'
+    }
+  };
+
+  I18N.es = {
+    meta: {
+      title: 'Julio López · Ingeniero de software full-stack senior',
+      description: 'Portfolio de Julio López, ingeniero full-stack senior con más de 10 años construyendo plataformas web y herramientas internas, hoy enfocado en herramientas agénticas para desarrolladores. Construido en público con Hermes Agent.'
+    },
+    a11y: { home: 'Julio, volver al inicio', files: 'Secciones', sidebar: 'Sesión', language: 'Idioma', theme: 'Tema', prompt: 'Línea de comandos', menu: 'Comandos', skins: 'Cambio rápido de tema' },
+    ui: {
+      placeholder: 'Busca proyectos y habilidades, o escribe / para comandos…', hintTouch: 'toca ❯ para buscar · / comandos', menuShort: 'menú', tipMode: 'Modo', tipModel: 'Modelo', tipVariant: 'Variante', srMode: 'Modo: ', srModel: 'Modelo: ', srVariant: 'Variante: ', placeholderShort: 'Busca, o escribe /…', hint: '? atajos · / comandos · {k} paleta', hintOff: '{k} paleta · /help atajos', hintShort: '/ comandos',
+      copied: 'copiado', copyFailed: 'selecciona la dirección para copiarla', close: 'Cerrar', ready: 'listo', matches: 'coincidencias', current: 'actual'
+    },
+    nav: { work: 'trabajo', devlog: 'bitácora', experience: 'experiencia', stack: 'stack', about: 'sobre-mí', contact: 'contacto', design: 'sistema-de-diseño' },
+    side: { files: 'Archivos', todo: 'Pendientes ', theme: 'Tema', keys: 'atajos de teclado', context: 'Contexto', contextLabel: 'Cuánto de la página has leído',
+      tokens: 'tokens', read: 'secciones leídas', agents: 'Agentes', learning: 'aprendiendo', active: 'activo' },
+    agents: {
+      hermes: 'construyendo este sitio · {issue}', opencode: 'revisión de código con IA en GitHub Actions', claude: 'programación diaria, sesiones remotas',
+      orchestrator: 'orquestador · solo lectura', specialists: 'revisores especialistas'
+    },
+    status: { done: 'hecho', progress: 'en curso', planned: 'planeado', tbd: 'por definir' },
+    hero: {
+      role: 'ingeniero de software full-stack senior',
+      pitch: 'Ingeniero senior con más de 10 años en todo el ciclo de desarrollo. Convierto sistemas heredados en plataformas web rápidas y nativas de la nube, y construyo las herramientas internas con las que trabajan los equipos. Últimamente me enfoco en herramientas agénticas para desarrolladores, como revisión de código asistida por IA que corre en GitHub Actions.',
+      cv: 'Descargar CV', email: 'Copiar email',
+      available: 'disponible', availableNote: 'para roles full-stack senior · [Ciudad, zona horaria] · remoto',
+      profile: 'Perfil', tipsTitle: 'Prueba esto',
+      card: [['rol', 'Ingeniero de software senior'], ['experiencia', 'Más de 10 años, desde 2015'], ['foco', 'Plataformas web, herramientas internas, flujos de desarrollo asistidos por IA'], ['stack', 'TypeScript · React · Next.js · Node.js · AWS'], ['idiomas', 'Español (nativo) · Inglés (profesional)'], ['base', '[Ciudad, país]']],
+      tips: { work: 'Ver trabajo seleccionado', theme: 'Probar un tema de color', palette: 'Paleta de comandos', help: 'Atajos de teclado' }
+    },
+    work: {
+      q: '¿Qué ha construido Julio?', note: 'Proyectos de ejemplo por ahora. Selecciona una fila para expandirla. Los casos de estudio completos están en proceso.', view: 'Ver el repositorio', soon: 'caso de estudio en proceso',
+      labels: { problem: 'Problema', role: 'Rol', stack: 'Stack', outcome: 'Resultado' },
+      items: [
+        { period: '20XX — actualidad', name: 'Plataforma de operaciones', problem: 'Una plataforma empresarial de operaciones superó su framework heredado y las interfaces web construidas sobre él.', role: '[Ejemplo.] Ingeniero senior al frente de una migración de varios años.', outcome: 'Un ecosistema full-stack moderno con herramientas internas para flujos propios. [Añade una métrica.]' },
+        { period: '20XX — actualidad', name: 'Sistema de reservas y agenda', problem: 'Un negocio necesitaba un solo sistema para expedientes, agenda y facturación en lugar de tres herramientas desconectadas.', role: '[Ejemplo.] Ingeniero freelance. Diseñé el monorepo de las apps de cliente y administración.', outcome: 'Modelos de datos compartidos entre apps y contabilidad de doble entrada. [Añade una métrica.]' },
+        { period: 'planeado', name: 'Tienda en línea', problem: 'Un pequeño comercio necesitaba páginas rápidas, buen SEO, pagos seguros e inventario automatizado.', role: '[Ejemplo.] Construida desde cero como muestra técnica.', outcome: 'En proceso. Pagos, inventario y tienda se construyen en público.' },
+        { period: '2026', name: 'Este portfolio', problem: 'Quería aprender un flujo de trabajo con agentes en un proyecto real y mostrar el proceso, no solo el resultado.', role: 'Diseño, ingeniería y redacción, con el agente como compañero.', outcome: 'Un sitio bilingüe con un sistema de diseño público. [Añade una métrica.]' }
+      ]
+    },
+    devlog: {
+      q: '¿Cómo está aprendiendo Hermes Agent?', issue: 'issue', repo: 'Repositorio público', hosted: 'Publicado desde el repositorio con',
+      intro: 'Estoy aprendiendo Hermes Agent, el agente de código abierto de Nous Research, usándolo para construir este sitio. Cada fase es un issue de GitHub y esta lista los sigue.',
+      items: [
+        { title: 'Configuración del entorno', note: 'Ejecutar Hermes Agent en Docker con una configuración reproducible y anotar lo que me complicó.' },
+        { title: 'Sistema de diseño', note: 'Tokens, skins y componentes del lenguaje visual TUI. Estás viendo la primera versión.' },
+        { title: 'Contenido y casos de estudio', note: 'Reemplazar los ejemplos con proyectos reales, experiencia y un CV.' },
+        { title: 'Publicación', note: 'Migrar al stack final, desplegar en GitHub Pages y escribir la retrospectiva.' }
+      ]
+    },
+    experience: {
+      q: '¿Dónde ha trabajado?',
+      items: [
+        { when: '20XX — actualidad', role: 'Ingeniero de Software Senior', org: 'Example Corp', text: '[Alcance, los sistemas de los que eres responsable y un resultado medible.]' },
+        { when: '20XX — 20XX', role: 'Ingeniero de Software Intermedio', org: 'Example Inc', text: '[Responsabilidad de funcionalidades de principio a fin y consolidación de una base de código fragmentada.]' },
+        { when: '20XX — 20XX', role: 'Ingeniero de Software Junior', org: 'Example Ltd', text: '[Desarrollo y mantenimiento de módulos para aplicaciones de negocio.]' },
+        { when: '20XX — 20XX', role: 'Licenciatura en Ciencias de la Computación', org: 'Example University', text: '[Tema de tesis o menciones.]', edu: true }
+      ]
+    },
+    stack: { q: '¿Con qué construye?', groups: ['Lenguajes', 'Frontend', 'Backend y datos', 'Infraestructura, herramientas y flujos asistidos por IA'] },
+    about: {
+      q: '¿Quién es Julio?',
+      body: ['Soy Julio, ingeniero de software con una década entregando productos web. Me gusta el software que resulta obvio de usar y tranquilo de mantener, y cuido los pequeños detalles que hacen posibles ambas cosas.', 'Últimamente casi toda mi curiosidad va a las herramientas agénticas para desarrolladores. Diseñé un flujo automatizado de revisión de código para GitHub Actions, con un orquestador de solo lectura, subagentes especialistas y comentarios de revisión que se actualizan en lugar de acumularse. Trabajo desde WSL2 en Ubuntu y estoy aprendiendo Hermes Agent construyendo este sitio en público.', '[Añade una o dos frases: qué valoras en un equipo y qué haces lejos del teclado.]']
+    },
+    contact: {
+      q: '¿Cómo lo contacto?', lede: 'La forma más rápida es el email. Suelo responder en un día.',
+      copy: 'Copiar', open: 'Abrir en la app de correo', colophon: 'Construido en público con Hermes Agent. Sin frameworks ni rastreadores.', colophonLink: 'Ver el sistema de diseño'
+    },
+    cmd: {
+      work: 'Trabajo seleccionado', devlog: 'Construyendo en público', experience: 'Experiencia', stack: 'Stack', about: 'Sobre mí', contact: 'Contacto', design: 'Sistema de diseño',
+      theme: 'Elegir un tema de color', lang: 'Cambiar idioma', copy: 'Copiar dirección de email', hire: 'Ir a contacto y copiar el email', help: 'Atajos de teclado',
+      clear: 'Borrar resultados de búsqueda', github: 'Abrir GitHub', linkedin: 'Abrir LinkedIn', cv: 'Abrir CV', repo: 'Abrir el repositorio del portfolio'
+    },
+    search: { result: '{n} coincidencias para "{q}"', none: 'Sin coincidencias para "{q}". Prueba una habilidad como react, o escribe / para comandos.', unknown: 'Comando desconocido {c}. Escribe / para ver todos los comandos.', badarg: 'Opción desconocida {a} para {c}.', running: 'ejecutando' },
+    palette: {
+      title: 'Paleta de comandos', placeholder: 'Escribe un comando o busca…', empty: 'Ningún comando coincide.', hNav: 'navegar', hRun: 'ejecutar', hClose: 'cerrar',
+      gGo: 'Ir a', gApp: 'Apariencia', gLinks: 'Enlaces', gActions: 'Acciones', themePrefix: 'Tema: ', langPrefix: 'Idioma: '
+    },
+    themes: {
+      title: 'Elegir un tema', note: 'Los colores se previsualizan al moverte.', hMove: 'previsualizar', hApply: 'aplicar', hCancel: 'cancelar',
+      dark: 'oscuro', light: 'claro', desc: { system: 'sigue tu sistema · Ayu' }
+    },
+    help: {
+      title: 'Atajos de teclado', inPrompt: 'En la línea de comandos', always: 'Siempre activos', single: 'Atajos de una tecla',
+      toggle: 'Atajos de una tecla', on: 'sí', off: 'no',
+      toggleNote: 'Se activan con una sola tecla. Desactívalos si interfieren con un lector de pantalla, el control por voz o al escribir.',
+      alwaysRows: [['{k}', 'Paleta de comandos'], ['esc', 'Cerrar, o salir de la línea de comandos']],
+      singleRows: [['/', 'Enfocar la línea de comandos'], ['?', 'Mostrar esta ayuda'], ['t', 'Elegir un tema'], ['l', 'Cambiar idioma'], ['j / k', 'Sección siguiente / anterior']],
+      prompt: [['↑ ↓', 'Moverte por la lista'], ['tab', 'Completar el comando'], ['enter', 'Ejecutarlo']]
+    },
+    ds: {
+      q: 'Muéstrame el sistema de diseño.', title: 'Sistema de diseño', lede: 'Los tokens, skins y componentes con los que está hecho este sitio. Los valores se leen en vivo de la página, así que cambian con el skin.',
+      tabTokens: 'tokens', tabSkins: 'skins', tabComponents: 'componentes',
+      color: 'color', colorNote: 'Cada tema conserva su propio acento, reservado para lo activo o accionable. Los colores de estado son el verde, amarillo y rojo del tema, y siempre van con un glifo y una etiqueta.',
+      type: 'tipografía (mono)', space: 'espaciado (base 4px)', shape: 'radio y borde', motion: 'movimiento', motionNote: 'Selecciona una fila para reproducirla. Las duraciones bajan a cero con prefers-reduced-motion.', layers: 'z-index',
+      sample: 'Nítido, sobrio, seguro.', skinsNote: 'Nueve temas de código abierto más sistema, que usa Ayu Dark o Ayu Light según tu sistema operativo. Cada uno conserva su paleta oficial, llevada a los mismos tokens. Los colores que no cumplen WCAG AA se ajustan lo justo, sobre todo en los temas claros. Selecciona una tarjeta para aplicarlo.',
+      sPrimary: 'Primario', sDefault: 'Normal', sDisabled: 'Inactivo', sLink: 'Enlace en línea', sTipTarget: 'Pasa el cursor o enfócame', sTip: 'Texto del tooltip',
+      sThemeBtn: 'Selector de tema', sPaletteBtn: 'Paleta de comandos', sPrompt: '¿Qué ha construido Julio?', sResult: 'El resultado va bajo la llamada a la herramienta.',
+      sLogo: 'La marca jl: una j seguida de un cursor de bloque que también es la l. Es el logo de la barra de título y el favicon, que cambia entre Ayu Dark y Ayu Light según tu sistema operativo. ⠚, la letra j en Braille, solo aparece mientras algo está cargando.',
+      sTodo: 'Sistema de diseño', sRole: '[Nombre del rol]', sOrg: '[Empresa] · [Lugar]'
+    }
+  };
+
+  /* ========================================================================
+     CORE: helpers, state, storage
+     ======================================================================== */
+  var root = document.documentElement;
+  function $(s, el) { return (el || document).querySelector(s); }
+  function $$(s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); }
+  var store = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || '');
+  var KEY = isMac ? '⌘K' : 'Ctrl K';
+  var touch = matchMedia('(hover: none) and (pointer: coarse)').matches;
+  var GLYPH = { done: '●', progress: '◐', planned: '○' };
+  var SECTIONS = ['top', 'work', 'devlog', 'experience', 'stack', 'about', 'contact'];
+  var state = {
+    lang: (function () {
+      var s = store.get('tui.lang');
+      if (s === 'en' || s === 'es') return s;
+      return /^es\b/i.test(navigator.language || '') ? 'es' : 'en';
+    })(),
+    choice: (function () { var s = store.get('tui.skin'); return SKIN_IDS.indexOf(s) > -1 ? s : 'system'; })(),
+    keys: store.get('tui.keys') !== 'off',
+    view: 'home', section: 'top', open: { 0: true }, hist: [], hi: -1, asks: 0
+  };
+  function t(key) {
+    var v = key.split('.').reduce(function (o, p) { return o == null ? o : o[p]; }, I18N[state.lang]);
+    return v == null ? key : v;
+  }
+  function fmt(s, o) { return s.replace(/\{(\w+)\}/g, function (m, k) { return o[k] != null ? o[k] : m; }); }
+  function withKey(s) { return s.replace('{k}', KEY); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function behavior() { return reduced.matches ? 'auto' : 'smooth'; }
+
+  /* ========================================================================
+     COMPONENT: skins (color themes). Any element with data-skin previews one.
+     ======================================================================== */
+  function systemSkin() {
+    var ht = root.getAttribute('data-theme');
+    if (ht === 'light') return 'ayu-light';
+    if (ht === 'dark') return 'ayu-dark';
+    return matchMedia('(prefers-color-scheme: light)').matches ? 'ayu-light' : 'ayu-dark';
+  }
+  function skinName(id) { if (id === 'system') return 'system'; for (var i = 0; i < SKINS.length; i++) if (SKINS[i].id === id) return SKINS[i].name; return id; }
+  function skinDesc(id) {
+    if (id === 'system') return t('themes.desc.system');
+    var s = SKINS.filter(function (x) { return x.id === id; })[0];
+    return t('themes.' + s.kind) + ' · ' + s.by;
+  }
+  function skinFor(choice) { return choice === 'system' ? systemSkin() : choice; }
+  function applySkin(name, anim) {
+    if (anim && !reduced.matches) {
+      root.classList.add('theme-anim');
+      setTimeout(function () { root.classList.remove('theme-anim'); }, 320);
+    }
+    root.setAttribute('data-skin', name);
+    if (state.view === 'system') renderSwatches();
+  }
+  function syncSkinUI() {
+    $('#skin-name').textContent = skinName(state.choice);
+    $$('[data-skin-pick]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-skin-pick') === state.choice ? 'true' : 'false'); });
+  }
+  function setChoice(choice) {
+    state.choice = choice; store.set('tui.skin', choice);
+    applySkin(skinFor(choice), true); syncSkinUI();
+  }
+  try { matchMedia('(prefers-color-scheme: light)').addEventListener('change', function () { if (state.choice === 'system') applySkin(systemSkin(), true); }); } catch (e) {}
+  try {
+    new MutationObserver(function () { if (state.choice === 'system') applySkin(systemSkin(), true); }).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  } catch (e) {}
+  function swatchHtml(id) {
+    if (id === 'system') {
+      return '<span class="sw" aria-hidden="true">' + ['ayu-dark', 'ayu-light'].map(function (s) {
+        return '<i data-skin="' + s + '" style="background:var(--bg)"></i><i data-skin="' + s + '" style="background:var(--accent)"></i>';
+      }).join('') + '</span>';
+    }
+    return '<span class="sw" data-skin="' + id + '" aria-hidden="true"><i style="background:var(--bg)"></i><i style="background:var(--panel)"></i><i style="background:var(--accent)"></i><i style="background:var(--ok)"></i><i style="background:var(--warn)"></i></span>';
+  }
+
+  /* ========================================================================
+     COMPONENT: i18n applier
+     ======================================================================== */
+  function applyI18n(scope) {
+    $$('[data-i18n]', scope).forEach(function (el) { el.textContent = t(el.getAttribute('data-i18n')); });
+    $$('[data-i18n-attr]', scope).forEach(function (el) {
+      el.getAttribute('data-i18n-attr').split(';').forEach(function (pair) {
+        var p = pair.split(':'); el.setAttribute(p[0], t(p[1]));
+      });
+    });
+  }
+
+  /* ========================================================================
+     COMPONENT: status line (message + one-shot spinner)
+     ======================================================================== */
+  /* Braille spinner; the mark ⠚ is the letter j in Braille and is the resting frame. */
+  var stTimer, spinTimer, MARK = '⠚', SPIN = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+  function setStatus(msg, spin, ms) {
+    var el = $('#st-msg');
+    clearTimeout(stTimer); clearInterval(spinTimer);
+    el.classList.toggle('is-hint', !msg);
+    if (!msg) { el.textContent = touch ? t('ui.hintTouch') : withKey(t(state.keys ? 'ui.hint' : 'ui.hintOff')); return; }
+    if (spin) {
+      var i = 0;
+      el.innerHTML = '<span class="spin" aria-hidden="true">' + (reduced.matches ? MARK : SPIN[0]) + '</span> ' + esc(msg);
+      if (!reduced.matches) {
+        spinTimer = setInterval(function () { i = (i + 1) % SPIN.length; var s = el.querySelector('.spin'); if (s) s.textContent = SPIN[i]; }, 80);
+      }
+    } else el.textContent = msg;
+    if (ms) stTimer = setTimeout(function () { setStatus(''); }, ms);
+  }
+
+  /* ========================================================================
+     COMPONENT: copy email, external links
+     ======================================================================== */
+  function copyEmail() {
+    var done = function () { setStatus('✓ ' + t('ui.copied') + ' ' + SITE.email, false, 3200); };
+    var fail = function () {
+      var r = document.createRange(); r.selectNodeContents($('#email-text'));
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      setStatus(t('ui.copyFailed'), false, 3200);
+    };
+    try { navigator.clipboard.writeText(SITE.email).then(done, fail); } catch (e) { fail(); }
+  }
+  function openExternal(url) {
+    var a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  /* ========================================================================
+     RENDER: lists built from SITE + I18N
+     ======================================================================== */
+  function renderHero() {
+    $('#hero-kv').innerHTML = t('hero.card').map(function (r) { return '<dt>' + r[0] + '</dt><dd>' + r[1] + '</dd>'; }).join('');
+    var tips = $('#tips');
+    tips.classList.toggle('tips--chips', touch);
+    if (touch) {
+      tips.innerHTML = SITE.chips.map(function (k) { return '<li><button type="button" class="btn" data-act="cmd:' + k + '">' + k + '</button></li>'; }).join('');
+      return;
+    }
+    tips.innerHTML = SITE.tips.map(function (k) {
+      return '<li><button type="button" class="tip" data-act="' + k.act + '"><span class="tip__key">' + withKey(k.label) + '</span><span class="tip__desc">' + t('hero.tips.' + k.id) + '</span></button></li>';
+    }).join('');
+  }
+  function renderWork() {
+    var L = t('work.labels'), items = t('work.items');
+    $('#work-list').innerHTML = SITE.work.map(function (w, i) {
+      var c = items[i], open = !!state.open[i];
+      return '<li class="row' + (open ? ' is-open' : '') + '" data-i="' + i + '">' +
+        '<button class="row__head" type="button" aria-expanded="' + open + '" aria-controls="proj-' + i + '">' +
+        '<span class="row__mark" aria-hidden="true">' + (open ? '▾' : '▸') + '</span><span class="row__name">' + c.name + '</span><span class="row__meta">' + c.period + '</span></button>' +
+        '<p class="row__sum">' + c.problem + '</p>' +
+        '<div class="row__body" id="proj-' + i + '"><div class="row__inner"><dl class="man">' +
+        '<dt>' + L.role + '</dt><dd>' + c.role + '</dd>' +
+        '<dt>' + L.stack + '</dt><dd><span class="tags">' + w.stack.map(function (s) { return '<span class="tag">' + s + '</span>'; }).join('') + '</span></dd>' +
+        '<dt>' + L.outcome + '</dt><dd>' + c.outcome + '</dd></dl>' +
+        '<p class="row__foot">' + (w.href ? '<a class="link" href="' + w.href + '" target="_blank" rel="noopener">' + t('work.view') + ' ↗</a>' : '<span class="tag tag--dashed">' + t('work.soon') + '</span>') + '</p>' +
+        '</div></div></li>';
+    }).join('');
+  }
+  function renderDevlog() {
+    var items = t('devlog.items');
+    $('#todo-list').innerHTML = SITE.devlog.map(function (d, i) {
+      var c = items[i];
+      return '<li class="todo__item"><span class="todo__id">#' + d.issue + '</span>' +
+        '<span class="todo__st status status--' + d.status + '"><span aria-hidden="true">' + GLYPH[d.status] + '</span> ' + t('status.' + d.status) + '</span>' +
+        (d.date ? '<time class="todo__date" datetime="' + d.date + '">' + d.date + '</time>' : '<span class="todo__date">' + t('status.tbd') + '</span>') +
+        '<span class="todo__title">' + c.title + '</span>' +
+        '<a class="link todo__link" href="' + SITE.links.repo + '/issues/' + d.issue + '" target="_blank" rel="noopener">' + t('devlog.issue') + ' #' + d.issue + ' ↗</a>' +
+        '<p class="todo__note">' + c.note + '</p></li>';
+    }).join('');
+    $('#mini-todo').innerHTML = SITE.devlog.map(function (d, i) {
+      return '<li><a href="#devlog"><span class="status status--' + d.status + '" aria-hidden="true">' + GLYPH[d.status] + '</span><span class="sr-only">' + t('status.' + d.status) + ' </span><span>#' + d.issue + ' ' + items[i].title + '</span></a></li>';
+    }).join('');
+    var done = SITE.devlog.filter(function (d) { return d.status === 'done'; }).length;
+    $('#todo-count').textContent = done + '/' + SITE.devlog.length;
+  }
+  function renderExperience() {
+    $('#exp-list').innerHTML = t('experience.items').map(function (e) {
+      return '<li class="glog__item' + (e.edu ? ' glog__item--edu' : '') + '"><p class="glog__role">' + e.role + ' <span class="glog__org">· ' + e.org + '</span></p><p class="glog__when">' + e.when + '</p>' + (e.text ? '<p class="glog__text">' + e.text + '</p>' : '') + '</li>';
+    }).join('');
+  }
+  function renderStack() {
+    var groups = t('stack.groups');
+    $('#stack-list').innerHTML = SITE.stack.map(function (g, i) {
+      return '<section class="tree"><h3 class="tree__name">' + g.dir + '/ <span class="tree__sub">' + groups[i] + '</span></h3><ul>' +
+        g.items.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ul></section>';
+    }).join('');
+  }
+  function renderAbout() {
+    $('#about-body').innerHTML = t('about.body').map(function (p, i) { return '<p' + (i ? ' class="muted"' : '') + '>' + p + '</p>'; }).join('');
+  }
+  function renderAgents() {
+    var cur = SITE.devlog.filter(function (d) { return d.status === 'progress'; })[0];
+    var issue = cur ? '#' + cur.issue + ' ' + t('devlog.items')[SITE.devlog.indexOf(cur)].title : '';
+    $('#agents').innerHTML = SITE.agents.map(function (a) {
+      var st = a.status === 'learning' ? 'progress' : 'done', glyph = a.status === 'learning' ? '◐' : '●';
+      return '<li class="agent"><span class="status status--' + st + '" aria-hidden="true">' + glyph + '</span>' +
+        '<span class="agent__name">' + a.name + ' <span class="muted">· ' + t('side.' + a.status) + '</span></span>' +
+        '<p class="agent__desc">' + fmt(t('agents.' + a.id), { issue: issue }) + '</p>' +
+        (a.subs ? '<ul class="agent__subs">' + a.subs.map(function (s) { return '<li>' + t('agents.' + s) + '</li>'; }).join('') + '</ul>' : '') + '</li>';
+    }).join('');
+    $('#agents-count').textContent = SITE.agents.length;
+  }
+  /* Context meter: page text as tokens (≈ 4 characters each); "used" grows as you read. */
+  var ctxSizes = null, ctxSeen = {};
+  function updateContext() {
+    if (state.view !== 'home') return;
+    if (!ctxSizes) ctxSizes = SECTIONS.map(function (id) { var el = document.getElementById(id); return el ? Math.round(el.textContent.replace(/\s+/g, ' ').length / 4) : 0; });
+    var total = 0, used = 0, seen = 0;
+    SECTIONS.forEach(function (id, i) {
+      var el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < window.innerHeight * 0.85) ctxSeen[id] = true;
+      total += ctxSizes[i]; if (ctxSeen[id]) { used += ctxSizes[i]; seen++; }
+    });
+    var pct = Math.round((used / Math.max(total, 1)) * 100), cells = 14, f = Math.round((pct / 100) * cells);
+    var k = function (n) { return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n); };
+    $('#ctx-bar').innerHTML = '█'.repeat(f) + '<i>' + '░'.repeat(cells - f) + '</i>';
+    $('#ctx-nums').textContent = '≈ ' + k(used) + ' / ' + k(total) + ' ' + t('side.tokens');
+    $('#ctx-read').textContent = seen + '/' + SECTIONS.length + ' ' + t('side.read');
+    $('#ctx-pct').textContent = pct + '%';
+    $('#ctx').setAttribute('aria-valuenow', pct);
+  }
+
+  /* design system view: values are read live from the page */
+  var COLOR_TOKENS = ['bg', 'panel', 'element', 'border', 'border-strong', 'text', 'muted', 'accent', 'accent-fg', 'accent-subtle', 'ok', 'warn', 'danger', 'select'];
+  function cssVar(n) { return getComputedStyle(root).getPropertyValue('--' + n).trim(); }
+  function renderSwatches() {
+    var el = $('#ds-swatches'); if (!el) return;
+    el.innerHTML = COLOR_TOKENS.map(function (n) {
+      return '<div class="swatch"><div class="swatch__chip" style="background:var(--' + n + ')"></div><div class="swatch__meta">--' + n + '<span>' + cssVar(n) + '</span></div></div>';
+    }).join('');
+  }
+  function renderSystem() {
+    renderSwatches();
+    var sample = t('ds.sample');
+    $('#ds-type').innerHTML = [1, 2, 3, 4, 5, 6, 7].map(function (n) {
+      return '<div class="row2"><code>--fs-' + n + (n === 7 ? ' · clamp' : ' · ' + cssVar('fs-' + n)) + '</code><span class="row2__sample" style="font-size:var(--fs-' + n + ');line-height:1.25' + (n > 4 ? ';font-weight:700' : '') + '">' + sample + '</span></div>';
+    }).join('');
+    $('#ds-space').innerHTML = [1, 2, 3, 4, 5, 6, 7, 8].map(function (n) {
+      return '<div class="row2"><code>--sp-' + n + ' · ' + cssVar('sp-' + n) + '</code><span class="row2__bar" style="width:var(--sp-' + n + ')"></span></div>';
+    }).join('');
+    $('#ds-shape').innerHTML = ['r-0', 'r-1', 'r-box'].map(function (n) { return '<span class="shape" style="border-radius:var(--' + n + ')">' + n + '</span>'; }).join('') +
+      '<span class="shape" style="border-width:var(--bw)">bw</span><span class="shape" style="border-width:var(--bw-2)">bw-2</span><span class="shape" style="box-shadow:var(--elev)">elev</span>';
+    $('#ds-motion').innerHTML = [['dur-fast', 'ease-out'], ['dur-base', 'ease-out'], ['dur-slow', 'ease-out'], ['dur-slow', 'ease-in-out']].map(function (r) {
+      return '<button type="button" class="row2 motion-row"><code>--' + r[0] + ' · ' + r[1] + '</code><span class="track"><i style="transition-duration:var(--' + r[0] + ');transition-timing-function:var(--' + r[1] + ')"></i></span></button>';
+    }).join('');
+    $('#ds-layers').innerHTML = ['z-bar', 'z-dock', 'z-menu', 'z-dialog', 'z-tip'].map(function (n) {
+      return '<div class="row2"><code>--' + n + '</code><span style="font-size:var(--fs-2)">' + cssVar(n) + '</span></div>';
+    }).join('');
+    $('#ds-skins').innerHTML = ['system'].concat(SKIN_IDS).map(function (id) {
+      var preview = id === 'system' ? 'ayu-dark' : id;
+      return '<button type="button" class="skin-card" data-skin-pick="' + id + '" aria-pressed="' + (id === state.choice) + '">' +
+        '<span class="mini" data-skin="' + preview + '"><span><b>❯</b> /work</span><span class="mini__muted">● List(work/)</span><span class="mini__bar"><i></i><i></i><i></i></span></span>' +
+        '<span>' + skinName(id) + '<small>' + skinDesc(id) + '</small></span></button>';
+    }).join('');
+  }
+
+  function renderAll() {
+    renderHero(); renderWork(); renderDevlog(); renderExperience(); renderStack(); renderAbout(); renderAgents(); ctxSizes = null; updateContext();
+    $('#email-text').textContent = SITE.email;
+    $$('[data-kbd]').forEach(function (k) { k.textContent = touch ? t('ui.menuShort') : KEY; });
+    if (matchMedia('(max-width: 640px)').matches) $('#cmd').setAttribute('placeholder', t('ui.placeholderShort'));
+    if (state.view === 'system') renderSystem();
+    syncSkinUI(); syncSegs();
+  }
+
+  /* ========================================================================
+     COMPONENT: language switch + segmented radiogroup (shared)
+     ======================================================================== */
+  function syncSegs() {
+    $$('[data-seg="lang"]').forEach(function (seg) {
+      $$('[role="radio"]', seg).forEach(function (b) {
+        var on = b.getAttribute('data-value') === state.lang;
+        b.setAttribute('aria-checked', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1;
+      });
+    });
+  }
+  /* page title + description follow the language */
+  function applyMeta() {
+    document.title = t('meta.title');
+    var md = document.querySelector('meta[name="description"]'); if (md) md.setAttribute('content', t('meta.description'));
+  }
+  function setLang(l) {
+    state.lang = l; store.set('tui.lang', l);
+    root.setAttribute('lang', l);
+    applyI18n(document); renderAll(); applyMeta();
+    $('#typed').textContent = t('hero.role');
+    setStatus(''); onScroll(true);
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-seg] [role="radio"]');
+    if (b) setLang(b.getAttribute('data-value'));
+  });
+  document.addEventListener('keydown', function (e) {
+    var b = e.target.closest && e.target.closest('[data-seg] [role="radio"]');
+    if (!b) return;
+    var dir = (e.key === 'ArrowRight' || e.key === 'ArrowDown') ? 1 : (e.key === 'ArrowLeft' || e.key === 'ArrowUp') ? -1 : 0;
+    if (!dir) return;
+    e.preventDefault();
+    var opts = $$('[role="radio"]', b.closest('[data-seg]')), n = opts[(opts.indexOf(b) + dir + opts.length) % opts.length];
+    setLang(n.getAttribute('data-value')); n.focus();
+  });
+
+  /* ========================================================================
+     COMPONENT: expandable project rows + tabs + motion demo
+     ======================================================================== */
+  function toggleRow(row, force) {
+    var open = force != null ? force : !row.classList.contains('is-open');
+    row.classList.toggle('is-open', open);
+    var head = $('.row__head', row);
+    head.setAttribute('aria-expanded', open ? 'true' : 'false');
+    $('.row__mark', head).textContent = open ? '▾' : '▸';
+    state.open[+row.getAttribute('data-i')] = open;
+  }
+  document.addEventListener('click', function (e) {
+    var h = e.target.closest('.row__head'); if (h) toggleRow(h.closest('.row'));
+    var m = e.target.closest('.motion-row'); if (m) m.classList.toggle('is-on');
+    var tab = e.target.closest('[role="tab"]'); if (tab) selectTab(tab);
+  });
+  document.addEventListener('keydown', function (e) {
+    var h = e.target.closest && e.target.closest('.row__head');
+    if (h && (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Home' || e.key === 'End')) {
+      e.preventDefault();
+      var heads = $$('.row__head'), i = heads.indexOf(h);
+      var n = e.key === 'Home' ? 0 : e.key === 'End' ? heads.length - 1 : (i + (e.key === 'ArrowDown' ? 1 : -1) + heads.length) % heads.length;
+      heads[n].focus(); return;
+    }
+    var tab = e.target.closest && e.target.closest('[role="tab"]');
+    if (!tab) return;
+    var tabs = $$('[role="tab"]', tab.parentNode), j = tabs.indexOf(tab), k = -1;
+    if (e.key === 'ArrowRight') k = (j + 1) % tabs.length; else if (e.key === 'ArrowLeft') k = (j - 1 + tabs.length) % tabs.length;
+    else if (e.key === 'Home') k = 0; else if (e.key === 'End') k = tabs.length - 1;
+    if (k < 0) return;
+    e.preventDefault(); selectTab(tabs[k]); tabs[k].focus();
+  });
+  function selectTab(tab) {
+    $$('[role="tab"]', tab.parentNode).forEach(function (x) {
+      var on = x === tab;
+      x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1;
+      document.getElementById(x.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+
+  /* ========================================================================
+     COMPONENT: view router, section tracking, nav indicators
+     ======================================================================== */
+  function navTo(id) {
+    if ((location.hash || '').slice(1) === id) route(true); else location.hash = id;
+  }
+  function flash(el) {
+    if (!el || el.id === 'top' || !el.classList.contains('turn')) return;
+    el.classList.remove('is-flash'); void el.offsetWidth; el.classList.add('is-flash');
+    setTimeout(function () { el.classList.remove('is-flash'); }, 1000);
+  }
+  /* Move keyboard and screen reader focus to the section that was asked for. */
+  function focusHeading(sec) {
+    if (!sec) return;
+    var h = sec.matches('h1, h2') ? sec : sec.querySelector('h1, h2');
+    if (!h) return;
+    if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1');
+    h.focus({ preventScroll: true });
+  }
+  function route(force, boot) {
+    var h = (location.hash || '').slice(1);
+    var view = h === 'design-system' ? 'system' : 'home';
+    var changed = view !== state.view;
+    state.view = view;
+    $$('[data-view]').forEach(function (m) { m.hidden = m.getAttribute('data-view') !== view; });
+    var el = view === 'home' && h ? document.getElementById(h) : null;
+    if (changed || force) {
+      var beh = (changed || reduced.matches) ? 'auto' : 'smooth';
+      if (el) { el.scrollIntoView({ behavior: beh, block: 'start' }); flash(el); }
+      else window.scrollTo({ top: 0, behavior: beh });
+    }
+    if (view === 'system') renderSystem();
+    if (!boot) {
+      if (el) focusHeading(el);
+      else if (changed || force) focusHeading(view === 'system' ? $('#view-system h1') : $('#hero-name'));
+    }
+    onScroll(true);
+  }
+  function moveInd(container, ind, axis) {
+    if (!container || !ind || !container.offsetParent) return;
+    var a = container.querySelector('[aria-current="true"]');
+    if (!a) { ind.style.transform = axis === 'y' ? 'translateY(0) scaleY(0)' : 'translateX(0) scaleX(0)'; return; }
+    if (axis === 'y') { ind.style.transform = 'translateY(' + a.offsetTop + 'px) scaleY(' + a.offsetHeight + ')'; return; }
+    var pad = 8;
+    ind.style.transform = 'translateX(' + (a.offsetLeft + pad) + 'px) scaleX(' + Math.max(a.offsetWidth - pad * 2, 1) + ')';
+    if (container.scrollWidth > container.clientWidth) {
+      container.scrollTo({ left: a.offsetLeft - (container.clientWidth - a.offsetWidth) / 2, behavior: behavior() });
+    }
+  }
+  function syncNav() {
+    var key = state.view === 'system' ? 'design-system' : state.section;
+    $$('[data-nav]').forEach(function (a) {
+      if (a.getAttribute('data-nav') === key) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+    $$('#view-home [data-turn]').forEach(function (el) { el.classList.toggle('is-current', state.view === 'home' && el.id === state.section); });
+    $('#crumb').textContent = key === 'top' ? '' : '/' + key;
+    moveInd($('#files'), $('#files-ind'), 'y');
+    moveInd($('#tabstrip'), $('#tabstrip-ind'), 'x');
+  }
+  var ticking = false;
+  function onScroll(now) {
+    if (ticking && now !== true) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      ticking = false;
+      var max = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1), y = window.scrollY || 0;
+      var cur = 'top';
+      if (state.view === 'home') {
+        var line = window.innerHeight * 0.38;
+        SECTIONS.forEach(function (id) { var el = document.getElementById(id); if (el && el.getBoundingClientRect().top <= line) cur = id; });
+        if (y >= max - 2) cur = 'contact';
+      }
+      state.section = cur; syncNav(); updateContext();
+      compactDock(y, max);
+    });
+  }
+  /* Phones: the dock shrinks to one line while scrolling down, expands on scroll up. */
+  var lastY = 0, dockEl = document.querySelector('.dock'), narrow = matchMedia('(max-width: 899px)');
+  function compactDock(y, max) {
+    if (!dockEl) return;
+    if (!narrow.matches || y < 80 || y >= max - 2 || document.activeElement === cmdEl() || !document.getElementById('menu').hidden) { dockEl.classList.remove('is-compact'); lastY = y; return; }
+    if (Math.abs(y - lastY) < 8) return;
+    dockEl.classList.toggle('is-compact', y > lastY); lastY = y;
+  }
+  function cmdEl() { return document.getElementById('cmd'); }
+  function step(d) {
+    var i = SECTIONS.indexOf(state.section), n = Math.max(0, Math.min(SECTIONS.length - 1, i + d));
+    var el = document.getElementById(SECTIONS[n]);
+    if (el) { el.scrollIntoView({ behavior: behavior(), block: 'start' }); flash(el); focusHeading(el); }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  window.addEventListener('hashchange', function () { route(false); });
+
+  /* ========================================================================
+     COMPONENT: commands (shared by slash menu and palette)
+     ======================================================================== */
+  function runNav(id, spin) {
+    var label = '/' + (id === 'design-system' ? 'design' : id);
+    if (spin && !reduced.matches) {
+      setStatus(t('search.running') + ' ' + label, true);
+      setTimeout(function () { navTo(id); setStatus('✓ ' + label, false, 2200); }, 320);
+    } else navTo(id);
+  }
+  function hire() { runNav('contact', true); setTimeout(copyEmail, reduced.matches ? 0 : 700); }
+  function baseCommands() {
+    var go = function (id) { return function () { runNav(id, true); }; };
+    var ext = function (k) { return function () { openExternal(SITE.links[k]); }; };
+    var L = [['work', go('work'), 'go'], ['devlog', go('devlog'), 'go'], ['experience', go('experience'), 'go'], ['stack', go('stack'), 'go'],
+      ['about', go('about'), 'go'], ['contact', go('contact'), 'go'], ['design', go('design-system'), 'go'],
+      ['theme', openThemes, 'app'], ['lang', function () { setLang(state.lang === 'en' ? 'es' : 'en'); }, 'app'],
+      ['github', ext('github'), 'links'], ['linkedin', ext('linkedin'), 'links'], ['cv', ext('cv'), 'links'], ['repo', ext('repo'), 'links'],
+      ['copy', copyEmail, 'actions'], ['hire', hire, 'actions'], ['help', openHelp, 'actions']];
+    return L.map(function (c) { return { key: '/' + c[0], name: c[0], desc: t('cmd.' + c[0]), run: c[1], group: c[2] }; });
+  }
+  function variants(base) {
+    if (base === 'theme') {
+      return ['system'].concat(SKIN_IDS).map(function (id) {
+        return { key: '/theme ' + id, name: id, desc: skinDesc(id), run: function () { setChoice(id); setStatus('✓ ' + t('palette.themePrefix') + skinName(id), false, 2400); } };
+      });
+    }
+    return ['en', 'es'].map(function (l) { return { key: '/lang ' + l, name: l, desc: l === 'en' ? 'English' : 'Español', run: function () { setLang(l); } }; });
+  }
+  function runKey(key) { var c = baseCommands().filter(function (x) { return x.key === key; })[0]; if (c) c.run(); }
+  function slashItems(raw) {
+    var q = raw.toLowerCase(), m = q.match(/^\/(theme|lang)\s+(\S*)$/);
+    if (m) return variants(m[1]).filter(function (v) { return v.name.indexOf(m[2]) === 0; });
+    if (/\s/.test(q)) return [];
+    return baseCommands().filter(function (c) { return c.key.indexOf(q) === 0 || (q.length > 1 && c.desc.toLowerCase().indexOf(q.slice(1)) > -1); });
+  }
+
+  /* ========================================================================
+     COMPONENT: prompt with slash-command menu + live search
+     "/" lists commands; plain text searches projects, stack, devlog and
+     experience by name, tag and title, ranked, inside the same menu.
+     ======================================================================== */
+  var cmd = $('#cmd'), menu = $('#menu'), mItems = [], mSel = 0, mNote = '', annT;
+  function keepVisible(list, el) {
+    if (!el) return;
+    var top = el.offsetTop, bot = top + el.offsetHeight;
+    if (top < list.scrollTop) list.scrollTop = top; else if (bot > list.scrollTop + list.clientHeight) list.scrollTop = bot - list.clientHeight;
+  }
+  function closeMenu() { menu.hidden = true; mItems = []; mNote = ''; cmd.setAttribute('aria-expanded', 'false'); cmd.removeAttribute('aria-activedescendant'); }
+  function hl(label, q) {
+    var i = q ? label.toLowerCase().indexOf(q) : -1;
+    if (i < 0) return esc(label);
+    return esc(label.slice(0, i)) + '<mark>' + esc(label.slice(i, i + q.length)) + '</mark>' + esc(label.slice(i + q.length));
+  }
+  function renderMenu() {
+    if (!mItems.length && !mNote) { closeMenu(); return; }
+    menu.hidden = false; cmd.setAttribute('aria-expanded', 'true');
+    menu.innerHTML = (mNote ? '<div class="opt-note" role="presentation">' + esc(mNote) + '</div>' : '') + mItems.map(function (it, i) {
+      return '<div class="opt" role="option" id="mo-' + i + '" data-i="' + i + '" aria-selected="' + (i === mSel) + '"><span class="opt__key">' + (it.html || esc(it.key)) + '</span><span class="opt__desc">' + esc(it.desc) + '</span></div>';
+    }).join('');
+    if (mItems.length) { cmd.setAttribute('aria-activedescendant', 'mo-' + mSel); keepVisible(menu, $('#mo-' + mSel)); }
+    else cmd.removeAttribute('aria-activedescendant');
+  }
+  function searchIndex() {
+    var idx = [], work = t('work.items'), groups = t('stack.groups');
+    ['work', 'devlog', 'experience', 'stack', 'about', 'contact'].forEach(function (id) {
+      idx.push({ label: t('cmd.' + id), where: '/' + id, tags: [t('nav.' + id), id], text: t(id + '.q'), run: function () { runNav(id, false); } });
+    });
+    SITE.work.forEach(function (w, i) {
+      var c = work[i];
+      idx.push({ label: c.name, where: t('nav.work') + '/ · ' + c.period, tags: w.stack, text: [c.problem, c.role, c.outcome].join(' '), run: function () { openProject(i); } });
+    });
+    SITE.devlog.forEach(function (d, i) {
+      var c = t('devlog.items')[i];
+      idx.push({ label: '#' + d.issue + ' ' + c.title, where: t('nav.devlog') + '/ · ' + t('status.' + d.status), tags: [], text: c.note, run: function () { runNav('devlog', false); } });
+    });
+    t('experience.items').forEach(function (e) {
+      idx.push({ label: e.role, where: t('nav.experience') + ' · ' + e.org, tags: [e.org], text: e.text, run: function () { runNav('experience', false); } });
+    });
+    SITE.stack.forEach(function (g, gi) {
+      g.items.forEach(function (it) { idx.push({ label: it, where: 'stack/' + g.dir, tags: [groups[gi]], text: '', run: function () { runNav('stack', false); } }); });
+    });
+    baseCommands().forEach(function (c) { if (c.group !== 'go') idx.push({ label: c.key, where: c.desc, tags: [c.desc], text: '', run: c.run }); });
+    return idx;
+  }
+  function searchItems(raw) {
+    var q = raw.toLowerCase(), toks = q.split(/\s+/);
+    return searchIndex().map(function (e) {
+      var L = e.label.toLowerCase(), tags = e.tags.map(function (x) { return x.toLowerCase(); }), W = e.where.toLowerCase(), X = (e.text || '').toLowerCase();
+      var all = L + ' ' + tags.join(' ') + ' ' + W + ' ' + X;
+      if (!toks.every(function (tk) { return all.indexOf(tk) > -1; })) return null;
+      var s = 0, tag = null;
+      if (L.indexOf(q) === 0) s += 100; else if ((' ' + L).indexOf(' ' + q) > -1) s += 60; else if (L.indexOf(q) > -1) s += 40;
+      e.tags.forEach(function (tg) { var l = tg.toLowerCase(); if (l === q) { s += 50; tag = tg; } else if (l.indexOf(q) > -1) { s += 25; tag = tag || tg; } });
+      if (W.indexOf(q) > -1) s += 10;
+      if (X.indexOf(q) > -1) s += 5;
+      var extra = tag && L.indexOf(q) < 0 && W.indexOf(tag.toLowerCase()) < 0 ? ' · ' + tag : '';
+      return { score: s || 1, key: e.label, html: hl(e.label, q), desc: e.where + extra, run: e.run };
+    }).filter(Boolean).sort(function (a, b) { return b.score - a.score; }).slice(0, 8);
+  }
+  function openProject(i) {
+    var go = function () {
+      var row = $$('#work-list .row')[i]; if (!row) return;
+      toggleRow(row, true);
+      row.scrollIntoView({ behavior: behavior(), block: 'center' });
+      $('.row__head', row).focus({ preventScroll: true }); flash($('#work'));
+      setStatus('✓ ' + t('work.items')[i].name, false, 2400);
+    };
+    if (state.view !== 'home') { location.hash = 'work'; setTimeout(go, 120); } else go();
+  }
+  function updateMenu() {
+    var raw = cmd.value, q = raw.trim(); mSel = 0; mNote = '';
+    if (raw.charAt(0) === '/') {
+      mItems = slashItems(raw);
+      if (!mItems.length && raw.length > 1) mNote = fmt(t('search.unknown'), { c: raw.split(/\s+/)[0] });
+    } else if (q) {
+      mItems = searchItems(q);
+      mNote = mItems.length ? fmt(t('search.result'), { n: mItems.length, q: q }) : fmt(t('search.none'), { q: q });
+    } else { closeMenu(); return; }
+    renderMenu();
+    clearTimeout(annT);
+    if (mNote) annT = setTimeout(function () { if (!menu.hidden && mNote) setStatus(mNote, false, 3000); }, 600);
+  }
+  function pushHist(raw) { state.hist.push(raw); state.hi = -1; }
+  function afterRun() { if (matchMedia('(pointer: coarse)').matches) cmd.blur(); }
+  function execRaw(raw) {
+    pushHist(raw); cmd.value = ''; closeMenu();
+    if (raw.charAt(0) === '/') {
+      var parts = raw.slice(1).split(/\s+/), name = parts[0].toLowerCase();
+      var c = baseCommands().filter(function (x) { return x.name === name; })[0];
+      if (!c) setStatus(fmt(t('search.unknown'), { c: '/' + name }), false, 3600);
+      else if (parts[1] && (name === 'theme' || name === 'lang')) {
+        var v = variants(name).filter(function (x) { return x.name === parts[1].toLowerCase(); })[0];
+        if (v) v.run(); else setStatus(fmt(t('search.badarg'), { a: parts[1], c: '/' + name }), false, 3600);
+      } else c.run();
+    } else setStatus(fmt(t('search.none'), { q: raw }), false, 3600);
+    afterRun();
+  }
+  $('#prompt').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var raw = cmd.value.trim(); if (!raw) return;
+    if (!menu.hidden && mItems.length) { var it = mItems[mSel]; pushHist(raw); cmd.value = ''; closeMenu(); it.run(); afterRun(); return; }
+    execRaw(raw);
+  });
+  cmd.addEventListener('input', function () { state.hi = -1; updateMenu(); });
+  cmd.addEventListener('focus', function () { $('.dock').classList.remove('is-compact'); if (cmd.value.trim()) updateMenu(); });
+  cmd.addEventListener('blur', closeMenu);
+  cmd.addEventListener('keydown', function (e) {
+    var open = !menu.hidden && mItems.length;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      if (open) { e.preventDefault(); mSel = (mSel + (e.key === 'ArrowDown' ? 1 : -1) + mItems.length) % mItems.length; renderMenu(); }
+      else if (state.hist.length) {
+        e.preventDefault();
+        state.hi = Math.max(-1, Math.min(state.hist.length - 1, state.hi + (e.key === 'ArrowUp' ? 1 : -1)));
+        cmd.value = state.hi < 0 ? '' : state.hist[state.hist.length - 1 - state.hi];
+      }
+    } else if (e.key === 'Tab' && open) {
+      var it = mItems[mSel];
+      if (it.key.charAt(0) === '/') { e.preventDefault(); cmd.value = it.key + (it.key === '/theme' || it.key === '/lang' ? ' ' : ''); updateMenu(); }
+    }
+  });
+  menu.addEventListener('mousedown', function (e) { e.preventDefault(); });
+  menu.addEventListener('click', function (e) {
+    var o = e.target.closest('[data-i]'); if (!o) return;
+    var it = mItems[+o.getAttribute('data-i')]; pushHist(cmd.value); cmd.value = ''; closeMenu(); it.run(); afterRun();
+  });
+  function focusPrompt(prefill) { cmd.focus(); if (prefill) { cmd.value = prefill; updateMenu(); } }
+
+  /* ========================================================================
+     COMPONENT: dialog (command palette, theme picker, help)
+     ======================================================================== */
+  var dlg = { open: false, type: null, ret: null, commit: false };
+  function openDialog(type, title, build) {
+    if (dlg.open) closeDialog(true);
+    dlg.ret = document.activeElement; dlg.type = type; dlg.commit = false;
+    $('#dlg-title').textContent = title;
+    var body = $('#dlg-body'); body.innerHTML = ''; build(body);
+    $('#dlg').hidden = false; dlg.open = true;
+  }
+  function closeDialog(silent) {
+    if (!dlg.open) return;
+    if (dlg.type === 'themes' && !dlg.commit) applySkin(skinFor(state.choice), false);
+    $('#dlg').hidden = true; dlg.open = false; dlg.type = null;
+    var r = dlg.ret; if (!silent && r && r.focus) r.focus();
+  }
+  function trapTab(e) {
+    var f = $$('#dlg button, #dlg input, #dlg [tabindex="0"], #dlg a[href]').filter(function (el) { return !el.disabled; });
+    if (!f.length) return;
+    var i = f.indexOf(document.activeElement);
+    if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && (i === f.length - 1 || i === -1)) { e.preventDefault(); f[0].focus(); }
+  }
+  function paletteItems() {
+    var order = ['go', 'app', 'links', 'actions'];
+    var names = { go: t('palette.gGo'), app: t('palette.gApp'), links: t('palette.gLinks'), actions: t('palette.gActions') };
+    var all = baseCommands().map(function (c) { return { label: c.desc, hint: c.key, group: c.group, run: c.run }; });
+    ['system'].concat(SKIN_IDS).forEach(function (id) { all.push({ label: t('palette.themePrefix') + skinName(id), hint: skinDesc(id), group: 'app', run: function () { setChoice(id); } }); });
+    ['en', 'es'].forEach(function (l) { all.push({ label: t('palette.langPrefix') + (l === 'en' ? 'English' : 'Español'), hint: l === state.lang ? '●' : '', group: 'app', run: function () { setLang(l); } }); });
+    var out = [];
+    order.forEach(function (g) { all.filter(function (x) { return x.group === g; }).forEach(function (x) { x.gname = names[g]; out.push(x); }); });
+    return out;
+  }
+  function openPalette() {
+    openDialog('palette', t('palette.title'), function (body) {
+      body.innerHTML = '<div class="dialog__field"><span class="prompt__glyph" aria-hidden="true">❯</span><input id="pal-in" class="prompt__input" type="text" role="combobox" aria-expanded="true" aria-controls="pal-list" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="' + esc(t('palette.placeholder')) + '" aria-label="' + esc(t('palette.title')) + '"></div>' +
+        '<div class="dialog__list" id="pal-list" role="listbox" aria-label="' + esc(t('palette.title')) + '"></div>' +
+        '<div class="dialog__hint" aria-hidden="true"><span>↑↓ ' + t('palette.hNav') + '</span><span>↵ ' + t('palette.hRun') + '</span><span>esc ' + t('palette.hClose') + '</span></div>';
+      var input = $('#pal-in'), list = $('#pal-list'), all = paletteItems(), items = [], sel = 0;
+      function draw() {
+        var q = input.value.trim().toLowerCase();
+        items = all.filter(function (x) { return !q || (x.label + ' ' + x.hint + ' ' + x.gname).toLowerCase().indexOf(q) > -1; });
+        if (sel >= items.length) sel = Math.max(items.length - 1, 0);
+        if (!items.length) { list.innerHTML = '<p class="dialog__note">' + t('palette.empty') + '</p>'; input.removeAttribute('aria-activedescendant'); return; }
+        var g = null, h = '';
+        items.forEach(function (x, i) {
+          if (x.gname !== g) { g = x.gname; h += '<div class="opt-group" role="presentation">' + g + '</div>'; }
+          h += '<div class="opt" role="option" id="po-' + i + '" data-i="' + i + '" aria-selected="' + (i === sel) + '"><span class="opt__key" style="min-width:0">' + esc(x.label) + '</span><span class="opt__desc" style="text-align:right">' + esc(x.hint) + '</span></div>';
+        });
+        list.innerHTML = h; input.setAttribute('aria-activedescendant', 'po-' + sel); keepVisible(list, $('#po-' + sel));
+      }
+      function run(i) { var x = items[i]; if (!x) return; closeDialog(); x.run(); }
+      input.addEventListener('input', function () { sel = 0; draw(); });
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown') { e.preventDefault(); sel = (sel + 1) % Math.max(items.length, 1); draw(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); sel = (sel - 1 + items.length) % Math.max(items.length, 1); draw(); }
+        else if (e.key === 'Enter') { e.preventDefault(); run(sel); }
+      });
+      list.addEventListener('click', function (e) { var o = e.target.closest('[data-i]'); if (o) run(+o.getAttribute('data-i')); });
+      list.addEventListener('mousemove', function (e) { var o = e.target.closest('[data-i]'); if (o && +o.getAttribute('data-i') !== sel) { sel = +o.getAttribute('data-i'); draw(); } });
+      draw(); setTimeout(function () { input.focus(); }, 0);
+    });
+  }
+  function openThemes() {
+    var ids = ['system'].concat(SKIN_IDS), sel = Math.max(ids.indexOf(state.choice), 0);
+    openDialog('themes', t('themes.title'), function (body) {
+      body.innerHTML = '<p class="dialog__note">' + t('themes.note') + '</p><div class="dialog__list" id="th-list" role="listbox" tabindex="0" aria-label="' + esc(t('themes.title')) + '"></div>' +
+        '<div class="dialog__hint" aria-hidden="true"><span>↑↓ ' + t('themes.hMove') + '</span><span>↵ ' + t('themes.hApply') + '</span><span>esc ' + t('themes.hCancel') + '</span></div>';
+      var list = $('#th-list');
+      function draw() {
+        list.innerHTML = ids.map(function (id, i) {
+          return '<div class="opt" role="option" id="to-' + i + '" data-i="' + i + '" aria-selected="' + (i === sel) + '">' + swatchHtml(id) + '<span class="opt__key" style="min-width:18ch">' + skinName(id) + '</span><span class="opt__desc">' + esc(skinDesc(id)) + '</span>' + (id === state.choice ? '<span class="opt__end">● ' + t('ui.current') + '</span>' : '') + '</div>';
+        }).join('');
+        list.setAttribute('aria-activedescendant', 'to-' + sel); keepVisible(list, $('#to-' + sel));
+      }
+      function preview() { applySkin(skinFor(ids[sel]), false); draw(); }
+      function commit() { dlg.commit = true; setChoice(ids[sel]); closeDialog(); setStatus('✓ ' + t('palette.themePrefix') + skinName(ids[sel]), false, 2400); }
+      list.addEventListener('keydown', function (e) {
+        var n = sel;
+        if (e.key === 'ArrowDown') n = (sel + 1) % ids.length; else if (e.key === 'ArrowUp') n = (sel - 1 + ids.length) % ids.length;
+        else if (e.key === 'Home') n = 0; else if (e.key === 'End') n = ids.length - 1;
+        else if (e.key === 'Enter') { e.preventDefault(); commit(); return; } else return;
+        e.preventDefault(); sel = n; preview();
+      });
+      list.addEventListener('click', function (e) { var o = e.target.closest('[data-i]'); if (o) { sel = +o.getAttribute('data-i'); commit(); } });
+      list.addEventListener('mousemove', function (e) {
+        if (!matchMedia('(hover: hover)').matches) return;
+        var o = e.target.closest('[data-i]'); if (o && +o.getAttribute('data-i') !== sel) { sel = +o.getAttribute('data-i'); preview(); }
+      });
+      draw(); setTimeout(function () { list.focus(); }, 0);
+    });
+  }
+  function openHelp() {
+    openDialog('help', t('help.title'), function (body) {
+      var rows = function (r, dim) { return r.map(function (x) { return '<span class="kbd"' + (dim ? ' style="opacity:.5"' : '') + '>' + withKey(x[0]) + '</span><span' + (dim ? ' class="muted"' : '') + '>' + x[1] + '</span>'; }).join(''); };
+      function draw() {
+        body.innerHTML = '<button type="button" class="switch" role="switch" id="keys-switch" aria-checked="' + state.keys + '"><span>' + t('help.toggle') + '</span><span class="switch__state" aria-hidden="true">' + t(state.keys ? 'help.on' : 'help.off') + '</span></button>' +
+          '<div class="helptable"><p class="helptable__note">' + t('help.toggleNote') + '</p>' +
+          '<h3>' + t('help.always') + '</h3>' + rows(t('help.alwaysRows')) +
+          '<h3>' + t('help.single') + '</h3>' + rows(t('help.singleRows'), !state.keys) +
+          '<h3>' + t('help.inPrompt') + '</h3>' + rows(t('help.prompt')) + '</div>';
+        $('#keys-switch').addEventListener('click', function () {
+          state.keys = !state.keys; store.set('tui.keys', state.keys ? 'on' : 'off');
+          setStatus(''); draw(); $('#keys-switch').focus();
+        });
+      }
+      draw(); setTimeout(function () { $('#keys-switch').focus(); }, 0);
+    });
+  }
+
+  /* ========================================================================
+     GLOBAL: click delegation + keyboard shortcuts
+     ======================================================================== */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#"]');
+    if (a && (location.hash || '').slice(1) === a.getAttribute('href').slice(1)) { e.preventDefault(); route(true); }
+    var act = e.target.closest('[data-act]');
+    if (act) {
+      var v = act.getAttribute('data-act');
+      if (v === 'themes') openThemes(); else if (v === 'palette') openPalette(); else if (v === 'help') openHelp();
+      else if (v.indexOf('cmd:') === 0) runKey(v.slice(4));
+    }
+    var g = e.target.closest('[data-goto]'); if (g) navTo(g.getAttribute('data-goto'));
+    if (e.target.closest('[data-copy-email]')) copyEmail();
+    var sp = e.target.closest('[data-skin-pick]'); if (sp) setChoice(sp.getAttribute('data-skin-pick'));
+    if (e.target.closest('[data-dlg-close]')) closeDialog();
+  });
+  document.addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); if (dlg.open && dlg.type === 'palette') closeDialog(); else openPalette(); return; }
+    if (e.key === 'Escape') {
+      if (dlg.open) { closeDialog(); return; }
+      if (!menu.hidden) { closeMenu(); return; }
+      if (document.activeElement === cmd) cmd.blur();
+      return;
+    }
+    if (dlg.open) { if (e.key === 'Tab') trapTab(e); return; }
+    /* Single-key shortcuts: switchable in the help dialog (WCAG 2.1.4), never while typing
+       or inside widgets that use letter or arrow keys themselves. */
+    if (!state.keys) return;
+    var tag = e.target.tagName, typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable;
+    if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target.closest && e.target.closest('[role="listbox"], [role="tablist"], [role="radiogroup"]')) return;
+    switch (e.key) {
+      case '/': e.preventDefault(); focusPrompt('/'); break;
+      case '?': e.preventDefault(); openHelp(); break;
+      case 't': openThemes(); break;
+      case 'l': setLang(state.lang === 'en' ? 'es' : 'en'); break;
+      case 'j': step(1); break;
+      case 'k': step(-1); break;
+    }
+  });
+
+  /* ========================================================================
+     MOTION: hero typed line + scroll reveal
+     ======================================================================== */
+  function typeHero() {
+    var el = $('#typed'), full = t('hero.role'), mark = $('#boot-mark');
+    if (reduced.matches) { el.textContent = full; return; }
+    /* loading: Braille spinner in the welcome box title, resting on ⠚, then hidden */
+    var f = 0;
+    mark.textContent = SPIN[0]; mark.hidden = false;
+    var spin = setInterval(function () { f = (f + 1) % SPIN.length; mark.textContent = SPIN[f]; }, 80);
+    var done = function () {
+      clearInterval(spin); mark.textContent = MARK;
+      setTimeout(function () { mark.hidden = true; mark.textContent = ''; }, 450);
+    };
+    var i = 0; el.textContent = '';
+    (function stepType() {
+      if (full !== t('hero.role')) { el.textContent = t('hero.role'); done(); return; }
+      el.textContent = full.slice(0, ++i);
+      if (i < full.length) setTimeout(stepType, 26 + Math.random() * 30); else done();
+    })();
+  }
+  function setupReveal() {
+    if (reduced.matches || !('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.remove('is-pending'); io.unobserve(en.target); } });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    $$('#view-home .reveal').forEach(function (el) {
+      if (el.getBoundingClientRect().top > window.innerHeight) { el.classList.add('is-pending'); io.observe(el); }
+    });
+  }
+
+  /* ========================================================================
+     BOOT
+     ======================================================================== */
+  $$('[data-href]').forEach(function (a) { a.href = SITE.links[a.getAttribute('data-href')]; });
+  $('#email-link').href = 'mailto:' + SITE.email;
+  root.setAttribute('lang', state.lang);
+  applyI18n(document); renderAll(); applyMeta(); setStatus('');
+  route(!!(location.hash || '').slice(1), true);
+  typeHero(); setupReveal();
+})();
+</script>

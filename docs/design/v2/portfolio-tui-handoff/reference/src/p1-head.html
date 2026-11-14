@@ -1,0 +1,141 @@
+<title>Julio's Portfolio TUI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cstyle%3E.t%7Bfill:%230d1017%7D.j%7Bfill:%23e6b450%7D.h%7Bstroke:%23e6b450%7D.c%7Bfill:%23bfbdb6%7D%40media %28prefers-color-scheme: light%29%7B.t%7Bfill:%23fcfcfc%3Bstroke:%23e7eaed%7D.j%7Bfill:%238c5e1c%7D.h%7Bstroke:%238c5e1c%7D.c%7Bfill:%233e4348%7D%7D%3C/style%3E%3Crect class=%22t%22 x=%220.5%22 y=%220.5%22 width=%2223%22 height=%2223%22 rx=%225%22/%3E%3Cg transform=%22translate%280.75 -0.25%29%22%3E%3Crect class=%22j%22 x=%227%22 y=%223.5%22 width=%223%22 height=%223%22/%3E%3Cpath class=%22h%22 d=%22M8.5 9.5V18a3 3 0 0 1-3 3H3%22 fill=%22none%22 stroke-width=%223%22/%3E%3Crect class=%22c%22 x=%2213%22 y=%223.5%22 width=%227%22 height=%2214.5%22/%3E%3C/g%3E%3C/svg%3E">
+<script>
+(function () {
+  var skins = ['ayu-dark', 'ayu-light', 'catppuccin-mocha', 'catppuccin-latte', 'dracula', 'tokyo-night', 'nord', 'rose-pine', 'rose-pine-dawn'], c = null, r = document.documentElement;
+  try { c = localStorage.getItem('tui.skin'); } catch (e) {}
+  var n = skins.indexOf(c) > -1 ? c : 'system';
+  if (n === 'system') {
+    var ht = r.getAttribute('data-theme');
+    n = (ht === 'light' || (ht !== 'dark' && window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches)) ? 'ayu-light' : 'ayu-dark';
+  }
+  r.setAttribute('data-skin', n);
+  r.classList.add('js');
+})();
+</script>
+<style>
+/* ==========================================================================
+   TOKENS
+   Layout concept: a TUI. Transcript column (prompt lines, tool calls, results)
+   beside a file/todo sidebar, with a prompt + status line docked at the bottom.
+   Skins are open-source themes (Catppuccin, Dracula, Tokyo Night, Nord, Rosé Pine,
+   Ayu) mapped onto the same tokens and scoped by [data-skin], so any element can
+   preview one. Each theme keeps its own official accent, green, yellow and red; values
+   that fail WCAG AA are darkened or lightened just enough to pass.
+   ========================================================================== */
+:root, [data-skin="ayu-dark"] {
+  --bg: #0d1017; --panel: #0f131a; --element: #131721; --border: #1c212b; --border-strong: #6c7380;
+  --text: #bfbdb6; --muted: #9499a2; --accent: #e6b450; --accent-fg: #0d1017; --accent-subtle: #312d23;
+  --ok: #aad94c; --warn: #ffb454; --danger: #d95757; --select: #273747; --shadow: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+[data-skin="ayu-light"] {
+  --bg: #fcfcfc; --panel: #f8f9fa; --element: #f3f4f5; --border: #e7eaed; --border-strong: #868d94;
+  --text: #3e4348; --muted: #656a70; --accent: #8c5e1c; --accent-fg: #fcfcfc; --accent-subtle: #f9f0e2;
+  --ok: #5a7800; --warn: #8c652a; --danger: #c44444; --select: #d8e6f6; --shadow: rgba(40, 40, 60, 0.18);
+  color-scheme: light;
+}
+/* no JavaScript: follow the OS with Ayu Light */
+@media (prefers-color-scheme: light) { :root:not([data-skin]) {
+  --bg: #fcfcfc; --panel: #f8f9fa; --element: #f3f4f5; --border: #e7eaed; --border-strong: #868d94;
+  --text: #3e4348; --muted: #656a70; --accent: #8c5e1c; --accent-fg: #fcfcfc; --accent-subtle: #f9f0e2;
+  --ok: #5a7800; --warn: #8c652a; --danger: #c44444; --select: #d8e6f6; --shadow: rgba(40, 40, 60, 0.18);
+  color-scheme: light;
+} }
+[data-skin="catppuccin-mocha"] {
+  --bg: #1e1e2e; --panel: #181825; --element: #313244; --border: #45475a; --border-strong: #7f849c;
+  --text: #cdd6f4; --muted: #a6adc8; --accent: #cba6f7; --accent-fg: #11111b; --accent-subtle: #352f47;
+  --ok: #a6e3a1; --warn: #f9e2af; --danger: #f38ba8; --select: #45475a; --shadow: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+[data-skin="catppuccin-latte"] {
+  --bg: #eff1f5; --panel: #e6e9ef; --element: #dce0e8; --border: #ccd0da; --border-strong: #7f8293;
+  --text: #4c4f69; --muted: #565970; --accent: #7832d2; --accent-fg: #eff1f5; --accent-subtle: #dbd4ef;
+  --ok: #2f751f; --warn: #8f5b13; --danger: #cc0f37; --select: #bcc0cc; --shadow: rgba(40, 40, 60, 0.18);
+  color-scheme: light;
+}
+[data-skin="dracula"] {
+  --bg: #282a36; --panel: #21222c; --element: #343746; --border: #44475a; --border-strong: #6776a7;
+  --text: #f8f8f2; --muted: #9ba5c5; --accent: #bd93f9; --accent-fg: #282a36; --accent-subtle: #3a344d;
+  --ok: #50fa7b; --warn: #f1fa8c; --danger: #ff5a5a; --select: #44475a; --shadow: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+[data-skin="tokyo-night"] {
+  --bg: #1a1b26; --panel: #16161e; --element: #292e42; --border: #3b4261; --border-strong: #737aa2;
+  --text: #c0caf5; --muted: #a9b1d6; --accent: #7aa2f7; --accent-fg: #1a1b26; --accent-subtle: #262c41;
+  --ok: #9ece6a; --warn: #e0af68; --danger: #f7768e; --select: #283457; --shadow: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+[data-skin="nord"] {
+  --bg: #2e3440; --panel: #3b4252; --element: #3b4252; --border: #434c5e; --border-strong: #8791a5;
+  --text: #eceff4; --muted: #d8dee9; --accent: #acd3de; --accent-fg: #2e3440; --accent-subtle: #475666;
+  --ok: #a3be8c; --warn: #ebcb8b; --danger: #daa3a9; --select: #4c566a; --shadow: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+[data-skin="rose-pine"] {
+  --bg: #191724; --panel: #1f1d2e; --element: #26233a; --border: #403d52; --border-strong: #6e6a86;
+  --text: #e0def4; --muted: #a7a4bc; --accent: #ebbcba; --accent-fg: #191724; --accent-subtle: #403644;
+  --ok: #9ccfd8; --warn: #f6c177; --danger: #eb6f92; --select: #403d52; --shadow: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+[data-skin="rose-pine-dawn"] {
+  --bg: #faf4ed; --panel: #fffaf3; --element: #f2e9e1; --border: #dfdad9; --border-strong: #8a8696;
+  --text: #575279; --muted: #67637d; --accent: #905754; --accent-fg: #fffaf3; --accent-subtle: #faece5;
+  --ok: #286983; --warn: #966421; --danger: #9e576b; --select: #dfdad9; --shadow: rgba(40, 40, 60, 0.18);
+  color-scheme: light;
+}
+:root {
+  --font: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "JetBrains Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+  --fs-1: 12px; --fs-2: 13px; --fs-3: 14px; --fs-4: 16px; --fs-5: 20px; --fs-6: 28px;
+  --fs-7: clamp(30px, 6.2vw, 48px);
+  --lh-tight: 1.1; --lh-snug: 1.4; --lh-body: 1.6;
+  --ls-tight: -0.02em; --ls-wide: 0.08em;
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 72px;
+  --r-0: 0; --r-1: 2px; --r-box: 6px; --bw: 1px; --bw-2: 2px;
+  --elev: 0 20px 50px -20px var(--shadow);
+  --z-bar: 20; --z-dock: 30; --z-menu: 35; --z-dialog: 50; --z-tip: 60;
+  --dur-fast: 120ms; --dur-base: 220ms; --dur-slow: 520ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.6, 0, 0.2, 1);
+  --bar-h: 49px; --side-w: 288px;
+}
+@media (max-width: 899px) { :root { --bar-h: 89px; } }
+/* Desktop scale: text grows with the screen so a 1440–1920px monitor isn't reading 12–14px type. */
+@media (min-width: 1200px) {
+  :root { --fs-1: 13px; --fs-2: 14px; --fs-3: 15px; --fs-4: 17px; --fs-5: 21px; --fs-7: clamp(40px, 3.4vw, 54px); --side-w: 304px; --app-w: 1360px; }
+}
+@media (min-width: 1600px) {
+  :root { --fs-1: 14px; --fs-2: 15px; --fs-3: 16px; --fs-4: 18px; --fs-5: 22px; --fs-7: clamp(48px, 3.2vw, 60px); --side-w: 336px; --app-w: 1520px; }
+}
+@media (prefers-reduced-motion: reduce) { :root { --dur-fast: 0ms; --dur-base: 0ms; --dur-slow: 0ms; } }
+
+@keyframes blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sweep { from { box-shadow: inset 0 0 0 1px var(--accent); } to { box-shadow: inset 0 0 0 1px transparent; } }
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: var(--fs-3); line-height: var(--lh-body); -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: var(--z-dialog); background: var(--bg); }
+::selection { background: var(--select); color: var(--text); }
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: var(--bw-2) solid var(--accent); outline-offset: 2px; }
+h1[tabindex="-1"]:focus:not(:focus-visible), h2[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.muted { color: var(--muted); }
+.theme-anim, .theme-anim *, .theme-anim *::before, .theme-anim *::after {
+  transition: background-color var(--dur-base) var(--ease-in-out), color var(--dur-base) var(--ease-in-out),
+    border-color var(--dur-base) var(--ease-in-out), fill var(--dur-base) var(--ease-in-out) !important;
+}
+.reveal { transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
+.reveal.is-pending { opacity: 0; transform: translateY(10px); }
+.app { max-width: var(--app-w, 1280px); margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }

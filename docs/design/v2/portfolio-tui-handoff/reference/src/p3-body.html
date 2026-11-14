@@ -1,0 +1,234 @@
+
+<div class="app">
+  <!-- COMPONENT: title bar -->
+  <header class="titlebar">
+    <div class="titlebar__row">
+      <a class="brand" href="#top" data-i18n-attr="aria-label:a11y.home"><span class="brand__logo" aria-hidden="true"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="7" y="3.5" width="3" height="3" fill="var(--accent)"/><path d="M8.5 9.5V18a3 3 0 0 1-3 3H3" fill="none" stroke="var(--accent)" stroke-width="3"/><rect x="13" y="3.5" width="7" height="14.5" fill="var(--text)"/></svg></span>julio<span class="brand__crumb" id="crumb" aria-hidden="true"></span></a>
+      <span class="titlebar__spacer"></span>
+      <div class="seg needs-js" role="radiogroup" data-seg="lang" data-i18n-attr="aria-label:a11y.language">
+        <button class="seg__opt" type="button" role="radio" data-value="en" aria-label="English">EN</button>
+        <button class="seg__opt" type="button" role="radio" data-value="es" aria-label="Español">ES</button>
+      </div>
+      <button class="btn skinbtn needs-js" type="button" data-act="themes" aria-haspopup="dialog" data-i18n-attr="aria-label:a11y.theme;data-tip:a11y.theme">
+        <span class="sw" aria-hidden="true"><i style="background:var(--bg)"></i><i style="background:var(--accent)"></i><i style="background:var(--ok)"></i><i style="background:var(--warn)"></i></span>
+        <span class="skinbtn__label" id="skin-name"></span>
+      </button>
+      <button class="btn needs-js" type="button" data-act="palette" aria-haspopup="dialog" data-i18n-attr="aria-label:palette.title;data-tip:palette.title"><span class="kbd-label" data-kbd></span></button>
+    </div>
+    <nav class="tabstrip" id="tabstrip" data-i18n-attr="aria-label:a11y.files">
+      <a href="#work" data-nav="work" data-i18n="nav.work"></a>
+      <a href="#devlog" data-nav="devlog" data-i18n="nav.devlog"></a>
+      <a href="#experience" data-nav="experience" data-i18n="nav.experience"></a>
+      <a href="#stack" data-nav="stack" data-i18n="nav.stack"></a>
+      <a href="#about" data-nav="about" data-i18n="nav.about"></a>
+      <a href="#contact" data-nav="contact" data-i18n="nav.contact"></a>
+      <a class="needs-js" href="#design-system" data-nav="design-system" data-i18n="nav.design"></a>
+      <span class="tabstrip__ind" id="tabstrip-ind" aria-hidden="true"></span>
+    </nav>
+  </header>
+
+  <div class="shell">
+    <main class="main" id="main">
+
+      <!-- ===================== VIEW: home ===================== -->
+      <div class="transcript" id="view-home" data-view="home">
+        <section class="welcome" id="top" aria-labelledby="hero-name">
+          <span class="welcome__title" aria-hidden="true"><span class="mark" id="boot-mark" hidden></span>portfolio v1.0</span>
+          <div class="welcome__main">
+            <h1 class="hero__name" id="hero-name">Julio López</h1>
+            <p class="hero__role">
+              <span class="hero__ghost" aria-hidden="true">› <span data-i18n="hero.role"></span><span class="caret"></span></span>
+              <span><span aria-hidden="true">› </span><span class="sr-only" data-i18n="hero.role"></span><span id="typed" aria-hidden="true"></span><span class="caret" aria-hidden="true"></span></span>
+            </p>
+            <p class="hero__pitch" data-i18n="hero.pitch"></p>
+            <div class="actions">
+              <a class="btn btn--primary" data-href="cv" target="_blank" rel="noopener"><span aria-hidden="true">↓</span><span data-i18n="hero.cv"></span></a>
+              <button class="btn needs-js" type="button" data-copy-email><span aria-hidden="true">@</span><span data-i18n="hero.email"></span></button>
+              <a class="btn" data-href="github" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
+              <a class="btn" data-href="linkedin" target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span></a>
+            </div>
+            <p class="avail"><span class="status status--done"><span aria-hidden="true">●</span> <span data-i18n="hero.available"></span></span><span data-i18n="hero.availableNote"></span></p>
+          </div>
+          <aside class="welcome__side">
+            <p class="side__label" data-i18n="hero.profile"></p>
+            <dl class="kv" id="hero-kv"></dl>
+            <p class="side__label needs-js" data-i18n="hero.tipsTitle"></p>
+            <ul class="tips needs-js" id="tips"></ul>
+          </aside>
+        </section>
+
+        <section class="turn reveal" id="work" aria-labelledby="work-h" data-turn>
+          <h2 class="turn__prompt" id="work-h"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="work.q"></span><span class="turn__cmd">/work</span></h2>
+          <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">List</span><span class="tool__arg">(work/)</span></p>
+          <div class="result">
+            <p class="muted" data-i18n="work.note"></p>
+            <ul class="rows" id="work-list" style="margin-top:var(--sp-4)"></ul>
+          </div>
+        </section>
+
+        <section class="turn reveal" id="devlog" aria-labelledby="devlog-h" data-turn>
+          <h2 class="turn__prompt" id="devlog-h"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="devlog.q"></span><span class="turn__cmd">/devlog</span></h2>
+          <div class="say"><span class="say__dot" aria-hidden="true">●</span><p class="prose" data-i18n="devlog.intro"></p></div>
+          <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">Update Todos</span><span class="tool__arg">(TODO.md)</span></p>
+          <div class="result">
+            <ol class="todo" id="todo-list"></ol>
+            <p class="devlog-meta"><a class="link" data-href="repo" target="_blank" rel="noopener"><span data-i18n="devlog.repo"></span> ↗</a><span class="muted"><span data-i18n="devlog.hosted"></span> <a class="link" data-href="pages" target="_blank" rel="noopener">GitHub Pages ↗</a></span></p>
+          </div>
+        </section>
+
+        <section class="turn reveal" id="experience" aria-labelledby="exp-h" data-turn>
+          <h2 class="turn__prompt" id="exp-h"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="experience.q"></span><span class="turn__cmd">/experience</span></h2>
+          <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">Bash</span><span class="tool__arg">(git log --graph --career)</span></p>
+          <div class="result"><ol class="glog" id="exp-list"></ol></div>
+        </section>
+
+        <section class="turn reveal" id="stack" aria-labelledby="stack-h" data-turn>
+          <h2 class="turn__prompt" id="stack-h"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="stack.q"></span><span class="turn__cmd">/stack</span></h2>
+          <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">Bash</span><span class="tool__arg">(tree stack/)</span></p>
+          <div class="result"><div class="trees" id="stack-list"></div></div>
+        </section>
+
+        <section class="turn reveal" id="about" aria-labelledby="about-h" data-turn>
+          <h2 class="turn__prompt" id="about-h"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="about.q"></span><span class="turn__cmd">/about</span></h2>
+          <div class="say"><span class="say__dot" aria-hidden="true">●</span><div class="prose" id="about-body"></div></div>
+        </section>
+
+        <section class="turn reveal" id="contact" aria-labelledby="contact-h" data-turn>
+          <h2 class="turn__prompt" id="contact-h"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="contact.q"></span><span class="turn__cmd">/contact</span></h2>
+          <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">Read</span><span class="tool__arg">(contact.md)</span></p>
+          <div class="result">
+            <p class="muted" data-i18n="contact.lede" style="margin-bottom:var(--sp-4)"></p>
+            <dl class="contact">
+              <dt>email</dt>
+              <dd class="contact__email"><span class="contact__addr" id="email-text"></span><button class="btn needs-js" type="button" data-copy-email data-i18n="contact.copy"></button><a class="btn btn--ghost" id="email-link" data-i18n="contact.open"></a></dd>
+              <dt>github</dt><dd><a class="link" data-href="github" target="_blank" rel="noopener">github.com/juliolv ↗</a></dd>
+              <dt>linkedin</dt><dd><a class="link" data-href="linkedin" target="_blank" rel="noopener">linkedin.com/in/your-handle ↗</a></dd>
+              <dt>cv</dt><dd><a class="link" data-href="cv" target="_blank" rel="noopener"><span data-i18n="hero.cv"></span> ↓</a></dd>
+            </dl>
+            <p class="colophon"><span data-i18n="contact.colophon"></span> <a class="link needs-js" href="#design-system" data-i18n="contact.colophonLink"></a></p>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ===================== VIEW: design system ===================== -->
+      <div class="transcript" id="view-system" data-view="system" hidden>
+        <h1 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="ds.q"></span><span class="turn__cmd">/design</span></h1>
+        <p class="muted" style="margin-top:var(--sp-4);max-width:70ch" data-i18n="ds.lede"></p>
+        <div class="tabs" role="tablist" data-i18n-attr="aria-label:ds.title">
+          <button class="tab" type="button" role="tab" id="tab-tokens" aria-controls="panel-tokens" aria-selected="true" data-i18n="ds.tabTokens"></button>
+          <button class="tab" type="button" role="tab" id="tab-skins" aria-controls="panel-skins" aria-selected="false" tabindex="-1" data-i18n="ds.tabSkins"></button>
+          <button class="tab" type="button" role="tab" id="tab-components" aria-controls="panel-components" aria-selected="false" tabindex="-1" data-i18n="ds.tabComponents"></button>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-tokens" aria-labelledby="tab-tokens" tabindex="0">
+          <div class="ds-group"><h3 data-i18n="ds.color"></h3><div><div class="swatches" id="ds-swatches"></div><p class="muted" style="margin-top:var(--sp-3);font-size:var(--fs-2)" data-i18n="ds.colorNote"></p></div></div>
+          <div class="ds-group"><h3 data-i18n="ds.type"></h3><div class="rows2" id="ds-type"></div></div>
+          <div class="ds-group"><h3 data-i18n="ds.space"></h3><div class="rows2" id="ds-space"></div></div>
+          <div class="ds-group"><h3 data-i18n="ds.shape"></h3><div class="shapes" id="ds-shape"></div></div>
+          <div class="ds-group"><h3 data-i18n="ds.motion"></h3><div><div class="rows2" id="ds-motion"></div><p class="muted" style="margin-top:var(--sp-3);font-size:var(--fs-2)" data-i18n="ds.motionNote"></p></div></div>
+          <div class="ds-group"><h3 data-i18n="ds.layers"></h3><div class="rows2" id="ds-layers"></div></div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-skins" aria-labelledby="tab-skins" tabindex="0" hidden>
+          <p class="muted" style="margin-bottom:var(--sp-4);max-width:70ch" data-i18n="ds.skinsNote"></p>
+          <div class="skins" id="ds-skins"></div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-components" aria-labelledby="tab-components" tabindex="0" hidden>
+          <div class="specs">
+            <section class="spec"><div class="spec__bar"><b>button</b><span>.btn</span></div><div class="spec__body">
+              <button class="btn btn--primary" type="button" data-i18n="ds.sPrimary"></button><button class="btn" type="button" data-i18n="ds.sDefault"></button><button class="btn btn--ghost" type="button">ghost</button><button class="btn" type="button" disabled data-i18n="ds.sDisabled"></button></div></section>
+            <section class="spec spec--wide"><div class="spec__bar"><b>logo · loading mark</b><span>.logo .mark</span></div><div class="spec__body spec__body--col">
+              <div class="logo-row"><span style="font-size:48px"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="7" y="3.5" width="3" height="3" fill="var(--accent)"/><path d="M8.5 9.5V18a3 3 0 0 1-3 3H3" fill="none" stroke="var(--accent)" stroke-width="3"/><rect x="13" y="3.5" width="7" height="14.5" fill="var(--text)"/></svg></span><span style="font-size:24px"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="7" y="3.5" width="3" height="3" fill="var(--accent)"/><path d="M8.5 9.5V18a3 3 0 0 1-3 3H3" fill="none" stroke="var(--accent)" stroke-width="3"/><rect x="13" y="3.5" width="7" height="14.5" fill="var(--text)"/></svg></span><span style="font-size:16px"><svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="7" y="3.5" width="3" height="3" fill="var(--accent)"/><path d="M8.5 9.5V18a3 3 0 0 1-3 3H3" fill="none" stroke="var(--accent)" stroke-width="3"/><rect x="13" y="3.5" width="7" height="14.5" fill="var(--text)"/></svg></span><span class="mark" style="font-size:28px">⠚</span></div>
+              <p class="muted" style="font-size:var(--fs-2)" data-i18n="ds.sLogo"></p></div></section>
+            <section class="spec"><div class="spec__bar"><b>link · kbd · tooltip</b><span>.link .kbd</span></div><div class="spec__body">
+              <a class="link" href="#design-system" data-i18n="ds.sLink"></a><span class="kbd">ctrl</span><span class="kbd">k</span>
+              <button class="btn tip-start" type="button" data-i18n="ds.sTipTarget" data-i18n-attr="data-tip:ds.sTip"></button></div></section>
+            <section class="spec"><div class="spec__bar"><b>tag · status</b><span>.tag .status</span></div><div class="spec__body">
+              <span class="tag">TypeScript</span><span class="tag tag--dashed">placeholder</span>
+              <span class="status status--done"><span aria-hidden="true">●</span> <span data-i18n="status.done"></span></span>
+              <span class="status status--progress"><span aria-hidden="true">◐</span> <span data-i18n="status.progress"></span></span>
+              <span class="status status--planned"><span aria-hidden="true">○</span> <span data-i18n="status.planned"></span></span>
+              <span class="status status--warn"><span aria-hidden="true">▲</span> warning</span><span class="status status--error"><span aria-hidden="true">✕</span> danger</span></div></section>
+            <section class="spec"><div class="spec__bar"><b>language · theme</b><span>.seg</span></div><div class="spec__body">
+              <div class="seg" role="radiogroup" data-seg="lang" data-i18n-attr="aria-label:a11y.language"><button class="seg__opt" type="button" role="radio" data-value="en" aria-label="English">EN</button><button class="seg__opt" type="button" role="radio" data-value="es" aria-label="Español">ES</button></div>
+              <button class="btn" type="button" data-act="themes" aria-haspopup="dialog" data-i18n="ds.sThemeBtn"></button>
+              <button class="btn" type="button" data-act="palette" aria-haspopup="dialog" data-i18n="ds.sPaletteBtn"></button></div></section>
+            <section class="spec spec--wide"><div class="spec__bar"><b>prompt · tool call · result</b><span>.turn .tool .result</span></div><div class="spec__body spec__body--col">
+              <p class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span><span data-i18n="ds.sPrompt"></span><span class="turn__cmd">/work</span></p>
+              <p class="tool" style="margin-top:0"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">List</span><span class="tool__arg">(work/)</span></p>
+              <div class="result"><span class="muted" data-i18n="ds.sResult"></span></div></div></section>
+            <section class="spec"><div class="spec__bar"><b>todo item</b><span>.todo__item</span></div><div class="spec__body spec__body--col">
+              <div class="todo"><div class="todo__item" style="border:0;padding:0"><span class="todo__id">#2</span><span class="status status--progress todo__st"><span aria-hidden="true">◐</span> <span data-i18n="status.progress"></span></span><span class="todo__date">2026-11-12</span><span class="todo__title" data-i18n="ds.sTodo"></span></div></div></div></section>
+            <section class="spec"><div class="spec__bar"><b>timeline item</b><span>.glog__item</span></div><div class="spec__body spec__body--col">
+              <div class="glog"><div class="glog__item"><p class="glog__role" data-i18n="ds.sRole"></p><p class="glog__org" data-i18n="ds.sOrg"></p><p class="glog__when">20XX — 20XX</p></div></div></div></section>
+            <section class="spec spec--wide"><div class="spec__bar"><b>code block</b><span>.code</span></div><div class="spec__body spec__body--col">
+<pre class="code"><code><span class="c"># tokens only, never literals</span>
+<span class="h">[button.primary]</span>
+<span class="k">background</span> = <span class="s">"var(--accent)"</span>
+<span class="k">color</span>      = <span class="s">"var(--accent-fg)"</span>
+<span class="k">transition</span> = <span class="s">"border-color var(--dur-fast)"</span></code></pre></div></section>
+            <section class="spec spec--wide"><div class="spec__bar"><b>status bar</b><span>.status-line</span></div><div class="spec__body spec__body--col">
+              <div class="status-line" style="padding:0"><span>? shortcuts · / commands</span><span class="status-line__right"><span class="mode">build</span><span class="model">julio-lopez<span class="muted">/</span>senior-full-stack</span></span></div></div></section>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPONENT: dock (prompt + status line) -->
+      <div class="dock needs-js">
+        <form class="prompt" id="prompt" autocomplete="off">
+          <div class="menu" id="menu" role="listbox" hidden data-i18n-attr="aria-label:a11y.menu"></div>
+          <div class="prompt__box">
+            <span class="prompt__glyph" aria-hidden="true">❯</span>
+            <input class="prompt__input" id="cmd" type="text" role="combobox" aria-expanded="false" aria-controls="menu" aria-autocomplete="list" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" data-i18n-attr="placeholder:ui.placeholder;aria-label:a11y.prompt">
+          </div>
+        </form>
+        <div class="status-line">
+          <span class="status-line__msg" id="st-msg" role="status" aria-live="polite"></span>
+          <span class="status-line__right"><span class="mode tip-up" data-i18n-attr="data-tip:ui.tipMode"><span class="sr-only" data-i18n="ui.srMode"></span>build</span><span class="model tip-up" data-i18n-attr="data-tip:ui.tipModel"><span class="sr-only" data-i18n="ui.srModel"></span>julio-lopez</span><span class="muted" aria-hidden="true">/</span><span class="model tip-up" data-i18n-attr="data-tip:ui.tipVariant"><span class="sr-only" data-i18n="ui.srVariant"></span><span class="opt-hide">senior-full-stack</span><span class="opt-show">sr-fs</span></span></span>
+        </div>
+      </div>
+    </main>
+
+    <!-- COMPONENT: sidebar -->
+    <aside class="sidebar" data-i18n-attr="aria-label:a11y.sidebar">
+      <div class="side__block">
+        <p class="side__title" data-i18n="side.files"></p>
+        <nav class="files" id="files" data-i18n-attr="aria-label:a11y.files">
+          <a href="#work" data-nav="work"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.work"></span>/</a>
+          <a href="#devlog" data-nav="devlog"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.devlog"></span>/</a>
+          <a href="#experience" data-nav="experience"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.experience"></span>.md</a>
+          <a href="#stack" data-nav="stack"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.stack"></span>/</a>
+          <a href="#about" data-nav="about"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.about"></span>.md</a>
+          <a href="#contact" data-nav="contact"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.contact"></span>.md</a>
+          <a class="needs-js" href="#design-system" data-nav="design-system"><span class="files__cur" aria-hidden="true">❯</span><span data-i18n="nav.design"></span>/</a>
+          <span class="files__ind" id="files-ind" aria-hidden="true"></span>
+        </nav>
+      </div>
+      <div class="side__block needs-js">
+        <p class="side__title"><span data-i18n="side.context"></span><span id="ctx-pct">0%</span></p>
+        <div class="ctx" id="ctx" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-i18n-attr="aria-label:side.contextLabel">
+          <span class="ctx__bar" id="ctx-bar" aria-hidden="true"></span>
+          <span class="ctx__nums" id="ctx-nums"></span>
+        </div>
+        <p class="ctx__read" id="ctx-read"></p>
+      </div>
+      <div class="side__block">
+        <p class="side__title"><span data-i18n="side.agents"></span><span id="agents-count"></span></p>
+        <ul class="agents" id="agents"></ul>
+      </div>
+      <div class="side__block">
+        <p class="side__title"><span data-i18n="side.todo"></span><span id="todo-count"></span></p>
+        <ul class="mini-todo" id="mini-todo"></ul>
+      </div>
+      <button class="tip needs-js" type="button" data-act="help"><span class="kbd">?</span><span class="tip__desc" data-i18n="side.keys"></span></button>
+    </aside>
+  </div>
+</div>
+
+<!-- COMPONENT: dialog (command palette, theme picker, help) -->
+<div class="dialog" id="dlg" hidden>
+  <div class="dialog__backdrop" data-dlg-close></div>
+  <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
+    <div class="dialog__head"><h2 class="dialog__title" id="dlg-title"></h2><button class="btn btn--ghost" type="button" data-dlg-close data-i18n-attr="aria-label:ui.close">esc</button></div>
+    <div id="dlg-body" style="display:flex;flex-direction:column;min-height:0;flex:1"></div>
+  </div>
+</div>
