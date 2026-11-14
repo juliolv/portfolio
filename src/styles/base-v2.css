@@ -361,10 +361,6 @@ html[data-lang='es'] [data-lang-block='en'] {
 .shell {
   position: relative;
   min-height: calc(100svh - var(--bar-h) - var(--sp-2));
-  /* A transform still contributes to scrollable overflow, so a dock slid down by
-     its status line made the document 19px taller — one jump traded for a smaller
-     one. Clipping here keeps the slide purely visual. */
-  overflow: clip;
 }
 .shell::before {
   content: "";
@@ -402,6 +398,18 @@ html[data-lang='es'] [data-lang-block='en'] {
    Three classes on the compact rules: components.css is imported after this file
    and sets the same selectors at two. */
 @media (max-width: 899px) {
+  /* Reserve the space the compact dock slides into. Without it the transform
+     extends the page (a 19px jump), and clipping the shell to stop that cut the
+     prompt's focus ring off at the column edge — a 2px outline at a 2px offset
+     needs 4px outside the box, which is exactly where the clip boundary sits.
+     Reserving the space costs nothing visible: the gap below the dock is the page
+     colour, and it only exists at the very end of the document. */
+  .main {
+    padding-bottom: calc(var(--dock-slide, 27px) + 8px);
+  }
+  .main > .transcript {
+    padding-bottom: calc(var(--dock-h, 96px) + var(--sp-5) - var(--dock-slide, 27px));
+  }
   .dock {
     transition: transform var(--dur-base) var(--ease-out);
   }
@@ -423,4 +431,12 @@ html[data-lang='es'] [data-lang-block='en'] {
    removes the last movement — and a dock should sit on the edge anyway. */
 body {
   margin-bottom: 0;
+}
+
+/* The body keeps an 8px gutter, so the document ends 8px below the shell. That
+   was enough for the sticky dock to reach its flow position and nudge up as you
+   arrived at the bottom — the last movement in the scroll. A negative margin lets
+   the dock's box meet the page edge, so it stays pinned to the end. */
+.main > .dock {
+  margin-bottom: -8px;
 }
