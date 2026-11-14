@@ -278,9 +278,12 @@ const kv: [string, string, string][] = [
               <span class="welcome__title" aria-hidden="true">portfolio v1.0</span>
               <div class="welcome__main">
                 <h1 class="hero__name">{SITE.name}</h1>
-                <p class="hero__role">
-                  <span class="hero__ghost" aria-hidden="true">› <Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /><span class="caret"></span></span>
-                  <span><span aria-hidden="true">› </span><span class="sr-only"><Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /></span><span id="typed" aria-hidden="true"><Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /></span><span class="caret" aria-hidden="true"></span></span>
+                {/* One text node, one accessible name. The ghost reserves the width;
+                    the visible copy is what types. There is no sr-only duplicate —
+                    that copy was reaching selection and reading twice. */}
+                <p class="hero__role" aria-label={s(L, 'hero.role')}>
+                  <span class="hero__ghost" aria-hidden="true"><span class="hero__role-glyph">›</span> <Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /><span class="caret"></span></span>
+                  <span aria-hidden="true"><span class="hero__role-glyph">›</span> <span id="typed"><Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /></span><span class="caret"></span></span>
                 </p>
                 <p class="hero__pitch"><Bi en={s('en', 'hero.pitch')} es={s('es', 'hero.pitch')} /></p>
                 <div class="actions">

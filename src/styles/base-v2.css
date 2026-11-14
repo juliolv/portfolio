@@ -228,3 +228,18 @@ html[data-lang='es'] [data-lang-block='en'] {
 .switch:focus-visible {
   outline-offset: -2px;
 }
+
+/* The prompt glyph is the accent everywhere else (❯ in the turn lines); the role
+   line was the one place it inherited body text, and at a different size. */
+.hero__role-glyph {
+  color: var(--accent);
+  /* match the ❯ glyphs in the prompt lines below, which sit at --fs-3 */
+  font-size: var(--fs-3);
+}
+
+/* The ghost reserves the width, so it must not also be selectable: selecting the
+   role line was returning the hidden copy as well as the visible one. */
+.hero__ghost {
+  user-select: none;
+  -webkit-user-select: none;
+}
