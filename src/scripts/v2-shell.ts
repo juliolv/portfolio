@@ -21,6 +21,7 @@ const meta = JSON.parse(document.getElementById('v2-meta')?.textContent ?? '{}')
   desc?: Record<Lang, string>;
   hint?: Record<Lang, string>;
   hintTouch?: Record<Lang, string>;
+  hintOff?: Record<Lang, string>;
   placeholder?: Record<Lang, string>;
   placeholderPhone?: Record<Lang, string>;
   tokensLine?: Record<Lang, string>;
@@ -118,8 +119,6 @@ function applyLang(next: Lang, announce = true) {
   // text lengths differ per language, so the meter has to recount — and its own
   // copy changes with the language, which is why it repaints rather than waiting
   // for the next scroll.
-  metrics = null;
-  measure();
   paintMeter(maxRead);
   paintChrome();
   window.dispatchEvent(new CustomEvent('tui:lang', { detail: next }));
@@ -146,28 +145,34 @@ const ctxRead = document.querySelector<HTMLElement>('.ctx__read');
 const ctxPct = document.getElementById('ctx-pct');
 
 /**
- * The window the meter reports against. A page this size uses a couple of
- * thousand tokens, so the total is the context window a reader would expect from
- * an LLM — 1M — and the bar keeps measuring progress through the page instead of
- * a fill it could never change.
+ * The window the meter reports against: 1M, what a large model's context is
+ * expected to be. Usage is simulated (see simulatedUsage) so the meter fills the
+ * way a session does; the page's real text is a couple of thousand tokens and
+ * would never move it.
  */
 const CONTEXT_WINDOW = 1_000_000;
 
 const short = (n: number) => (n >= 1_000_000 ? `${(n / 1_000_000).toFixed(0)}M` : `${(n / 1000).toFixed(1)}k`);
 
+/**
+ * Simulated usage. Reading a section stands in for a turn of an agent session:
+ * each costs a block of tokens, and the cost creeps up as the work deepens. Seven
+ * sections land just under the window, so the meter fills the way a real session
+ * does instead of pinning at 0.2% of a million.
+ */
+const SECTION_COST = 96_500;
+const SECTION_GROWTH = 0.15;
+
+function simulatedUsage(read: number): number {
+  let total = 0;
+  for (let i = 0; i < read; i += 1) total += SECTION_COST * (1 + SECTION_GROWTH * i);
+  return Math.round(total);
+}
+
 let currentId = '';
 /** Nav clicks set the section themselves; scroll updates pause briefly after. */
 let currentLock = 0;
 let maxRead = 0;
-let metrics: { tokens: number[]; total: number } | null = null;
-
-/** tokens ≈ text length ÷ 4, per section; recomputed when the language changes */
-function measure() {
-  if (metrics) return metrics;
-  const tokens = blocks.map((block) => Math.round((block.textContent ?? '').length / 4));
-  metrics = { tokens, total: tokens.reduce((a, b) => a + b, 0) || 1 };
-  return metrics;
-}
 
 /** 14 cells: filled ones are glyphs, empty ones are wrapped so they can be muted */
 function paintBar(pct: number) {
@@ -178,12 +183,8 @@ function paintBar(pct: number) {
 }
 
 function paintMeter(read: number) {
-  const { tokens, total } = measure();
-  const used = tokens.slice(0, read).reduce((a, b) => a + b, 0);
-  // The bar and the header show how much of the page you have read, the same
-  // number as "n/7 sections read". The token line is the only thing measured
-  // against the 1M window, because a page this size could never fill it.
-  const pct = Math.min(100, Math.round((read / blocks.length) * 100));
+  const used = simulatedUsage(read);
+  const pct = Math.min(100, Math.round((used / CONTEXT_WINDOW) * 100));
 
   paintBar(pct);
   const tokensLine = (meta.tokensLine?.[lang] ?? '{used} / {total}')
