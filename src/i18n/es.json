@@ -135,7 +135,7 @@
   "palette": {
     "title": "Paleta de comandos",
     "open": "Paleta de comandos",
-    "placeholder": "Escribe un comando o busca…",
+    "placeholder": "Busca secciones, temas, enlaces y acciones…",
     "empty": "Ningún comando coincide.",
     "hNav": "navegar",
     "hRun": "ejecutar",
@@ -147,12 +147,24 @@
     "gActions": "Acciones",
     "top": "Inicio",
     "themeSet": "Tema: ",
-    "langEn": "Idioma: English",
-    "langEs": "Idioma: Español",
+    "langEn": "Inglés",
+    "langEs": "Español",
     "openLink": "Abrir ",
-    "copyEmail": "Copiar dirección de email",
+    "copyEmail": "Copiar el email",
     "repo": "Repositorio del portfolio",
-    "cv": "CV"
+    "cv": "CV",
+    "go": "ir a",
+    "appearance": "apariencia",
+    "links": "enlaces",
+    "actions": "acciones",
+    "designSystem": "Sistema de diseño",
+    "shortcuts": "Atajos de teclado",
+    "themePicker": "Abrir el selector de tema",
+    "noResults": "Sin resultados para «{q}»",
+    "keysSwitch": "Atajos de una tecla",
+    "keysOn": "sí",
+    "keysOff": "no",
+    "keysOffHint": "Ctrl K paleta · /help atajos"
   },
   "ds": {
     "q": "Muéstrame el sistema de diseño.",
@@ -250,7 +262,9 @@
       "hire": "ir a contacto y copiar el email",
       "help": "atajos de teclado"
     },
-    "savedAs": "Se guarda como"
+    "savedAs": "Se guarda como",
+    "kPalette": "abrir la paleta de comandos",
+    "keysWhich": "las teclas t · l · j · k · ?"
   },
   "side": {
     "agents": "Agentes",

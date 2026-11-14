@@ -116,8 +116,19 @@ function open(name: string, from?: HTMLElement) {
   // lands after this handler — which would leave focus on <body> and make the
   // arrows do nothing.
   requestAnimationFrame(() => {
-    if (name === 'theme') pickerCards.find((card) => card.dataset.skinPick === committed)?.focus();
-    else focusables(dialog.querySelector<HTMLElement>('.dialog__panel')!)[0]?.focus();
+    const panel = dialog.querySelector<HTMLElement>('.dialog__panel')!;
+    const target =
+      name === 'palette'
+        ? panel.querySelector<HTMLElement>('#pal-input')
+        : name === 'theme'
+          ? pickerCards.find((card) => card.dataset.skinPick === committed)
+          : focusables(panel)[0];
+
+    target?.focus();
+
+    // Other modules own what goes inside a dialog (the palette builds its list),
+    // so they get a hook after focus has landed.
+    window.dispatchEvent(new CustomEvent('tui:dialog-opened', { detail: name }));
   });
 }
 
@@ -209,16 +220,8 @@ document.addEventListener('keydown', (event) => {
   // Ctrl/⌘ K focuses the prompt: the palette in v1, the prompt itself here
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
     event.preventDefault();
-    if (isOpen()) return; // focus stays in the dialog; its trap owns the keyboard
-    document.getElementById('cmd')?.focus();
-    return;
-  }
-
-  if (event.key === '?' && !isOpen()) {
-    const tag = (document.activeElement as HTMLElement)?.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-    event.preventDefault();
-    open('keys');
+    if (isOpen()) return; // the palette is already the only thing on screen
+    open('palette');
     return;
   }
 
@@ -282,6 +285,14 @@ if (HOVER_OK) {
 window.addEventListener('tui:open-dialog', (event) => {
   const name = (event as CustomEvent<string>).detail;
   if (name) open(name);
+});
+
+window.addEventListener('tui:close-dialog', () => close());
+
+// Picking a skin from the palette goes through the same save path as the picker.
+window.addEventListener('tui:set-skin', (event) => {
+  const id = (event as CustomEvent<string>).detail;
+  if (id) save(id);
 });
 
 /* ------------------------------------------------------------ initial state -- */

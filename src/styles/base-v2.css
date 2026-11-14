@@ -203,3 +203,28 @@ html[data-lang='es'] [data-lang-block='en'] {
     overflow-y: hidden;
   }
 }
+
+/* --- shortcut switch -----------------------------------------------------
+   Both words are in the DOM, one per language, and CSS picks one per state, so
+   toggling never has to rewrite translated text. */
+.switch[aria-checked='true'] .switch__off,
+.switch[aria-checked='false'] .switch__on {
+  display: none !important;
+}
+
+/* --- palette field -------------------------------------------------------
+   The prompt box draws its focus ring on focus-within; the palette's field had
+   none, so opening it with Ctrl K gave no visible sign of where typing goes. */
+.dialog__field:focus-within {
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+/* The switch is the whole row; give it a hover so it reads as a control rather
+   than a status line. */
+.switch:hover {
+  background: var(--panel);
+}
+
+.switch:focus-visible {
+  outline-offset: -2px;
+}

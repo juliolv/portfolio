@@ -199,11 +199,45 @@ const kv: [string, string, string][] = [
   </head>
   <body>
     <script type="application/json" id="v2-search-data" set:html={JSON.stringify(searchPayload)}></script>
+    <script type="application/json" id="v2-palette-data" set:html={JSON.stringify([
+      ...sections.map((section) => ({
+        group: 'go',
+        label: { en: section.file, es: section.file },
+        hint: { en: s('en', `nav.${section.id}`), es: s('es', `nav.${section.id}`) },
+        hash: `#${section.id}`,
+      })),
+      { group: 'go', label: { en: 'design-system', es: 'design-system' },
+        hint: { en: s('en', 'palette.designSystem'), es: s('es', 'palette.designSystem') }, hash: '#design-system' },
+      ...SKINS.map((skin) => ({
+        group: 'appearance',
+        label: { en: skin.name, es: skin.name },
+        hint: { en: `theme · ${skin.mode}`, es: `tema · ${skin.mode}` },
+        skin: skin.id,
+      })),
+      { group: 'appearance', label: { en: 'English', es: 'Inglés' }, hint: { en: 'language', es: 'idioma' }, lang: 'en' },
+      { group: 'appearance', label: { en: 'Español', es: 'Español' }, hint: { en: 'language', es: 'idioma' }, lang: 'es' },
+      { group: 'links', label: { en: 'GitHub', es: 'GitHub' }, hint: { en: 'github.com/juliolv', es: 'github.com/juliolv' }, url: SITE.links.github },
+      { group: 'links', label: { en: 'LinkedIn', es: 'LinkedIn' }, hint: { en: 'linkedin.com', es: 'linkedin.com' }, url: SITE.links.linkedin },
+      { group: 'links', label: { en: 'CV', es: 'CV' }, hint: { en: 'cv.pdf', es: 'cv.pdf' }, url: SITE.links.cv },
+      { group: 'links', label: { en: 'Repository', es: 'Repositorio' }, hint: { en: 'github.com/juliolv/portfolio', es: 'github.com/juliolv/portfolio' }, url: SITE.links.repo },
+      { group: 'actions', label: { en: s('en', 'palette.copyEmail'), es: s('es', 'palette.copyEmail') }, hint: { en: 'email', es: 'email' }, action: 'copy' },
+      { group: 'actions', label: { en: s('en', 'palette.shortcuts'), es: s('es', 'palette.shortcuts') }, hint: { en: '?', es: '?' }, action: 'keys' },
+      { group: 'actions', label: { en: s('en', 'palette.themePicker'), es: s('es', 'palette.themePicker') }, hint: { en: 't', es: 't' }, action: 'theme' },
+    ])}></script>
+    <script type="application/json" id="v2-palette-titles" set:html={JSON.stringify({
+      go: { en: s('en', 'palette.go'), es: s('es', 'palette.go') },
+      appearance: { en: s('en', 'palette.appearance'), es: s('es', 'palette.appearance') },
+      links: { en: s('en', 'palette.links'), es: s('es', 'palette.links') },
+      actions: { en: s('en', 'palette.actions'), es: s('es', 'palette.actions') },
+      noResults: { en: s('en', 'palette.noResults'), es: s('es', 'palette.noResults') },
+      placeholder: { en: s('en', 'palette.placeholder'), es: s('es', 'palette.placeholder') },
+    })}></script>
     <script type="application/json" id="v2-meta" set:html={JSON.stringify({
       title: { en: `${SITE.name} — ${s('en', 'hero.role')}`, es: `${SITE.name} — ${s('es', 'hero.role')}` },
       desc: { en: s('en', 'hero.pitch'), es: s('es', 'hero.pitch') },
       hint: { en: s('en', 'tui.hint'), es: s('es', 'tui.hint') },
       hintTouch: { en: s('en', 'tui.hintTouch'), es: s('es', 'tui.hintTouch') },
+      hintOff: { en: s('en', 'palette.keysOffHint'), es: s('es', 'palette.keysOffHint') },
       placeholder: { en: s('en', 'tui.placeholder'), es: s('es', 'tui.placeholder') },
       placeholderPhone: { en: s('en', 'tui.placeholderPhone'), es: s('es', 'tui.placeholderPhone') },
       role: { en: s('en', 'hero.role'), es: s('es', 'hero.role') },
@@ -227,7 +261,7 @@ const kv: [string, string, string][] = [
             <span class="sw" aria-hidden="true"><i style="background:var(--bg)"></i><i style="background:var(--accent)"></i><i style="background:var(--ok)"></i><i style="background:var(--warn)"></i></span>
             <span class="skinbtn__label">·</span>
           </button>
-          <button class="btn" type="button" id="palette-btn" aria-label="Focus the prompt"><span class="kbd">Ctrl K</span></button>
+          <button class="btn" type="button" id="palette-btn" data-open-dlg="palette" aria-haspopup="dialog" aria-label={s(L, 'palette.title')}><span class="kbd">Ctrl K</span></button>
         </div>
         <nav class="tabstrip" aria-label="Sections">
           {sections.map((section) => (
@@ -488,7 +522,29 @@ const kv: [string, string, string][] = [
       </div>
     </div>
 
-    <!-- dialogs: theme picker, shortcuts, help (§5.2) -->
+    <!-- dialogs: palette, theme picker, shortcuts, help (§5.2) -->
+    <div class="dialog" data-dlg="palette" hidden>
+      <div class="dialog__backdrop" data-dlg-close></div>
+      <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-palette-title">
+        <div class="dialog__head">
+          <h2 class="dialog__title" id="dlg-palette-title"><Bi en={s('en', 'palette.title')} es={s('es', 'palette.title')} /></h2>
+          <button class="btn btn--ghost" type="button" data-dlg-close><Bi en={s('en', 'tui.dlgEsc')} es={s('es', 'tui.dlgEsc')} /></button>
+        </div>
+        <div class="dialog__field">
+          <span class="prompt__glyph" aria-hidden="true">❯</span>
+          <input class="prompt__input" id="pal-input" type="text" role="combobox" aria-expanded="true"
+            aria-controls="pal-list" aria-autocomplete="list" autocomplete="off" spellcheck="false"
+            placeholder={s(L, 'palette.placeholder')} aria-label={s(L, 'palette.title')} />
+        </div>
+        <div class="dialog__list" id="pal-list" role="listbox" aria-label={s(L, 'palette.title')}></div>
+        <p class="dialog__hint">
+          <span><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> <Bi en="move" es="moverse" /></span>
+          <span><kbd class="kbd">Enter</kbd> <Bi en="run" es="ejecutar" /></span>
+          <span><kbd class="kbd">Esc</kbd> <Bi en="close" es="cerrar" /></span>
+        </p>
+      </div>
+    </div>
+
     <div class="dialog" data-dlg="theme" hidden>
       <div class="dialog__backdrop" data-dlg-close></div>
       <div class="dialog__panel" role="dialog" aria-modal="true" aria-labelledby="dlg-theme-title">
@@ -527,10 +583,17 @@ const kv: [string, string, string][] = [
           <h2 class="dialog__title" id="dlg-keys-title"><Bi en={s('en', 'tui.dlgKeys')} es={s('es', 'tui.dlgKeys')} /></h2>
           <button class="btn btn--ghost" type="button" data-dlg-close><Bi en={s('en', 'tui.dlgEsc')} es={s('es', 'tui.dlgEsc')} /></button>
         </div>
+        <button class="switch" type="button" role="switch" aria-checked="true" id="keys-switch">
+          <span id="keys-switch-label"><Bi en={s('en', 'palette.keysSwitch')} es={s('es', 'palette.keysSwitch')} /> <span class="muted"><Bi en={s('en', 'tui.keysWhich')} es={s('es', 'tui.keysWhich')} /></span></span>
+          <span class="switch__state">
+            <span class="switch__on"><Bi en={s('en', 'palette.keysOn')} es={s('es', 'palette.keysOn')} /></span>
+            <span class="switch__off"><Bi en={s('en', 'palette.keysOff')} es={s('es', 'palette.keysOff')} /></span>
+          </span>
+        </button>
         <div class="helptable">
           <h3><Bi en={s('en', 'tui.keysAnywhere')} es={s('es', 'tui.keysAnywhere')} /></h3>
           <span><kbd class="kbd">/</kbd></span><span><Bi en={s('en', 'tui.kJump')} es={s('es', 'tui.kJump')} /></span>
-          <span><kbd class="kbd">Ctrl K</kbd></span><span><Bi en={s('en', 'tui.kJump')} es={s('es', 'tui.kJump')} /></span>
+          <span><kbd class="kbd">Ctrl K</kbd></span><span><Bi en={s('en', 'tui.kPalette')} es={s('es', 'tui.kPalette')} /></span>
           <span><kbd class="kbd">?</kbd></span><span><Bi en={s('en', 'tui.kHelp')} es={s('es', 'tui.kHelp')} /></span>
           <span><kbd class="kbd">Esc</kbd></span><span><Bi en={s('en', 'tui.kEsc')} es={s('es', 'tui.kEsc')} /></span>
           <h3><Bi en={s('en', 'tui.keysPrompt')} es={s('es', 'tui.keysPrompt')} /></h3>
@@ -563,6 +626,8 @@ const kv: [string, string, string][] = [
       import '../scripts/v2-shell';
       import '../scripts/v2-motion';
       import '../scripts/v2-ds';
+      import '../scripts/v2-palette';
+      import '../scripts/v2-keys';
     </script>
   </body>
 </html>

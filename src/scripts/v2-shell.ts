@@ -29,6 +29,13 @@ const meta = JSON.parse(document.getElementById('v2-meta')?.textContent ?? '{}')
 
 /** Touch is a capability, not a width: a small window with a mouse is not a phone. */
 const TOUCH = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+/** Mirrors tui.keys, so the status hint can say what still works. */
+let shortcutsOn = true;
+try {
+  shortcutsOn = localStorage.getItem('tui.keys') !== 'off';
+} catch {
+  /* storage blocked: shortcuts stay on */
+}
 const PHONE = () => window.matchMedia('(max-width: 640px)').matches;
 let lang: Lang = 'en';
 
@@ -60,8 +67,14 @@ function paintChrome() {
 }
 
 function hintText(): string {
+  if (!shortcutsOn) return meta.hintOff?.[lang] ?? '';
   return (TOUCH ? meta.hintTouch?.[lang] : meta.hint?.[lang]) ?? '';
 }
+
+window.addEventListener('tui:keys', (event) => {
+  shortcutsOn = Boolean((event as CustomEvent<boolean>).detail);
+  paintChrome();
+});
 
 // The status line is the shortcut hint until something has to be said, and the
 // reference hides it on phones unless it is saying something. Tracking the text

@@ -135,7 +135,7 @@
   "palette": {
     "title": "Command palette",
     "open": "Command palette",
-    "placeholder": "Type a command or search…",
+    "placeholder": "Search sections, themes, links and actions…",
     "empty": "No matching commands.",
     "hNav": "navigate",
     "hRun": "run",
@@ -147,12 +147,24 @@
     "gActions": "Actions",
     "top": "Top",
     "themeSet": "Theme: ",
-    "langEn": "Language: English",
-    "langEs": "Language: Español",
+    "langEn": "English",
+    "langEs": "Español",
     "openLink": "Open ",
     "copyEmail": "Copy email address",
     "repo": "Portfolio repo",
-    "cv": "CV"
+    "cv": "CV",
+    "go": "go to",
+    "appearance": "appearance",
+    "links": "links",
+    "actions": "actions",
+    "designSystem": "Design system",
+    "shortcuts": "Keyboard shortcuts",
+    "themePicker": "Open the theme picker",
+    "noResults": "No match for “{q}”",
+    "keysSwitch": "Single-key shortcuts",
+    "keysOn": "on",
+    "keysOff": "off",
+    "keysOffHint": "Ctrl K palette · /help shortcuts"
   },
   "ds": {
     "q": "Show me the design system.",
@@ -250,7 +262,9 @@
       "hire": "jump to contact and copy the email",
       "help": "keyboard shortcuts"
     },
-    "savedAs": "Saved as"
+    "savedAs": "Saved as",
+    "kPalette": "open the command palette",
+    "keysWhich": "letters t · l · j · k · ?"
   },
   "side": {
     "agents": "Agents",
