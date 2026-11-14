@@ -83,7 +83,7 @@ const specs = [
     <p class="muted" style="margin-bottom:var(--sp-4);max-width:70ch"><Bi en={d('skinsNote').en} es={d('skinsNote').es} /></p>
     <div class="skins">
       {[{ id: 'system', name: 'System', mode: 'auto', preview: DEFAULT_SKIN }, ...SKINS.map((skin) => ({ ...skin, preview: skin.id }))].map((skin) => (
-        <button class="skin-card" type="button" role="radio" aria-checked="false" tabindex="-1"
+        <button class="skin-card" type="button" aria-pressed="false"
           data-skin-pick={skin.id} data-skin-name={skin.name}>
           <span class="mini" data-skin={skin.preview} aria-hidden="true">
             <span><b>❯</b> /work</span>

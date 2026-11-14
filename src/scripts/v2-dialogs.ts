@@ -13,7 +13,12 @@
 const APP = document.querySelector<HTMLElement>('.app');
 const SKIN_KEY = 'tui.skin';
 const msg = document.getElementById('st-msg');
-const cards = [...document.querySelectorAll<HTMLElement>('[data-skin-pick]')];
+/** The picker's own radiogroup. Scoped: the design-system view renders a second
+ *  set of skin cards, and focusing or arrow-stepping through those (hidden, and
+ *  inside an inert subtree while a dialog is open) silently does nothing. */
+const pickerCards = [...document.querySelectorAll<HTMLElement>('.dialog[data-dlg="theme"] [data-skin-pick]')];
+/** Every card that mirrors the active skin, including the design-system view. */
+const allCards = [...document.querySelectorAll<HTMLElement>('[data-skin-pick]')];
 const HOVER_OK = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 let opener: HTMLElement | null = null;
@@ -31,13 +36,13 @@ function systemSkin(): string {
 }
 
 function skinName(id: string): string {
-  return cards.find((card) => card.dataset.skinPick === id)?.dataset.skinName ?? id;
+  return allCards.find((card) => card.dataset.skinPick === id)?.dataset.skinName ?? id;
 }
 
 function savedChoice(): string {
   try {
     const stored = localStorage.getItem(SKIN_KEY);
-    if (stored && cards.some((card) => card.dataset.skinPick === stored)) return stored;
+    if (stored && pickerCards.some((card) => card.dataset.skinPick === stored)) return stored;
   } catch {
     /* storage blocked: the system choice stands */
   }
@@ -49,10 +54,17 @@ function paint(id: string, announce = false) {
   document.documentElement.dataset.skin = id === 'system' ? systemSkin() : id;
   previewing = id;
 
-  cards.forEach((card) => {
+  allCards.forEach((card) => {
     const on = card.dataset.skinPick === id;
-    card.setAttribute('aria-checked', String(on));
-    card.tabIndex = on ? 0 : -1;
+    if (pickerCards.includes(card)) {
+      // The picker is a radiogroup: one checked card, one tab stop.
+      card.setAttribute('aria-checked', String(on));
+      card.tabIndex = on ? 0 : -1;
+    } else {
+      // The design-system view mirrors the skin as plain buttons, so every card
+      // stays reachable by Tab and the state is pressed, not checked.
+      card.setAttribute('aria-pressed', String(on));
+    }
     const mark = card.querySelector<HTMLElement>('.skin-card__cur');
     if (mark) mark.hidden = !on;
   });
@@ -99,11 +111,14 @@ function open(name: string, from?: HTMLElement) {
   if (APP) APP.inert = true;
   document.body.classList.add('dlg-open');
 
-  if (name === 'theme') {
-    cards.find((card) => card.dataset.skinPick === committed)?.focus();
-  } else {
-    focusables(dialog.querySelector<HTMLElement>('.dialog__panel')!)[0]?.focus();
-  }
+  // Focus on the next frame: a dialog opened by Enter or Space is still inside
+  // the activating element's click, and the browser's own focus-on-activation
+  // lands after this handler — which would leave focus on <body> and make the
+  // arrows do nothing.
+  requestAnimationFrame(() => {
+    if (name === 'theme') pickerCards.find((card) => card.dataset.skinPick === committed)?.focus();
+    else focusables(dialog.querySelector<HTMLElement>('.dialog__panel')!)[0]?.focus();
+  });
 }
 
 function close() {
@@ -129,33 +144,33 @@ function isOpen(): boolean {
 /* --------------------------------------------------------------- picking -- */
 
 function step(from: number, delta: number): number {
-  return (from + delta + cards.length) % cards.length;
+  return (from + delta + pickerCards.length) % pickerCards.length;
 }
 
 /** Arrow movement: one across, one column down, wrapping at both ends. */
 function neighbour(current: string, key: string): string | null {
-  const index = cards.findIndex((card) => card.dataset.skinPick === current);
+  const index = pickerCards.findIndex((card) => card.dataset.skinPick === current);
   if (index < 0) return null;
 
-  const columns = new Set(cards.map((card) => Math.round(card.offsetLeft))).size || 1;
+  const columns = new Set(pickerCards.map((card) => Math.round(card.offsetLeft))).size || 1;
 
   switch (key) {
     case 'ArrowRight':
-      return cards[step(index, 1)].dataset.skinPick!;
+      return pickerCards[step(index, 1)].dataset.skinPick!;
     case 'ArrowLeft':
-      return cards[step(index, -1)].dataset.skinPick!;
+      return pickerCards[step(index, -1)].dataset.skinPick!;
     case 'ArrowDown': {
       const next = index + columns;
-      return cards[next]?.dataset.skinPick ?? cards[index].dataset.skinPick!;
+      return pickerCards[next]?.dataset.skinPick ?? pickerCards[index].dataset.skinPick!;
     }
     case 'ArrowUp': {
       const next = index - columns;
-      return cards[next]?.dataset.skinPick ?? cards[index].dataset.skinPick!;
+      return pickerCards[next]?.dataset.skinPick ?? pickerCards[index].dataset.skinPick!;
     }
     case 'Home':
-      return cards[0].dataset.skinPick!;
+      return pickerCards[0].dataset.skinPick!;
     case 'End':
-      return cards[cards.length - 1].dataset.skinPick!;
+      return pickerCards[pickerCards.length - 1].dataset.skinPick!;
     default:
       return null;
   }
@@ -232,7 +247,7 @@ document.addEventListener('keydown', (event) => {
     if (next) {
       event.preventDefault();
       paint(next);
-      cards.find((card) => card.dataset.skinPick === next)?.focus();
+      pickerCards.find((card) => card.dataset.skinPick === next)?.focus();
       return;
     }
   }
@@ -255,7 +270,7 @@ document.addEventListener('keydown', (event) => {
 
 // Hover previews too, but only where hovering is real (not on touch).
 if (HOVER_OK) {
-  cards.forEach((card) => {
+  pickerCards.forEach((card) => {
     card.addEventListener('pointerenter', () => {
       if (document.querySelector('.dialog[data-dlg="theme"]:not([hidden])')) {
         paint(card.dataset.skinPick!);

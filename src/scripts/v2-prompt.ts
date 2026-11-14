@@ -296,7 +296,9 @@ if (input && menu) {
     const query = input!.value;
     if (query.startsWith('/')) {
       mode = 'command';
-      const typed = query.slice(1).toLowerCase();
+      // Tab completion appends a space, so the word after the slash is what
+      // identifies the command; the rest is an argument that does not exist yet.
+      const typed = query.slice(1).trim().split(/\s+/)[0].toLowerCase();
       results = data.commands.filter((c) => (c.cmd ?? '').slice(1).startsWith(typed));
       cursor = 0;
       render(query);
@@ -344,9 +346,13 @@ if (input && menu) {
         update();
       }
     } else if (event.key === 'Tab') {
+      // Tab never moves focus out of the prompt while the menu is open: it either
+      // completes the command or does nothing. Losing your query to a stray Tab
+      // is worse than losing the habit.
+      if (menu!.hidden) return;
+      event.preventDefault();
       const item = results[cursor];
       if (mode === 'command' && item?.cmd) {
-        event.preventDefault();
         input.value = `${item.cmd} `;
         update();
       }
@@ -355,7 +361,7 @@ if (input && menu) {
       // A typed command with no matching option still has to answer: otherwise
       // `/typo` looks like the site ignored you.
       if (mode === 'command' && !results.length) {
-        const typed = input.value.trim();
+        const typed = input.value.trim().split(/\s+/)[0];
         if (typed) history.push(typed);
         close();
         input.value = '';
@@ -372,6 +378,12 @@ if (input && menu) {
       }
     }
   });
+
+  // The prompt is the point of the page: focus it on load, except on touch,
+  // where focusing would raise the software keyboard over the content.
+  if (!window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+    input.focus({ preventScroll: true });
+  }
 
   document.addEventListener('keydown', (event) => {
     if (event.key === '/' && document.activeElement !== input && !event.metaKey && !event.ctrlKey) {
