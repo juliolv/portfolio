@@ -145,6 +145,16 @@ const ctxNums = document.querySelector<HTMLElement>('.ctx__nums');
 const ctxRead = document.querySelector<HTMLElement>('.ctx__read');
 const ctxPct = document.getElementById('ctx-pct');
 
+/**
+ * The window the meter reports against. A page this size uses a couple of
+ * thousand tokens, so the total is the context window a reader would expect from
+ * an LLM — 1M — and the bar keeps measuring progress through the page instead of
+ * a fill it could never change.
+ */
+const CONTEXT_WINDOW = 1_000_000;
+
+const short = (n: number) => (n >= 1_000_000 ? `${(n / 1_000_000).toFixed(0)}M` : `${(n / 1000).toFixed(1)}k`);
+
 let currentId = '';
 /** Nav clicks set the section themselves; scroll updates pause briefly after. */
 let currentLock = 0;
@@ -170,12 +180,15 @@ function paintBar(pct: number) {
 function paintMeter(read: number) {
   const { tokens, total } = measure();
   const used = tokens.slice(0, read).reduce((a, b) => a + b, 0);
-  const pct = Math.min(100, Math.round((used / total) * 100));
+  // The bar and the header show how much of the page you have read, the same
+  // number as "n/7 sections read". The token line is the only thing measured
+  // against the 1M window, because a page this size could never fill it.
+  const pct = Math.min(100, Math.round((read / blocks.length) * 100));
 
   paintBar(pct);
   const tokensLine = (meta.tokensLine?.[lang] ?? '{used} / {total}')
-    .replace('{used}', `${(used / 1000).toFixed(1)}k`)
-    .replace('{total}', `${Math.round(total / 1000)}k`)
+    .replace('{used}', short(used))
+    .replace('{total}', short(CONTEXT_WINDOW))
     .replace('{pct}', String(pct));
   const readLine = (meta.readLine?.[lang] ?? '{n}/{total}')
     .replace('{total}', String(blocks.length))

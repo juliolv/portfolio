@@ -242,7 +242,7 @@
     "kUpDown": "move through results, or recall history",
     "kTab": "complete a slash command",
     "kEnter": "run the selected result",
-    "tokensLine": "≈ {used} / {total} tokens · {pct}%",
+    "tokensLine": "≈ {used} / {total} tokens",
     "readLine": "{n}/{total} sections read",
     "cmds": {
       "work": "selected work",

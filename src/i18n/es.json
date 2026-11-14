@@ -242,7 +242,7 @@
     "kUpDown": "moverse por los resultados o el historial",
     "kTab": "completar un comando",
     "kEnter": "ejecutar el resultado elegido",
-    "tokensLine": "≈ {used} / {total} tokens · {pct}%",
+    "tokensLine": "≈ {used} / {total} tokens",
     "readLine": "{n}/{total} secciones leídas",
     "cmds": {
       "work": "trabajo seleccionado",
