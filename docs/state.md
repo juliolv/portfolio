@@ -98,7 +98,21 @@ line, because "looks fine" is what this section exists to replace.
 | Command palette (§5.2) | pass — Ctrl K or the button; 25 entries in four groups, arrows/Enter/hover, language-aware placeholder |
 | Single keys `t` `l` `j` `k` `?` + switch (`tui.keys`) | pass — ignored while typing, in a dialog, or with a modifier; hint changes when off; Ctrl K unaffected |
 | aria-labels, `data-tip` tooltips | pass — attributes carry both languages in data attributes and swap with the shell; 0 identical strings left between EN and ES |
-| `/design-system/` | v1 page still served; v2 lives at `#design-system` |
+| `/design-system/`, `/skins/` | pass — both forward to the `#design-system` view; no second implementation |
+
+## Merge checklist
+
+Four mechanical steps when `feat/tui-v2` becomes `main`. None of them are design
+decisions; they are the branch/test scaffolding coming down.
+
+1. `src/pages/v2.astro` → `src/pages/index.astro`, replacing the v1 page.
+2. Redirects in `design-system.astro` and `skins.astro`: `/v2/#design-system` →
+   `/#design-system`.
+3. Delete what only v1 used: `src/layouts/Base.astro`, `src/components/Topbar.astro`
+   and the rest of the v1 section components, `src/scripts/client.ts`,
+   `src/styles/design-system.css` (already gone), the v1 `/` markup.
+4. Keep `og.astro` and `icon.astro` (the image generators), `404.astro` (already v2)
+   and the sitemap at one URL.
 
 ## Known issues
 
