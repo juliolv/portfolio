@@ -121,6 +121,7 @@ const kv: [string, string][] = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="robots" content="noindex" />
+    <meta name="description" content={s(L, 'hero.pitch')} />
     <title>v2 shell preview — Julio López</title>
     <script is:inline>
       /* Theme boot (handoff §3.2): resolves a stored skin before first paint. */
@@ -139,6 +140,17 @@ const kv: [string, string][] = [
         root.setAttribute('data-skin', skin);
         root.classList.add('js');
 
+        // Same for the language: resolve it before paint so the first frame is
+        // already in the right one. Latin copy is wider in Spanish, so flipping
+        // after paint would reflow the page.
+        let lang = null;
+        try { lang = localStorage.getItem('tui.lang'); } catch {}
+        if (lang !== 'en' && lang !== 'es') {
+          lang = (navigator.language || '').toLowerCase().startsWith('es') ? 'es' : 'en';
+        }
+        root.setAttribute('data-lang', lang);
+        root.setAttribute('lang', lang);
+
         // The preview has no picker yet: label the button with the resolved skin
         // instead of a hardcoded name that can contradict the colours.
         const names = {
@@ -153,6 +165,10 @@ const kv: [string, string][] = [
   </head>
   <body>
     <script type="application/json" id="v2-search-data" set:html={JSON.stringify(searchPayload)}></script>
+    <script type="application/json" id="v2-meta" set:html={JSON.stringify({
+      title: { en: `${SITE.name} — ${s('en', 'hero.role')}`, es: `${SITE.name} — ${s('es', 'hero.role')}` },
+      desc: { en: s('en', 'hero.pitch'), es: s('es', 'hero.pitch') },
+    })}></script>
     <div class="app">
       <header class="titlebar">
         <div class="titlebar__row">
@@ -162,9 +178,9 @@ const kv: [string, string][] = [
             </span>julio<span class="brand__crumb" aria-hidden="true">/work</span>
           </a>
           <span class="titlebar__spacer"></span>
-          <div class="seg" role="radiogroup" aria-label="Language">
-            <button class="seg__opt" type="button" role="radio" aria-checked="true">EN</button>
-            <button class="seg__opt" type="button" role="radio" aria-checked="false">ES</button>
+          <div class="seg" role="radiogroup" aria-label={s(L, 'a11y.language')}>
+            <button class="seg__opt" type="button" role="radio" aria-checked="true" data-lang-to="en">EN</button>
+            <button class="seg__opt" type="button" role="radio" aria-checked="false" data-lang-to="es">ES</button>
           </div>
           <button class="btn skinbtn" type="button" data-open-dlg="theme" aria-haspopup="dialog">
             <span class="sw" aria-hidden="true"><i style="background:var(--bg)"></i><i style="background:var(--accent)"></i><i style="background:var(--ok)"></i><i style="background:var(--warn)"></i></span>
@@ -359,12 +375,12 @@ const kv: [string, string][] = [
             </nav>
           </div>
           <div class="side__block">
-            <p class="side__title"><span>Context</span><span>12%</span></p>
-            <div class="ctx" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="12">
-              <span class="ctx__bar" aria-hidden="true">██░░░░░░░░░░░░</span>
-              <span class="ctx__nums">3.1k / 26k tokens</span>
+            <p class="side__title"><span>Context</span><span id="ctx-pct">0%</span></p>
+            <div class="ctx" role="progressbar" aria-label="Context window" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span class="ctx__bar" aria-hidden="true"></span>
+              <span class="ctx__nums"></span>
+              <span class="ctx__read"></span>
             </div>
-            <p class="ctx__read">1/7 sections read</p>
           </div>
           <button class="tip" type="button" data-open-dlg="keys" aria-haspopup="dialog"><span class="kbd">?</span><span class="tip__desc">keyboard shortcuts</span></button>
         </aside>
@@ -443,6 +459,7 @@ const kv: [string, string][] = [
     <script>
       import '../scripts/v2-prompt';
       import '../scripts/v2-dialogs';
+      import '../scripts/v2-shell';
     </script>
   </body>
 </html>
