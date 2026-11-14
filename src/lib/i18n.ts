@@ -20,6 +20,8 @@ export function s(lang: Lang, path: string): string {
 
 /** Site-level config. Every outbound link lives here, in one place. */
 export const SITE = {
+  /** Absolute URL of the deployed site. Canonical, og:url and og:image build from it. */
+  url: 'https://juliolv.github.io/portfolio/',
   brand: 'julio',
   name: 'Julio López',
   email: 'you@example.com',

@@ -10,7 +10,7 @@ import '../styles/components.css';
 import { getCollection } from 'astro:content';
 import Bi from '../components/Bi.astro';
 import DesignSystemView from '../components/v2/DesignSystemView.astro';
-import { s, t, SITE } from '../lib/i18n';
+import { s, t, url, SITE } from '../lib/i18n';
 import devlog from '../data/devlog.json';
 import experience from '../data/experience.json';
 import stack from '../data/stack.json';
@@ -128,9 +128,38 @@ const kv: [string, string][] = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="robots" content="noindex" />
     <meta name="description" content={s(L, 'hero.pitch')} />
-    <title>v2 shell preview — Julio López</title>
+    <meta name="color-scheme" content="light dark" />
+    <title>{`${SITE.name} · ${s(L, 'hero.role')}`}</title>
+
+    <link rel="canonical" href={SITE.url} />
+    <meta name="theme-color" content="#0d1017" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fcfcfc" media="(prefers-color-scheme: light)" />
+
+    <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
+    <link rel="icon" type="image/png" sizes="32x32" href={url('/favicon-32.png')} />
+    <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={`${SITE.name} · ${s(L, 'hero.role')}`} />
+    <meta property="og:description" content={s(L, 'hero.pitch')} />
+    <meta property="og:url" content={SITE.url} />
+    <meta property="og:image" content={`${SITE.url}og.png`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${SITE.name} — ${s(L, 'hero.role')}`} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="es_ES" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${SITE.name} · ${s(L, 'hero.role')}`} />
+    <meta name="twitter:description" content={s(L, 'hero.pitch')} />
+    <meta name="twitter:image" content={`${SITE.url}og.png`} />
+
+    {/* Still a preview route: the shares above describe the page it becomes on
+        merge, but crawlers are held off until it is the real front door. */}
+    <meta name="robots" content="noindex" />
     <script is:inline>
       /* Theme boot (handoff §3.2): resolves a stored skin before first paint. */
       (() => {

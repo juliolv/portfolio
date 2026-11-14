@@ -218,5 +218,9 @@
     "orchestrator": "orchestrator · read-only",
     "reviewers": "specialist reviewers",
     "claude": "design and copy passes"
+  },
+  "og": {
+    "tag": "Available for senior roles",
+    "years": "10+ years"
   }
 }
