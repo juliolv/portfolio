@@ -348,3 +348,36 @@ html[data-lang='es'] [data-lang-block='en'] {
   border-color: var(--accent);
   box-shadow: inset 0 0 0 1px var(--accent);
 }
+
+/* The column rule. It was a border-left on .sidebar, so it stopped wherever the
+   sidebar's content stopped — 834px of a 3553px column — and looked cut in half.
+   Drawing it on the shell makes it span the column at any content height; the
+   sidebar is sticky and scrolls inside, so it cannot own a full-height border.
+
+   It is pushed one gutter past the shell at the bottom: the body keeps the
+   reference's 8px margin, so a rule that ended at the shell would stop 8px short
+   of the page edge. And the shell keeps a viewport height so a short page — the
+   404, the design-system view — still gets a rule to the bottom, not a stub. */
+.shell {
+  position: relative;
+  min-height: calc(100dvh - var(--bar-h) - var(--sp-2));
+}
+.shell::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(100% - var(--side-w) - var(--bw));
+  bottom: calc(-1 * var(--sp-2));
+  width: var(--bw);
+  background: var(--border);
+  pointer-events: none;
+}
+.shell > .sidebar {
+  border-left: 0;
+}
+@media (max-width: 899px) {
+  .shell::before {
+    display: none;
+  }
+}
