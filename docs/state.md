@@ -25,7 +25,7 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 | Stack | Astro 7 static, hand-authored CSS, ~10 KB vanilla TS, no UI framework |
 | Languages | EN / ES rendered at build time, toggled with CSS |
 | Build | `pnpm build` → `dist/` (7 pages: `/`, `/404`, three forwards, `/og`, `/icon`) |
-| Verified | 2026-11-13: live 200s, zero failed resources, reduced-motion + palette keyboard paths pass |
+| Verified | 2026-11-14, live after the merge: `/` 200 in Wave with six turns, picker 12 cards, `/design-system/` lands on the view, `/v2/` lands on the root, 0 overflow at 1440 and 390 |
 
 ## Milestone
 
