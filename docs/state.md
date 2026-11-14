@@ -42,8 +42,10 @@ After that: the devlog mirroring real GitHub issues.
 1. v2 port, one issue at a time (`HERMES_HANDOFF.md` §8), branch `feat/tui-v2`.
    Done: §2 tokens + nine skins + AA gate (`pnpm contrast`); §4/§5 shell at `/v2`
    with all six transcript turns rendering from the collections and data files,
-   bilingual, no horizontal scroll. Next: the prompt (slash commands + live
-   search), then the three dialogs, then the sidebar context meter and skins tab.
+   bilingual, no horizontal scroll; §5.1 prompt with 16 slash commands and live
+   search over every section. Next: the three dialogs (theme picker, shortcuts,
+   help) then the sidebar context meter and translations (`/theme` and `/help`
+   are stubs until they exist).
 2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
 2. Open issues #1–#4 so the devlog has something to mirror (owner approval).
