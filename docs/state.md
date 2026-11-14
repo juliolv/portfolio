@@ -43,9 +43,9 @@ After that: the devlog mirroring real GitHub issues.
    Done: §2 tokens + nine skins + AA gate (`pnpm contrast`); §4/§5 shell at `/v2`
    with all six transcript turns rendering from the collections and data files,
    bilingual, no horizontal scroll; §5.1 prompt with 16 slash commands and live
-   search over every section. Next: the three dialogs (theme picker, shortcuts,
-   help) then the sidebar context meter and translations (`/theme` and `/help`
-   are stubs until they exist).
+   search over every section; §5.2 dialogs — theme picker (System + nine skins,
+   `tui.skin`, live OS follow), keyboard, commands. Next: the sidebar context
+   meter, scroll tracking, the language toggle and the mobile layout.
 2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
 2. Open issues #1–#4 so the devlog has something to mirror (owner approval).
