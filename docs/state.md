@@ -1,7 +1,7 @@
 ---
 updated: 2026-11-14
 milestone: 3 — v2 TUI port, acceptance run
-next_action: re-run §9 with the palette in, then decide the merge
+next_action: §9 re-run is green — the merge is the one decision left
 owner: julio
 ---
 
@@ -24,7 +24,7 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 | Host | GitHub Pages, project subpath `/portfolio` (NOT Vercel) |
 | Stack | Astro 7 static, hand-authored CSS, ~10 KB vanilla TS, no UI framework |
 | Languages | EN / ES rendered at build time, toggled with CSS |
-| Build | `pnpm build` → `dist/` (3 pages: `/`, `/design-system/`, `404.html`) |
+| Build | `pnpm build` → `dist/` (7 pages: `/`, `/v2/`, `/404`, the two forwards, `/og`, `/icon`) |
 | Verified | 2026-11-13: live 200s, zero failed resources, reduced-motion + palette keyboard paths pass |
 
 ## Milestone
@@ -44,8 +44,8 @@ After that: the devlog mirroring real GitHub issues.
    §4/§5 shell at `/v2`
    with all six transcript turns rendering from the collections and data files,
    bilingual, no horizontal scroll; §5.1 prompt with 16 slash commands and live
-   search over every section; §5.2 dialogs — theme picker (System + nine skins,
-   `tui.skin`, live OS follow), keyboard, commands; §5.3/§5.4 section tracking,
+   search over every section; §5.2 dialogs — theme picker (six themes × two
+   variants, `tui.skin` + `tui.mode`), keyboard, commands; §5.3/§5.4 section tracking,
    the sidebar reading meter and the EN/ES switch; §7 phones — touch chips, 44px
    targets, the compact dock, gutters; §6 motion — typed role line, reveal,
    prompt flash, theme cross-fade, reduced motion; §8 sidebar extras — agents
@@ -78,28 +78,36 @@ After that: the devlog mirroring real GitHub issues.
 | 2026-11-13 | No free models in the fleet | Owner ruled them out: predictable quality beats marginal savings |
 | 2026-11-13 | Per-role model tiers | `delegation.model` is global: one role per batch (build → audit → review). Builder `deepseek-v4.1-flash`, Auditor `qwen3.8-flash`, Reviewer **`glm-5.3-flash`** (mandated), Designer `gpt-6-luna` |
 
-## §9 acceptance run — 2026-11-13, branch `feat/tui-v2`
+## §9 acceptance run — 2026-11-14, branch `feat/tui-v2`
 
 Run in Chromium through CDP, not by eye. Evidence is the measurement next to each
-line, because "looks fine" is what this section exists to replace.
+line, because "looks fine" is what this section exists to replace. Re-run after the
+theme rework: six themes with two variants each, Wave, and the picker's state model.
 
 | Check | Result |
 |---|---|
 | Console errors, 360/375/393/412/430/1366/1440/1536/1920 × light/dark | pass — 0 errors in 18 loads |
-| No horizontal page scroll at those widths | pass — 0px overflow; only the tab strip and `sr-only` spans extend past the viewport, both by design |
-| AA across the themes | pass — `pnpm contrast` checks all six in both modes (12 palettes) |
-| Sticky prompts | pass — 49px under the bar at desktop, 89px on a phone |
-| Context meter | simulated — a section of reading costs a block of tokens, so the meter fills 21% → 98% of the 1M window instead of pinning at 0.2% |
-| Phone dock | pass — 94px → 45px scrolling down, back on scroll up, at either end, or on prompt focus |
-| Touch: chips, 44px targets, `menu` label | pass — chips 2×2, every tappable ≥44px |
-| Reduced motion | pass — full role text, no reveal, no cross-fade, caret static |
-| Theme picker by keyboard | pass — opens on the saved theme, any arrow steps one card and wraps, Enter saves, Esc reverts |
-| Prompt: autofocus, Tab completes without losing focus, `/work ` matches | pass |
-| Spanish, visible copy | pass — 245 strings identical EN/ES, of which 42 are technology names, theme names, URLs and code samples; no prose left in English |
-| Command palette (§5.2) | pass — Ctrl K or the button; 25 entries in four groups, arrows/Enter/hover, language-aware placeholder |
-| Single keys `t` `l` `j` `k` `?` + switch (`tui.keys`) | pass — ignored while typing, in a dialog, or with a modifier; hint changes when off; Ctrl K unaffected |
-| aria-labels, `data-tip` tooltips | pass — attributes carry both languages in data attributes and swap with the shell; 0 identical strings left between EN and ES |
-| `/design-system/`, `/skins/` | pass — both forward to the `#design-system` view; no second implementation |
+| No horizontal page scroll at those widths | pass — 0px at every width |
+| AA across the themes | pass — `pnpm contrast`, 12 palettes (six themes × dark/light) |
+| Sticky prompts | pass — the section prompt pins at 49px, exactly `--bar-h` |
+| Context meter | simulated — 21% → 98% of the 1M window; `aria-valuenow` agrees with the label |
+| Phone dock | pass — 94px → 45px scrolling down, back to 94 on scroll up |
+| Touch: chips, 44px targets, `menu` label | pass — 4 chips in 2 rows, no tappable under 44px |
+| Reduced motion | pass — full role text, caret `animation-name: none`, `--dur-fast: 0ms` |
+| Theme picker by keyboard | pass — opens on the saved card, any arrow steps one and wraps, Enter saves, Esc reverts |
+| Default theme and the OS flip | pass — `wave` with no stored choice, #16161e → #eef0f6 when the scheme flips, no script |
+| Explicit variant beats the OS | pass — gruvbox/dark stays dark under a light OS |
+| Legacy ids migrate | pass — `dracula` → `wave`; no id without tokens |
+| Prompt: autofocus, Tab completes, `/wo` matches | pass — completes to `/work ` and keeps focus in the field |
+| Spanish, visible copy | pass — 258 EN/ES pairs, 36 identical: tech names, placeholder orgs, dates, theme names, `esc` |
+| Command palette (§5.2) | pass — Ctrl K, 22 entries in four groups, focus lands in the field |
+| Single keys `t` `l` `j` `k` `?` + switch | pass — `t` opens the picker, `l` switches to Spanish, ignored while typing or in a dialog |
+| aria-labels, `data-tip` tooltips | pass — 15 attribute strings per language, none shared between them |
+| `/design-system/`, `/skins/` | pass — both forward to the `#design-system` view |
+| Design-system view | pass — 3 tabs, 12 theme cards in 3 columns, 9 specimens, 0 overflow |
+| Sidebar rule | pass — reaches the viewport edge at 1300 and 900 tall, top and bottom of the page |
+| 404 | pass — Wave, 404 heading, four ways back |
+| Share images | regenerated from `/og` and `/icon` in Wave; 76 KB, 1 KB, <1 KB |
 
 ## Merge checklist
 
@@ -137,7 +145,7 @@ ring, which is also accent-coloured. There is no "current" label and no hover
 preview: colours change only when a card takes focus, and they revert on Esc.
 
 **What `prefers-color-scheme` decides.** Exactly one thing: when `tui.mode` is
-absent, the OS picks the variant — which means the default `custom` theme is dark
+absent, the OS picks the variant — which means the default `wave` theme is dark
 or light according to the device, with no script and nothing to flash. The moment
 a variant is chosen, `data-mode` is set and the media query has no say. Absence of
 `data-mode` is the "follow the system" state; there is no third attribute value.
