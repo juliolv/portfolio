@@ -83,19 +83,6 @@
     },
     "items": "items"
   },
-  "case": {
-    "caseStudy": "case study",
-    "overview": "Overview",
-    "period": "Period",
-    "status": "Status",
-    "stack": "Stack",
-    "problem": "Problem",
-    "role": "Role",
-    "outcome": "Outcome",
-    "backToWork": "Back to work",
-    "read": "Read the case study",
-    "detail": "The detail"
-  },
   "devlog": {
     "title": "Building in public",
     "note": "Sample entries. Each one will mirror a real GitHub issue.",
