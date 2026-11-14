@@ -48,8 +48,10 @@ After that: the devlog mirroring real GitHub issues.
    the sidebar reading meter and the EN/ES switch; §7 phones — touch chips, 44px
    targets, the compact dock, gutters; §6 motion — typed role line, reveal,
    prompt flash, theme cross-fade, reduced motion; §8 sidebar extras — agents
-   from SITE.agents and the compact todo from the devlog. Next: §10 the
-   design-system view (tabs, live tokens, skins, component specimens).
+   from SITE.agents and the compact todo from the devlog; §10 the design-system
+   view at #design-system (live tokens, skins, component specimens). Next: §11
+   the phone pass is done, so §12 sharing (meta, OG, 404) and then §9 the
+   pre-merge checklist against the whole branch.
 2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
 2. Open issues #1–#4 so the devlog has something to mirror (owner approval).
