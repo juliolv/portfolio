@@ -33,6 +33,78 @@ const sections = [
   { id: 'contact', label: s(L, 'nav.contact') },
 ];
 
+/* ---------------------------------------------------------------- search --
+   One payload, embedded at build time: the prompt script never touches data
+   files, and every item carries where it lives and what to do with it. */
+const sectionItems = sections.map((section) => ({
+  kind: 'section' as const,
+  label: s(L, `nav.${section.id}`),
+  meta: `section · /${section.id}`,
+  hash: `#${section.id}`,
+}));
+
+const projectItems = work.map(({ data }, index) => ({
+  kind: 'project' as const,
+  label: data.name,
+  meta: `work/ · ${data.period}`,
+  tags: data.stack,
+  body: [data.problem, data.role, data.outcome].join(' '),
+  index,
+}));
+
+const devlogItems = devlog.map((entry) => ({
+  kind: 'devlog' as const,
+  label: entry.title,
+  meta: `devlog/ · #${entry.issue} · ${entry.date ?? 'TBD'}`,
+  body: entry.note,
+  hash: '#devlog',
+}));
+
+const experienceItems = experience.map((row) => ({
+  kind: 'experience' as const,
+  label: row.role,
+  meta: `experience.md · ${row.org} · ${row.when}`,
+  body: row.text,
+  hash: '#experience',
+}));
+
+const stackItems = stack.flatMap((group) =>
+  group.items.map((item) => ({
+    kind: 'stack' as const,
+    label: item,
+    meta: `stack/${group.dir}`,
+    tags: [item],
+    hash: '#stack',
+  }))
+);
+
+const commands = [
+  { cmd: '/work', desc: 'selected work' },
+  { cmd: '/devlog', desc: 'building in public' },
+  { cmd: '/experience', desc: 'career timeline' },
+  { cmd: '/stack', desc: 'tools and languages' },
+  { cmd: '/about', desc: 'who he is' },
+  { cmd: '/contact', desc: 'email and links' },
+  { cmd: '/design', desc: 'design system page' },
+  { cmd: '/theme', desc: 'theme picker (with the picker)' },
+  { cmd: '/lang', desc: 'toggle English / Español' },
+  { cmd: '/github', desc: 'open GitHub' },
+  { cmd: '/linkedin', desc: 'open LinkedIn' },
+  { cmd: '/cv', desc: 'open the CV' },
+  { cmd: '/repo', desc: 'open the repository' },
+  { cmd: '/copy', desc: 'copy the email address' },
+  { cmd: '/hire', desc: 'jump to contact and copy the email' },
+  { cmd: '/help', desc: 'shortcuts (with the help dialog)' },
+];
+
+const searchPayload = {
+  items: [...sectionItems, ...projectItems, ...devlogItems, ...experienceItems, ...stackItems],
+  commands: commands.map((c) => ({ kind: 'command' as const, label: c.cmd, cmd: c.cmd, desc: c.desc })),
+  email: SITE.email,
+  links: SITE.links,
+};
+
+
 const kv: [string, string][] = [
   ['role', 'senior software engineer'],
   ['experience', '10+ years'],
@@ -79,6 +151,7 @@ const kv: [string, string][] = [
     </script>
   </head>
   <body>
+    <script type="application/json" id="v2-search-data" set:html={JSON.stringify(searchPayload)}></script>
     <div class="app">
       <header class="titlebar">
         <div class="titlebar__row">
@@ -258,13 +331,17 @@ const kv: [string, string][] = [
 
           <div class="dock">
             <form class="prompt" autocomplete="off">
+              <div class="menu" id="menu" role="listbox" aria-label="Commands and results" hidden></div>
               <div class="prompt__box">
                 <span class="prompt__glyph" aria-hidden="true">❯</span>
-                <input class="prompt__input" type="text" placeholder="Search projects and skills, or type / for commands…" aria-label="Prompt" />
+                <input class="prompt__input" id="cmd" type="text" role="combobox" aria-expanded="false"
+                  aria-controls="menu" aria-autocomplete="list" autocomplete="off" autocapitalize="off"
+                  spellcheck="false" enterkeyhint="go"
+                  placeholder="Search projects and skills, or type / for commands…" aria-label="Prompt" />
               </div>
             </form>
             <div class="status-line">
-              <span class="status-line__msg" role="status">? shortcuts · / commands · Ctrl K palette</span>
+              <span class="status-line__msg" id="st-msg" role="status" aria-live="polite">? shortcuts · / commands · Ctrl K palette</span>
               <span class="status-line__right"><span class="mode">build</span><span class="model">julio-lopez</span><span class="muted" aria-hidden="true">/</span><span class="model">senior-full-stack</span></span>
             </div>
           </div>
@@ -292,5 +369,8 @@ const kv: [string, string][] = [
         </aside>
       </div>
     </div>
+    <script>
+      import '../scripts/v2-prompt';
+    </script>
   </body>
 </html>
