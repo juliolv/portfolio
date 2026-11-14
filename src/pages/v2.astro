@@ -1,0 +1,173 @@
+---
+/**
+ * v2 shell preview — the TUI layout with the new tokens and component CSS.
+ * Temporary route on the v2 branch (noindex): it exists so the shell can be
+ * seen and measured before it replaces the live one.
+ */
+import '../styles/tokens.css';
+import '../styles/base-v2.css';
+import '../styles/components.css';
+import { s, SITE } from '../lib/i18n';
+
+const L = 'en' as const;
+
+const sections = [
+  { id: 'work', label: s(L, 'nav.work') },
+  { id: 'devlog', label: s(L, 'nav.devlog') },
+  { id: 'experience', label: s(L, 'nav.experience') },
+  { id: 'stack', label: s(L, 'nav.stack') },
+  { id: 'about', label: s(L, 'nav.about') },
+  { id: 'contact', label: s(L, 'nav.contact') },
+];
+
+const kv: [string, string][] = [
+  ['role', 'senior software engineer'],
+  ['experience', '10+ years'],
+  ['focus', 'modernization · platforms'],
+  ['stack', 'TypeScript · React · Node'],
+  ['based', '[City, country]'],
+];
+---
+
+<!doctype html>
+<html lang="en" data-skin="ayu-dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>v2 shell preview — Julio López</title>
+    <script is:inline>
+      /* Theme boot (handoff §3.2): resolves a stored skin before first paint. */
+      (() => {
+        const skins = ['ayu-dark','ayu-light','catppuccin-mocha','catppuccin-latte','dracula','tokyo-night','nord','rose-pine','rose-pine-dawn'];
+        const root = document.documentElement;
+        let stored = null;
+        try { stored = localStorage.getItem('tui.skin'); } catch {}
+        let skin = skins.includes(stored) ? stored : 'system';
+        if (skin === 'system') {
+          const attr = root.getAttribute('data-theme');
+          skin = attr === 'light' || (attr !== 'dark' && matchMedia('(prefers-color-scheme: light)').matches)
+            ? 'ayu-light'
+            : 'ayu-dark';
+        }
+        root.setAttribute('data-skin', skin);
+        root.classList.add('js');
+
+        // The preview has no picker yet: label the button with the resolved skin
+        // instead of a hardcoded name that can contradict the colours.
+        const names = {
+          'ayu-dark': 'Ayu Dark', 'ayu-light': 'Ayu Light', 'catppuccin-mocha': 'Catppuccin Mocha',
+          'catppuccin-latte': 'Catppuccin Latte', dracula: 'Dracula', 'tokyo-night': 'Tokyo Night',
+          nord: 'Nord', 'rose-pine': 'Rosé Pine', 'rose-pine-dawn': 'Rosé Pine Dawn',
+        };
+        const label = document.querySelector('.skinbtn__label');
+        if (label) label.textContent = names[skin] ?? skin;
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="titlebar">
+        <div class="titlebar__row">
+          <a class="brand" href="#top">
+            <span class="brand__logo" aria-hidden="true">
+              <svg class="logo" viewBox="0 0 24 24" focusable="false"><rect x="7" y="3.5" width="3" height="3" fill="var(--accent)"/><path d="M8.5 9.5V18a3 3 0 0 1-3 3H3" fill="none" stroke="var(--accent)" stroke-width="3"/><rect x="13" y="3.5" width="7" height="14.5" fill="var(--text)"/></svg>
+            </span>julio<span class="brand__crumb" aria-hidden="true">/work</span>
+          </a>
+          <span class="titlebar__spacer"></span>
+          <div class="seg" role="radiogroup" aria-label="Language">
+            <button class="seg__opt" type="button" role="radio" aria-checked="true">EN</button>
+            <button class="seg__opt" type="button" role="radio" aria-checked="false">ES</button>
+          </div>
+          <button class="btn skinbtn" type="button">
+            <span class="sw" aria-hidden="true"><i style="background:var(--bg)"></i><i style="background:var(--accent)"></i><i style="background:var(--ok)"></i><i style="background:var(--warn)"></i></span>
+            <span class="skinbtn__label">·</span>
+          </button>
+          <button class="btn" type="button"><span class="kbd">Ctrl K</span></button>
+        </div>
+        <nav class="tabstrip" aria-label="Sections">
+          {sections.map((section) => (
+            <a href={`#${section.id}`} data-nav={section.id} aria-current={section.id === 'work' ? 'true' : undefined}>{section.label}</a>
+          ))}
+          <span class="tabstrip__ind" aria-hidden="true"></span>
+        </nav>
+      </header>
+
+      <div class="shell">
+        <main class="main">
+          <div class="transcript">
+            <section class="welcome" id="top">
+              <span class="welcome__title" aria-hidden="true">portfolio v1.0</span>
+              <div class="welcome__main">
+                <h1 class="hero__name">{SITE.name}</h1>
+                <p class="hero__role">
+                  <span class="hero__ghost" aria-hidden="true">› {s(L, 'hero.role')}<span class="caret"></span></span>
+                  <span><span aria-hidden="true">› </span><span class="sr-only">{s(L, 'hero.role')}</span><span aria-hidden="true">{s(L, 'hero.role')}</span><span class="caret" aria-hidden="true"></span></span>
+                </p>
+                <p class="hero__pitch">{s(L, 'hero.pitch')}</p>
+                <div class="actions">
+                  <a class="btn btn--primary" href="#contact"><span aria-hidden="true">↓</span>{s(L, 'hero.cv')}</a>
+                  <button class="btn" type="button"><span aria-hidden="true">@</span>{s(L, 'hero.email')}</button>
+                  <a class="btn" href={SITE.links.github} target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
+                  <a class="btn" href={SITE.links.linkedin} target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span></a>
+                </div>
+                <p class="avail"><span class="status status--done"><span aria-hidden="true">●</span> {s(L, 'hero.available')}</span><span>{s(L, 'hero.availableNote')}</span></p>
+              </div>
+              <aside class="welcome__side">
+                <p class="side__label">{s(L, 'hero.cardLabel')}</p>
+                <dl class="kv">
+                  {kv.map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}
+                </dl>
+              </aside>
+            </section>
+
+            <section class="turn" id="work">
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> What has Julio built?<span class="turn__cmd">/work</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">List</span><span class="tool__arg">(work/)</span></p>
+              <div class="result">
+                <p class="muted">{s(L, 'work.note')}</p>
+                <ul class="rows">
+                  <li><span class="tag">TypeScript</span><span class="tag">React</span></li>
+                </ul>
+              </div>
+            </section>
+          </div>
+
+          <div class="dock">
+            <form class="prompt" autocomplete="off">
+              <div class="prompt__box">
+                <span class="prompt__glyph" aria-hidden="true">❯</span>
+                <input class="prompt__input" type="text" placeholder="Search projects and skills, or type / for commands…" aria-label="Prompt" />
+              </div>
+            </form>
+            <div class="status-line">
+              <span class="status-line__msg" role="status">? shortcuts · / commands · Ctrl K palette</span>
+              <span class="status-line__right"><span class="mode">build</span><span class="model">julio-lopez</span><span class="muted" aria-hidden="true">/</span><span class="model">senior-full-stack</span></span>
+            </div>
+          </div>
+        </main>
+
+        <aside class="sidebar" aria-label="Sidebar">
+          <div class="side__block">
+            <p class="side__title">Files</p>
+            <nav class="files" aria-label="Files">
+              {sections.map((section) => (
+                <a href={`#${section.id}`} data-nav={section.id} aria-current={section.id === 'work' ? 'true' : undefined}><span class="files__cur" aria-hidden="true">❯</span><span>{section.label}</span>/</a>
+              ))}
+              <span class="files__ind" aria-hidden="true"></span>
+            </nav>
+          </div>
+          <div class="side__block">
+            <p class="side__title"><span>Context</span><span>12%</span></p>
+            <div class="ctx" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="12">
+              <span class="ctx__bar" aria-hidden="true">██░░░░░░░░░░░░</span>
+              <span class="ctx__nums">3.1k / 26k tokens</span>
+            </div>
+            <p class="ctx__read">1/7 sections read</p>
+          </div>
+          <button class="tip" type="button"><span class="kbd">?</span><span class="tip__desc">keyboard shortcuts</span></button>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>
