@@ -211,7 +211,7 @@ if (input && menu) {
         goHash(`#${cmd.slice(1)}`);
         break;
       case '/design':
-        window.location.href = '/portfolio/design-system/';
+        location.hash = 'design-system';
         break;
       case '/github':
         openExternal(data.links.github);

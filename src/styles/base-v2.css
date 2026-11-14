@@ -155,3 +155,25 @@ html[data-lang='es'] [data-lang-block='en'] {
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes sweep { from { box-shadow: inset 0 0 0 1px var(--accent); } to { box-shadow: inset 0 0 0 1px transparent; } }
+
+/* --- design system view ------------------------------------------------
+   A chip painted --bg or --panel is the same colour as the surface it sits on,
+   so the four lightest swatches had no visible edge. A hairline mixed from the
+   text colour works in every skin, light or dark. */
+.swatch__chip {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text) 18%, transparent);
+}
+
+/* --- design system view ------------------------------------------------
+   The dock is sticky over the transcript, so the view needs room at the end to
+   scroll its last rows out from under it. The radius chips are 56px wide in the
+   reference, which wraps `--r-box`; give them room and a taller sample so the
+   corner radius is actually visible. */
+#view-system {
+  padding-bottom: var(--sp-8);
+}
+
+#view-system .shapes .shape {
+  min-width: 72px;
+  height: 48px;
+}

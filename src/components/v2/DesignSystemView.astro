@@ -1,0 +1,209 @@
+---
+/**
+ * Design-system view (§10): tokens, skins and components, routed by hash
+ * (#design-system) so the site and the reference live at the same URLs.
+ *
+ * Token values are not written here — they are read from the page at runtime,
+ * so a skin change updates them and this view can never drift from tokens.css.
+ */
+import { s } from '../../lib/i18n';
+import { SKINS, DEFAULT_SKIN } from '../../data/skins';
+import Bi from '../Bi.astro';
+
+const L = 'en' as const;
+const d = (key: string) => ({ en: s('en', `ds.${key}`), es: s('es', `ds.${key}`) });
+
+const specs = [
+  { key: 'Button', cls: '.btn' },
+  { key: 'Logo', cls: '.logo .mark' },
+  { key: 'Link', cls: '.link .kbd' },
+  { key: 'Tag', cls: '.tag .status' },
+  { key: 'Seg', cls: '.seg' },
+  { key: 'Prompt', cls: '.turn .tool .result' },
+  { key: 'Todo', cls: '.todo__item' },
+  { key: 'Timeline', cls: '.glog__item' },
+  { key: 'Code', cls: '.code' },
+] as const;
+---
+
+<section class="transcript" id="view-system" hidden data-view="system">
+  <h1 class="turn__prompt" id="ds-title" tabindex="-1">
+    <span class="turn__glyph" aria-hidden="true">❯</span>
+    <span><Bi en={d('q').en} es={d('q').es} /></span>
+    <span class="turn__cmd">/design</span>
+  </h1>
+  <p class="muted" style="margin-top:var(--sp-4);max-width:70ch"><Bi en={d('lede').en} es={d('lede').es} /></p>
+
+  <div class="tabs" role="tablist" aria-label={d('title').en}>
+    <button class="tab" type="button" role="tab" id="tab-tokens" aria-controls="panel-tokens" aria-selected="true">
+      <Bi en={d('tokens').en} es={d('tokens').es} />
+    </button>
+    <button class="tab" type="button" role="tab" id="tab-skins" aria-controls="panel-skins" aria-selected="false" tabindex="-1">
+      <Bi en={d('skins').en} es={d('skins').es} />
+    </button>
+    <button class="tab" type="button" role="tab" id="tab-components" aria-controls="panel-components" aria-selected="false" tabindex="-1">
+      <Bi en={d('components').en} es={d('components').es} />
+    </button>
+  </div>
+
+  <div class="tabpanel" role="tabpanel" id="panel-tokens" aria-labelledby="tab-tokens" tabindex="0">
+    <div class="ds-group">
+      <h3><Bi en={d('color').en} es={d('color').es} /></h3>
+      <div>
+        <div class="swatches" data-ds="swatches"></div>
+        <p class="muted" style="margin-top:var(--sp-3);font-size:var(--fs-2)"><Bi en={d('colorNote').en} es={d('colorNote').es} /></p>
+      </div>
+    </div>
+    <div class="ds-group">
+      <h3><Bi en={d('type').en} es={d('type').es} /></h3>
+      <div class="rows2" data-ds="type"></div>
+    </div>
+    <div class="ds-group">
+      <h3><Bi en={d('space').en} es={d('space').es} /></h3>
+      <div class="rows2" data-ds="space"></div>
+    </div>
+    <div class="ds-group">
+      <h3><Bi en={d('shape').en} es={d('shape').es} /></h3>
+      <div class="shapes" data-ds="shape"></div>
+    </div>
+    <div class="ds-group">
+      <h3><Bi en={d('motion').en} es={d('motion').es} /></h3>
+      <div>
+        <div class="rows2" data-ds="motion"></div>
+        <p class="muted" style="margin-top:var(--sp-3);font-size:var(--fs-2)"><Bi en={d('motionNote').en} es={d('motionNote').es} /></p>
+      </div>
+    </div>
+    <div class="ds-group">
+      <h3><Bi en={d('layers').en} es={d('layers').es} /></h3>
+      <div class="rows2" data-ds="layers"></div>
+    </div>
+  </div>
+
+  <div class="tabpanel" role="tabpanel" id="panel-skins" aria-labelledby="tab-skins" tabindex="0" hidden>
+    <p class="muted" style="margin-bottom:var(--sp-4);max-width:70ch"><Bi en={d('skinsNote').en} es={d('skinsNote').es} /></p>
+    <div class="skins">
+      {[{ id: 'system', name: 'System', mode: 'auto', preview: DEFAULT_SKIN }, ...SKINS.map((skin) => ({ ...skin, preview: skin.id }))].map((skin) => (
+        <button class="skin-card" type="button" role="radio" aria-checked="false" tabindex="-1"
+          data-skin-pick={skin.id} data-skin-name={skin.name}>
+          <span class="mini" data-skin={skin.preview} aria-hidden="true">
+            <span><b>❯</b> /work</span>
+            <span class="mini__muted">● List(work/)</span>
+            <span class="mini__bar"><i></i><i></i><i></i></span>
+          </span>
+          <span>{skin.name}<small>{skin.mode}<span class="skin-card__cur" hidden> · ● current</span></small></span>
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <div class="tabpanel" role="tabpanel" id="panel-components" aria-labelledby="tab-components" tabindex="0" hidden>
+    <div class="specs">
+      <section class="spec">
+        <div class="spec__bar"><b><Bi en={d('specButton').en} es={d('specButton').es} /></b><span>.btn</span></div>
+        <div class="spec__body">
+          <button class="btn btn--primary" type="button"><Bi en={d('primary').en} es={d('primary').es} /></button>
+          <button class="btn" type="button"><Bi en={d('default').en} es={d('default').es} /></button>
+          <button class="btn btn--ghost" type="button">ghost</button>
+          <button class="btn" type="button" disabled><Bi en={d('disabled').en} es={d('disabled').es} /></button>
+        </div>
+      </section>
+
+      <section class="spec spec--wide">
+        <div class="spec__bar"><b><Bi en={d('specLogo').en} es={d('specLogo').es} /></b><span>.logo .mark</span></div>
+        <div class="spec__body spec__body--col">
+          <div class="logo-row">
+            <span style="font-size:48px">
+              <svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="7" y="3.5" width="3" height="3" fill="var(--accent)"></rect><path d="M8.5 9.5V18a3 3 0 0 1-3 3H3" fill="none" stroke="var(--accent)" stroke-width="3"></path><rect x="13" y="3.5" width="7" height="14.5" fill="var(--text)"></rect></svg>
+            </span>
+            <span style="font-size:32px;color:var(--muted)">⠚</span>
+          </div>
+          <p class="muted" style="font-size:var(--fs-2)"><Bi en={d('logoNote').en} es={d('logoNote').es} /></p>
+        </div>
+      </section>
+
+      <section class="spec">
+        <div class="spec__bar"><b><Bi en={d('specLink').en} es={d('specLink').es} /></b><span>.link .kbd</span></div>
+        <div class="spec__body">
+          <a class="link" href="#design-system"><Bi en={d('link').en} es={d('link').es} /></a>
+          <span class="kbd">ctrl</span><span class="kbd">k</span>
+          <button class="btn" type="button" data-tip={d('tip').en}><Bi en={d('tipTarget').en} es={d('tipTarget').es} /></button>
+        </div>
+      </section>
+
+      <section class="spec">
+        <div class="spec__bar"><b><Bi en={d('specTag').en} es={d('specTag').es} /></b><span>.tag .status</span></div>
+        <div class="spec__body">
+          <span class="tag">TypeScript</span><span class="tag tag--dashed">placeholder</span>
+          <span class="status status--done"><span aria-hidden="true">●</span> <Bi en={s(L, 'status.done')} es={s('es', 'status.done')} /></span>
+          <span class="status status--progress"><span aria-hidden="true">◐</span> <Bi en={s(L, 'status.progress')} es={s('es', 'status.progress')} /></span>
+          <span class="status status--planned"><span aria-hidden="true">○</span> <Bi en={s(L, 'status.planned')} es={s('es', 'status.planned')} /></span>
+          <span class="status status--warn"><span aria-hidden="true">▲</span> warn</span>
+          <span class="status status--error"><span aria-hidden="true">✕</span> danger</span>
+        </div>
+      </section>
+
+      <section class="spec">
+        <div class="spec__bar"><b><Bi en={d('specSeg').en} es={d('specSeg').es} /></b><span>.seg</span></div>
+        <div class="spec__body">
+          <div class="seg" role="radiogroup" aria-label={s(L, 'a11y.language')}>
+            <button class="seg__opt" type="button" role="radio" aria-checked="true" data-lang-to="en">EN</button>
+            <button class="seg__opt" type="button" role="radio" aria-checked="false" data-lang-to="es">ES</button>
+          </div>
+          <button class="btn" type="button" data-open-dlg="theme" aria-haspopup="dialog">theme</button>
+          <button class="btn" type="button" data-open-dlg="keys" aria-haspopup="dialog">shortcuts</button>
+        </div>
+      </section>
+
+      <section class="spec spec--wide">
+        <div class="spec__bar"><b><Bi en={d('specPrompt').en} es={d('specPrompt').es} /></b><span>.turn .tool .result</span></div>
+        <div class="spec__body spec__body--col">
+          <p class="turn__prompt">
+            <span class="turn__glyph" aria-hidden="true">❯</span>
+            <span><Bi en={d('promptSample').en} es={d('promptSample').es} /></span>
+            <span class="turn__cmd">/work</span>
+          </p>
+          <p class="tool" style="margin-top:0"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolList')}</span><span class="tool__arg">(work/)</span></p>
+          <div class="result"><span class="muted"><Bi en={d('resultSample').en} es={d('resultSample').es} /></span></div>
+        </div>
+      </section>
+
+      <section class="spec">
+        <div class="spec__bar"><b><Bi en={d('specTodo').en} es={d('specTodo').es} /></b><span>.todo__item</span></div>
+        <div class="spec__body spec__body--col">
+          <div class="todo">
+            <div class="todo__item" style="border:0;padding:0">
+              <span class="todo__id">#2</span>
+              <span class="status status--progress todo__st"><span aria-hidden="true">◐</span> <Bi en={s(L, 'status.progress')} es={s('es', 'status.progress')} /></span>
+              <span class="todo__date">2026-11-12</span>
+              <span class="todo__title"><Bi en={d('todoSample').en} es={d('todoSample').es} /></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="spec">
+        <div class="spec__bar"><b><Bi en={d('specTimeline').en} es={d('specTimeline').es} /></b><span>.glog__item</span></div>
+        <div class="spec__body spec__body--col">
+          <div class="glog">
+            <div class="glog__item">
+              <p class="glog__role"><Bi en={d('roleSample').en} es={d('roleSample').es} /></p>
+              <p class="glog__org"><Bi en={d('orgSample').en} es={d('orgSample').es} /></p>
+              <p class="glog__when">20XX — 20XX</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="spec spec--wide">
+        <div class="spec__bar"><b><Bi en={d('specCode').en} es={d('specCode').es} /></b><span>.code</span></div>
+        <div class="spec__body spec__body--col">
+          <pre class="code"><code><span class="c"># tokens only, never literals</span>
+<span class="h">[button.primary]</span>
+<span class="k">background</span> = <span class="s">"var(--accent)"</span>
+<span class="k">color</span>      = <span class="s">"var(--accent-fg)"</span>
+<span class="k">transition</span> = <span class="s">"border-color var(--dur-fast)"</span></code></pre>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>

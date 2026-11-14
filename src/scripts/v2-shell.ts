@@ -194,6 +194,10 @@ function moveIndicators() {
 }
 
 function update() {
+  // The design-system view is a sibling of the transcript; while it is open the
+  // section tracker and the reading meter have nothing to say.
+  if (!document.getElementById('view-system')?.hidden) return;
+
   const viewport = window.innerHeight;
   // Sticky prompts stack under the title bar, so the current section is the one
   // whose prompt has slid behind it. A fixed fraction of the viewport would skip

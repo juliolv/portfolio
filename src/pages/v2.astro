@@ -9,6 +9,7 @@ import '../styles/base-v2.css';
 import '../styles/components.css';
 import { getCollection } from 'astro:content';
 import Bi from '../components/Bi.astro';
+import DesignSystemView from '../components/v2/DesignSystemView.astro';
 import { s, t, SITE } from '../lib/i18n';
 import devlog from '../data/devlog.json';
 import experience from '../data/experience.json';
@@ -210,7 +211,7 @@ const kv: [string, string][] = [
 
       <div class="shell">
         <main class="main">
-          <div class="transcript">
+          <div class="transcript" id="view-site">
             <section class="welcome" id="top">
               <span class="welcome__title" aria-hidden="true">portfolio v1.0</span>
               <div class="welcome__main">
@@ -367,10 +368,13 @@ const kv: [string, string][] = [
                   <dt>cv</dt>
                   <dd><a class="link" href={SITE.links.cv} target="_blank" rel="noopener"><Bi en={s(L, 'hero.cv')} es={s('es', 'hero.cv')} /> ↓</a></dd>
                 </dl>
-                <p class="colophon"><Bi en={s(L, 'contact.colophon')} es={s('es', 'contact.colophon')} /></p>
+                <p class="colophon"><Bi en={s(L, 'contact.colophon')} es={s('es', 'contact.colophon')} />{' '}
+                  <a class="link" href="#design-system"><Bi en={s(L, 'contact.colophonLink')} es={s('es', 'contact.colophonLink')} /></a></p>
               </div>
             </section>
           </div>
+
+          <DesignSystemView />
 
           <div class="dock">
             <form class="prompt" autocomplete="off">
@@ -525,6 +529,7 @@ const kv: [string, string][] = [
       import '../scripts/v2-dialogs';
       import '../scripts/v2-shell';
       import '../scripts/v2-motion';
+      import '../scripts/v2-ds';
     </script>
   </body>
 </html>
