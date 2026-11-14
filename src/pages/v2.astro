@@ -172,6 +172,7 @@ const kv: [string, string][] = [
       hintTouch: { en: s('en', 'tui.hintTouch'), es: s('es', 'tui.hintTouch') },
       placeholder: { en: s('en', 'tui.placeholder'), es: s('es', 'tui.placeholder') },
       placeholderPhone: { en: s('en', 'tui.placeholderPhone'), es: s('es', 'tui.placeholderPhone') },
+      role: { en: s('en', 'hero.role'), es: s('es', 'hero.role') },
     })}></script>
     <div class="app">
       <header class="titlebar">
@@ -208,8 +209,8 @@ const kv: [string, string][] = [
               <div class="welcome__main">
                 <h1 class="hero__name">{SITE.name}</h1>
                 <p class="hero__role">
-                  <span class="hero__ghost" aria-hidden="true">› {s(L, 'hero.role')}<span class="caret"></span></span>
-                  <span><span aria-hidden="true">› </span><span class="sr-only">{s(L, 'hero.role')}</span><span aria-hidden="true">{s(L, 'hero.role')}</span><span class="caret" aria-hidden="true"></span></span>
+                  <span class="hero__ghost" aria-hidden="true">› <Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /><span class="caret"></span></span>
+                  <span><span aria-hidden="true">› </span><span class="sr-only"><Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /></span><span id="typed" aria-hidden="true"><Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /></span><span class="caret" aria-hidden="true"></span></span>
                 </p>
                 <p class="hero__pitch">{s(L, 'hero.pitch')}</p>
                 <div class="actions">
@@ -242,7 +243,7 @@ const kv: [string, string][] = [
               </aside>
             </section>
 
-            <section class="turn" id="work">
+            <section class="turn reveal" id="work">
               <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qWork')} es={s('es', 'tui.qWork')} /><span class="turn__cmd">/work</span></h2>
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolList')}</span><span class="tool__arg">(work/)</span></p>
               <div class="result">
@@ -275,7 +276,7 @@ const kv: [string, string][] = [
               </div>
             </section>
 
-            <section class="turn" id="devlog">
+            <section class="turn reveal" id="devlog">
               <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qDevlog')} es={s('es', 'tui.qDevlog')} /><span class="turn__cmd">/devlog</span></h2>
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTodos')}</span><span class="tool__arg">(TODO.md)</span></p>
               <div class="result">
@@ -299,7 +300,7 @@ const kv: [string, string][] = [
               </div>
             </section>
 
-            <section class="turn" id="experience">
+            <section class="turn reveal" id="experience">
               <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qExperience')} es={s('es', 'tui.qExperience')} /><span class="turn__cmd">/experience</span></h2>
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolBashLog')}</span><span class="tool__arg">(git log --graph --career)</span></p>
               <div class="result">
@@ -315,7 +316,7 @@ const kv: [string, string][] = [
               </div>
             </section>
 
-            <section class="turn" id="stack">
+            <section class="turn reveal" id="stack">
               <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qStack')} es={s('es', 'tui.qStack')} /><span class="turn__cmd">/stack</span></h2>
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTree')}</span><span class="tool__arg">(tree stack/)</span></p>
               <div class="result">
@@ -330,7 +331,7 @@ const kv: [string, string][] = [
               </div>
             </section>
 
-            <section class="turn" id="about">
+            <section class="turn reveal" id="about">
               <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qAbout')} es={s('es', 'tui.qAbout')} /><span class="turn__cmd">/about</span></h2>
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.assistant')}</span></p>
               <div class="result msg">
@@ -340,7 +341,7 @@ const kv: [string, string][] = [
               </div>
             </section>
 
-            <section class="turn" id="contact">
+            <section class="turn reveal" id="contact">
               <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qContact')} es={s('es', 'tui.qContact')} /><span class="turn__cmd">/contact</span></h2>
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolRead')}</span><span class="tool__arg">(contact.md)</span></p>
               <div class="result">
@@ -478,6 +479,7 @@ const kv: [string, string][] = [
       import '../scripts/v2-prompt';
       import '../scripts/v2-dialogs';
       import '../scripts/v2-shell';
+      import '../scripts/v2-motion';
     </script>
   </body>
 </html>

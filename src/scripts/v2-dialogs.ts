@@ -17,6 +17,8 @@ const cards = [...document.querySelectorAll<HTMLElement>('[data-skin-pick]')];
 const HOVER_OK = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 let opener: HTMLElement | null = null;
+/** First paint sets the skin from storage; only later changes cross-fade. */
+let booted = false;
 /** What is saved. Not what is on screen — arrows preview without saving. */
 let committed = 'system';
 /** What is on screen right now. */
@@ -58,6 +60,7 @@ function paint(id: string, announce = false) {
   const label = document.querySelector<HTMLElement>('.skinbtn__label');
   if (label) label.textContent = skinName(id);
   if (announce && msg) msg.textContent = `theme: ${skinName(id)}`;
+  if (booted) window.dispatchEvent(new CustomEvent('tui:skin', { detail: id }));
 }
 
 /** Apply and persist. "system" stores nothing, which is how it follows the OS. */
@@ -270,6 +273,7 @@ window.addEventListener('tui:open-dialog', (event) => {
 
 committed = savedChoice();
 paint(committed);
+booted = true;
 
 // While the choice is "system", follow the OS live instead of going stale.
 window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {

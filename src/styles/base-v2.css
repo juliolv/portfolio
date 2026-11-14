@@ -145,3 +145,13 @@ html[data-lang='es'] [data-lang-block='en'] {
     display: none;
   }
 }
+
+/* ==========================================================================
+   MOTION — ported from p1-head.html. components.css references blink, rise,
+   fade and sweep; without the keyframes the caret never blinks, the welcome
+   never rises, dialogs appear instantly and the prompt flash animates nothing.
+   ========================================================================== */
+@keyframes blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sweep { from { box-shadow: inset 0 0 0 1px var(--accent); } to { box-shadow: inset 0 0 0 1px transparent; } }

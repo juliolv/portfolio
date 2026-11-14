@@ -184,6 +184,7 @@ if (input && menu) {
       return;
     }
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.dispatchEvent(new CustomEvent('tui:flash', { detail: hash.slice(1) }));
     if (focusTarget) {
       const heading = el.querySelector<HTMLElement>('h2, h1');
       heading?.setAttribute('tabindex', '-1');
