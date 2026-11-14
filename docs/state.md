@@ -1,7 +1,7 @@
 ---
 updated: 2026-11-13
-milestone: 2 — case studies and live devlog
-next_action: add /work/[slug] case-study routes
+milestone: 3 — v2 TUI port, acceptance run
+next_action: build the command palette and the single-key shortcuts, then merge
 owner: julio
 ---
 
@@ -76,6 +76,28 @@ After that: the devlog mirroring real GitHub issues.
 | 2026-11-13 | Browser tab title/meta follow the language switch; the URL does not fork | cheap bilingual signal without canonical/hreflang complexity; crawlers see English |
 | 2026-11-13 | No free models in the fleet | Owner ruled them out: predictable quality beats marginal savings |
 | 2026-11-13 | Per-role model tiers | `delegation.model` is global: one role per batch (build → audit → review). Builder `deepseek-v4.1-flash`, Auditor `qwen3.8-flash`, Reviewer **`glm-5.3-flash`** (mandated), Designer `gpt-6-luna` |
+
+## §9 acceptance run — 2026-11-13, branch `feat/tui-v2`
+
+Run in Chromium through CDP, not by eye. Evidence is the measurement next to each
+line, because "looks fine" is what this section exists to replace.
+
+| Check | Result |
+|---|---|
+| Console errors, 360/375/393/412/430/1366/1440/1536/1920 × light/dark | pass — 0 errors in 18 loads |
+| No horizontal page scroll at those widths | pass — 0px overflow; only the tab strip and `sr-only` spans extend past the viewport, both by design |
+| AA across the nine skins | pass — `pnpm contrast` |
+| Sticky prompts | pass — 49px under the bar at desktop, 89px on a phone |
+| Phone dock | pass — 94px → 45px scrolling down, back on scroll up, at either end, or on prompt focus |
+| Touch: chips, 44px targets, `menu` label | pass — chips 2×2, every tappable ≥44px |
+| Reduced motion | pass — full role text, no reveal, no cross-fade, caret static |
+| Theme picker by keyboard | pass — Enter opens on the saved skin, arrows preview, Enter saves, Esc reverts |
+| Prompt: autofocus, Tab completes without losing focus, `/work ` matches | pass |
+| Spanish, visible copy | pass — 245 strings identical EN/ES, of which 42 are technology names, theme names, URLs and code samples; no prose left in English |
+| **Command palette (§5.2)** | **not built** — `Ctrl K` focuses the prompt; there is no grouped palette dialog |
+| **Single-key shortcuts `t` `l` `j` `k` and the help switch (`tui.keys`)** | **not built** |
+| aria-labels, `data-tip` tooltips | partial — visible copy is translated, attribute strings stay English |
+| `/design-system/` | v1 page still served; v2 lives at `#design-system` |
 
 ## Known issues
 
