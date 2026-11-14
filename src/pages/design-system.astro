@@ -3,14 +3,13 @@
  * The design system moved into the app as the #design-system view, so this route
  * only forwards. Kept as a real page so old links do not 404.
  *
- * MERGE STEP: the app still lives at /v2/ on this branch. When it becomes the
- * index, drop the `v2` segment here.
+ * The app is the front door, so the forward lands on the root.
  */
 import RedirectTo from '../components/RedirectTo.astro';
 ---
 
 <RedirectTo
-  to="/v2/#design-system"
+  to="/#design-system"
   label="Design system →"
   note="The tokens, skins and components live in the site now. This address only forwards."
 />

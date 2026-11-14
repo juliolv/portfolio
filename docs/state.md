@@ -1,7 +1,7 @@
 ---
 updated: 2026-11-14
-milestone: 3 — v2 TUI port, acceptance run
-next_action: §9 re-run is green — the merge is the one decision left
+milestone: 4 — v2 shipped to production
+next_action: v2 is live — open issues #1–#4 so the devlog mirrors real work
 owner: julio
 ---
 
@@ -19,12 +19,12 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 | | |
 |---|---|
 | Repo | https://github.com/juliolv/portfolio (public, history is permanent) |
-| Live | https://juliolv.github.io/portfolio/ — deploys on every push to `main` |
+| Live | https://juliolv.github.io/portfolio/ — the v2 TUI, deployed 2026-11-14 |
 | Repo About | homepage set to the live URL, description, 6 topics (astro, portfolio, design-system, i18n, github-pages, accessibility) |
 | Host | GitHub Pages, project subpath `/portfolio` (NOT Vercel) |
 | Stack | Astro 7 static, hand-authored CSS, ~10 KB vanilla TS, no UI framework |
 | Languages | EN / ES rendered at build time, toggled with CSS |
-| Build | `pnpm build` → `dist/` (7 pages: `/`, `/v2/`, `/404`, the two forwards, `/og`, `/icon`) |
+| Build | `pnpm build` → `dist/` (7 pages: `/`, `/404`, three forwards, `/og`, `/icon`) |
 | Verified | 2026-11-13: live 200s, zero failed resources, reduced-motion + palette keyboard paths pass |
 
 ## Milestone
@@ -109,19 +109,22 @@ theme rework: six themes with two variants each, Wave, and the picker's state mo
 | 404 | pass — Wave, 404 heading, four ways back |
 | Share images | regenerated from `/og` and `/icon` in Wave; 76 KB, 1 KB, <1 KB |
 
-## Merge checklist
+## Merge — done 2026-11-14
 
-Four mechanical steps when `feat/tui-v2` becomes `main`. None of them are design
-decisions; they are the branch/test scaffolding coming down.
+The v2 branch became `main` in one commit, and v1 came down with it. What happened,
+in the order it happened, because the next session will wonder why `v2.astro` is a
+forward:
 
-1. `src/pages/v2.astro` → `src/pages/index.astro`, replacing the v1 page.
-2. Redirects in `design-system.astro` and `skins.astro`: `/v2/#design-system` →
-   `/#design-system`.
-3. Delete what only v1 used: `src/layouts/Base.astro`, `src/components/Topbar.astro`
-   and the rest of the v1 section components, `src/scripts/client.ts`,
-   `src/styles/design-system.css` (already gone), the v1 `/` markup.
-4. Keep `og.astro` and `icon.astro` (the image generators), `404.astro` (already v2)
-   and the sitemap at one URL.
+1. `src/pages/v2.astro` → `src/pages/index.astro` (v1's index removed first, so the
+   move is a rename in git, not a delete-plus-add).
+2. `design-system.astro` and `skins.astro` now forward to `/#design-system`.
+3. `src/pages/v2.astro` was re-created as a forward to `/`: the preview URL was
+   shared, and a bookmark should not 404.
+4. Deleted: `layouts/Base.astro`, `Topbar`, `StatusBar`, `Palette`, and the five v1
+   section components, `scripts/client.ts`, `scripts/design-system.ts`,
+   `styles/design.css`, `styles/app.css`.
+5. `theme-color` on the root page still carried the old palette (#0c0f14/#fbf9f5);
+   it is Wave now (#16161e/#eef0f6). `noindex` came off with the preview status.
 
 ## Themes
 
