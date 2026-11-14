@@ -88,6 +88,7 @@ line, because "looks fine" is what this section exists to replace.
 | No horizontal page scroll at those widths | pass — 0px overflow; only the tab strip and `sr-only` spans extend past the viewport, both by design |
 | AA across the nine skins | pass — `pnpm contrast` |
 | Sticky prompts | pass — 49px under the bar at desktop, 89px on a phone |
+| Context meter | simulated — a section of reading costs a block of tokens, so the meter fills 21% → 98% of the 1M window instead of pinning at 0.2% |
 | Phone dock | pass — 94px → 45px scrolling down, back on scroll up, at either end, or on prompt focus |
 | Touch: chips, 44px targets, `menu` label | pass — chips 2×2, every tappable ≥44px |
 | Reduced motion | pass — full role text, no reveal, no cross-fade, caret static |
