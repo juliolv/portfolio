@@ -32,12 +32,17 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 **Done:** design-system port, motion/interaction handoff, GitHub Pages deploy,
 /work/[slug] case studies with linked cards, a generated sitemap and
 per-language markdown bodies.
-**Now:** the devlog mirroring real GitHub issues.
+**Now:** the v2 TUI rewrite, on branch `feat/tui-v2` (main stays live until the
+handoff's §9 checklist passes). Handoff: `docs/design/v2/portfolio-tui-handoff/`.
+After that: the devlog mirroring real GitHub issues.
 **Then:** real content (blocked on the owner), then launch polish.
 
 ## Next actions
 
-1. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
+1. v2 port, one issue at a time (`HERMES_HANDOFF.md` §8). Done: tokens + nine
+   skins + AA gate (`pnpm contrast`), branch `feat/tui-v2`. Next: §3 i18n/data,
+   then §4 shell. Scaffold (§1) already exists, so it is skipped.
+2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
 2. Open issues #1–#4 so the devlog has something to mirror (owner approval).
 3. Design pass on hero density and affordances (Designer agent, one batch).
@@ -54,6 +59,10 @@ per-language markdown bodies.
 | 2026-11-13 | `/design-system/` is a route, not a JS view | Real URL, indexable, works without JS (deviation from handoff §7, documented in client.ts) |
 | 2026-11-13 | Boot steps each run in a guard | One throwing step used to kill scroll tracking and nav handlers |
 | 2026-11-13 | Placeholder content only | Public repo; real employers/projects must never enter history |
+| 2026-11-13 | v2 keeps `/work/[slug]` case studies | the handoff was written before they shipped; project rows will expand in place *and* link out — dropping shipped content is not reversible in spirit |
+| 2026-11-13 | Design system stays a real route | shareable URL and its own canonical/OG beat a hash view; the spec's tabs port into the route |
+| 2026-11-13 | v2 lands on `feat/tui-v2`, not `main` | a shell rewrite this size needs a preview branch until §9 passes |
+| 2026-11-13 | Themes use official palettes, green/amber included | handoff §3.2 reverses the earlier no-green rule on purpose |
 | 2026-11-13 | Browser tab title/meta follow the language switch; the URL does not fork | cheap bilingual signal without canonical/hreflang complexity; crawlers see English |
 | 2026-11-13 | No free models in the fleet | Owner ruled them out: predictable quality beats marginal savings |
 | 2026-11-13 | Per-role model tiers | `delegation.model` is global: one role per batch (build → audit → review). Builder `deepseek-v4.1-flash`, Auditor `qwen3.8-flash`, Reviewer **`glm-5.3-flash`** (mandated), Designer `gpt-6-luna` |
