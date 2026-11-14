@@ -56,3 +56,9 @@ html[data-lang='es'] [data-lang-block='en'] {
   color: var(--accent);
   font-size: var(--fs-1);
 }
+
+/* The previewed card is also the checked one, so the accent border and the focus
+   ring would sit on top of each other. Push the ring out to keep them distinct. */
+.skin-card:focus-visible {
+  outline-offset: 4px;
+}
