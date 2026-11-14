@@ -329,9 +329,11 @@ function compactDock() {
   }
   const y = window.scrollY;
   const atTop = y < 12;
-  const atEnd = y + window.innerHeight >= document.documentElement.scrollHeight - 4;
 
-  if (atTop || atEnd || y < lastY - 4) dock.classList.remove('is-compact');
+  // Reaching the end used to expand the bar as well, which meant the dock moved
+  // 36px at the exact moment the reader arrived — the jump they noticed. It stays
+  // compact at the end now, and comes back on a scroll up, at the top, or on focus.
+  if (atTop || y < lastY - 4) dock.classList.remove('is-compact');
   else if (y > lastY + 6) dock.classList.add('is-compact');
 
   lastY = y;
@@ -380,7 +382,15 @@ export {};
    Measure it rather than guess: it is 96px at 1440 and taller on a phone once the
    status line wraps, and `.main > .transcript` reserves exactly this much. */
 if (dock) {
-  const reportDock = () => root.style.setProperty('--dock-h', `${Math.round(dock.getBoundingClientRect().height)}px`);
+  // --dock-h is the *expanded* height: the transcript reserves that much, and a
+  // value that shrank with the compact state would move the whole page under the
+  // reader every time the dock reacted to their scroll.
+  const statusLine = dock.querySelector<HTMLElement>('.status-line');
+  const reportDock = () => {
+    if (dock.classList.contains('is-compact')) return;
+    root.style.setProperty('--dock-h', `${Math.round(dock.getBoundingClientRect().height)}px`);
+    if (statusLine) root.style.setProperty('--dock-slide', `${Math.round(statusLine.getBoundingClientRect().height)}px`);
+  };
   reportDock();
   new ResizeObserver(reportDock).observe(dock);
 }

@@ -360,7 +360,11 @@ html[data-lang='es'] [data-lang-block='en'] {
    404, the design-system view — still gets a rule to the bottom, not a stub. */
 .shell {
   position: relative;
-  min-height: calc(100dvh - var(--bar-h) - var(--sp-2));
+  min-height: calc(100svh - var(--bar-h) - var(--sp-2));
+  /* A transform still contributes to scrollable overflow, so a dock slid down by
+     its status line made the document 19px taller — one jump traded for a smaller
+     one. Clipping here keeps the slide purely visual. */
+  overflow: clip;
 }
 .shell::before {
   content: "";
@@ -384,4 +388,39 @@ html[data-lang='es'] [data-lang-block='en'] {
   .shell::before {
     display: none;
   }
+}
+
+/* Phone dock, compact state.
+
+   The reference compacts by shrinking the box — padding down, input from 44 to
+   34, status line hidden. That changes the document height, which changes where
+   the reader is, which changes whether the dock thinks it is at the end of the
+   page: the page jumped by ~50px at the exact moment the dock reacted to the
+   scroll. Keeping the box and sliding the bar down frees the same space and
+   reflows nothing.
+
+   Three classes on the compact rules: components.css is imported after this file
+   and sets the same selectors at two. */
+@media (max-width: 899px) {
+  .dock {
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .app .dock.is-compact {
+    padding: var(--sp-3) var(--sp-5) calc(var(--sp-2) + env(safe-area-inset-bottom, 0px)) 0;
+    transform: translateY(var(--dock-slide, 45px));
+  }
+  .app .dock.is-compact .prompt__input {
+    height: 44px;
+  }
+  .app .dock.is-compact .status-line {
+    display: flex;
+  }
+}
+
+/* The dock is the last thing on the page, and the body's 8px bottom margin put a
+   strip of page below it: at the very end of a scroll the sticky dock reached its
+   flow position 9px higher than where it had been pinned. Flush to the bottom
+   removes the last movement — and a dock should sit on the edge anyway. */
+body {
+  margin-bottom: 0;
 }

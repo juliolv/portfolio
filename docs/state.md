@@ -91,7 +91,8 @@ theme rework: six themes with two variants each, Wave, and the picker's state mo
 | AA across the themes | pass — `pnpm contrast`, 12 palettes (six themes × dark/light) |
 | Sticky prompts | pass — the section prompt pins at 49px, exactly `--bar-h` |
 | Context meter | simulated — 21% → 98% of the 1M window; `aria-valuenow` agrees with the label |
-| Phone dock | pass — 94px → 45px scrolling down, back to 94 on scroll up |
+| Phone dock | pass — the bar slides 27px down on scroll down and back on scroll up; its box stays 94px, so nothing reflows |
+| No layout shift while scrolling | pass — document height constant (5333 phone / 3610 desktop) and the dock stays at one y through the whole page, including the end |
 | Touch: chips, 44px targets, `menu` label | pass — 4 chips in 2 rows, no tappable under 44px |
 | Reduced motion | pass — full role text, caret `animation-name: none`, `--dur-fast: 0ms` |
 | Theme picker by keyboard | pass — opens on the saved card, any arrow steps one and wraps, Enter saves, Esc reverts |
@@ -125,6 +126,23 @@ forward:
    `styles/design.css`, `styles/app.css`.
 5. `theme-color` on the root page still carried the old palette (#0c0f14/#fbf9f5);
    it is Wave now (#16161e/#eef0f6). `noindex` came off with the preview status.
+
+## Dock compaction
+
+The reference compacts the phone dock by shrinking its box: padding tightens, the
+input drops 44 → 34, the status line is hidden. That is a layout change, and layout
+changes move the reader.
+
+What it caused here: `--dock-h` (the space the transcript reserves) followed the
+dock's live height, so compacting shortened the document by 49px, which changed
+whether the dock was "at the end of the page", which un-compacted it, which made
+the document taller again. Reaching the bottom produced a visible bounce, and the
+top bar moved with it because the whole page was reflowing.
+
+The dock now keeps its box and slides down by its status-line height instead, the
+shell clips the overflow a transform still creates, `--dock-h` only ever measures
+the expanded dock, and reaching the end no longer expands the bar. Document height
+is constant from top to bottom; the bar appears to shrink without moving anything.
 
 ## Themes
 
@@ -167,8 +185,13 @@ names in that block are the thing to check first if the layout goes strange.
 ## Known issues
 
 - `og.png`, `favicon-32.png` and `apple-touch-icon.png` are captured from the
-  `/og` and `/icon` routes (2x, LANCZOS downscale). Re-run the capture after a
-  design change; the routes are `noindex` and stay out of the sitemap.
+  `/og` and `/icon` routes (2x/4x, LANCZOS downscale) and committed. Re-run the
+  capture after a design change; the routes are `noindex` and stay out of the
+  sitemap. `icon.astro` now reads tokens — it used to hardcode the ported palette,
+  so a "regenerated" icon still came out in the old colours.
+- `public/favicon.svg` is hand-written, not generated: it is the title-bar mark on
+  a rounded Wave tile. It shipped as the default **Astro logo** for days because
+  nothing in the build owns it — if the mark changes, this file has to change too.
 - `/design-system/` is still the v1 page; the v2 view lives at `#design-system`.
   The 404 already links to the hash — reconcile at merge.
 - **Testing note:** the browser harness reports `hover: none`, so the reference's
