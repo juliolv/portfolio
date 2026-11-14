@@ -1,0 +1,162 @@
+---
+/**
+ * Skin preview — a build-time proof that every theme in tokens.css renders and
+ * is legible. Temporary scaffolding for the v2 port: the real skins browser
+ * becomes the design-system "skins" tab later.
+ */
+import '../styles/tokens.css';
+import { t } from '../lib/i18n';
+
+const skins = [
+  { id: 'ayu-dark', name: 'Ayu Dark', kind: 'dark' },
+  { id: 'ayu-light', name: 'Ayu Light', kind: 'light' },
+  { id: 'catppuccin-mocha', name: 'Catppuccin Mocha', kind: 'dark' },
+  { id: 'catppuccin-latte', name: 'Catppuccin Latte', kind: 'light' },
+  { id: 'dracula', name: 'Dracula', kind: 'dark' },
+  { id: 'tokyo-night', name: 'Tokyo Night', kind: 'dark' },
+  { id: 'nord', name: 'Nord', kind: 'dark' },
+  { id: 'rose-pine', name: 'Rosé Pine', kind: 'dark' },
+  { id: 'rose-pine-dawn', name: 'Rosé Pine Dawn', kind: 'light' },
+];
+
+const swatches = ['bg', 'panel', 'element', 'border', 'border-strong', 'text', 'muted', 'accent', 'accent-subtle', 'ok', 'warn', 'danger', 'select'];
+---
+
+<!doctype html>
+<html lang="en" data-skin="ayu-dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Skins — internal preview</title>
+    <style>
+      body {
+        margin: 0;
+        background: #0d1017;
+        color: #bfbdb6;
+        font-family: var(--font);
+        font-size: 13px;
+        padding: 24px;
+      }
+      h1 {
+        font-size: 15px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #9499a2;
+        margin: 0 0 24px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 16px;
+      }
+      .card {
+        background: var(--bg);
+        color: var(--text);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--r-box);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .name {
+        font-size: var(--fs-4);
+        font-weight: 600;
+      }
+      .kind {
+        color: var(--muted);
+        font-size: var(--fs-1);
+        text-transform: uppercase;
+        letter-spacing: var(--ls-wide);
+      }
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+      }
+      .sw {
+        height: 28px;
+        border-radius: var(--r-1);
+        border: 1px solid var(--border);
+      }
+      .sample {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+      }
+      .sample p {
+        margin: 0;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .accent {
+        color: var(--accent);
+      }
+      .status {
+        display: flex;
+        gap: 12px;
+        font-size: var(--fs-1);
+      }
+      .ok { color: var(--ok); }
+      .warn { color: var(--warn); }
+      .danger { color: var(--danger); }
+      .btn {
+        align-self: flex-start;
+        background: var(--accent);
+        color: var(--accent-fg);
+        border: 0;
+        border-radius: var(--r-1);
+        padding: 6px 10px;
+        font: inherit;
+        cursor: pointer;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--r-1);
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Skins · {skins.length} + system</h1>
+    <div class="grid">
+      {skins.map((skin) => (
+        <section class="card" data-skin={skin.id}>
+          <div class="head">
+            <span class="name">{skin.name}</span>
+            <span class="kind">{skin.kind}</span>
+          </div>
+          <div class="swatches">
+            {swatches.map((token) => (
+              <span class="sw" style={`background: var(--${token})`} title={`--${token}`}></span>
+            ))}
+          </div>
+          <div class="sample">
+            <p>Julio López</p>
+            <p class="muted">senior full-stack software engineer</p>
+            <p class="accent">❯ /work</p>
+            <div class="panel">panel surface</div>
+            <div class="status">
+              <span class="ok">● done</span>
+              <span class="warn">◐ in progress</span>
+              <span class="danger">○ planned</span>
+            </div>
+            <button class="btn" type="button">{t('en', 'work.title')}</button>
+          </div>
+        </section>
+      ))}
+    </div>
+  </body>
+</html>

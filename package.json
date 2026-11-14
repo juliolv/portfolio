@@ -14,7 +14,8 @@
     "guard:all": "node scripts/guard-secrets.mjs --all",
     "check": "astro check",
     "state": "node scripts/state.mjs",
-    "fleet": "node scripts/fleet.mjs"
+    "fleet": "node scripts/fleet.mjs",
+    "contrast": "node scripts/check-contrast.mjs"
   },
   "dependencies": {
     "astro": "^7.4.11"
