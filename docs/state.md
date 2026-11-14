@@ -49,9 +49,9 @@ After that: the devlog mirroring real GitHub issues.
    targets, the compact dock, gutters; §6 motion — typed role line, reveal,
    prompt flash, theme cross-fade, reduced motion; §8 sidebar extras — agents
    from SITE.agents and the compact todo from the devlog; §10 the design-system
-   view at #design-system (live tokens, skins, component specimens). Next: §11
-   the phone pass is done, so §12 sharing (meta, OG, 404) and then §9 the
-   pre-merge checklist against the whole branch.
+   view at #design-system (live tokens, skins, component specimens); §12 sharing
+   — meta, generated OG card and icons, and a 404 in the v2 language. Next: §9,
+   the pre-merge checklist, run against the whole branch in one pass.
 2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
 2. Open issues #1–#4 so the devlog has something to mirror (owner approval).
@@ -79,6 +79,11 @@ After that: the devlog mirroring real GitHub issues.
 
 ## Known issues
 
+- `og.png`, `favicon-32.png` and `apple-touch-icon.png` are captured from the
+  `/og` and `/icon` routes (2x, LANCZOS downscale). Re-run the capture after a
+  design change; the routes are `noindex` and stay out of the sitemap.
+- `/design-system/` is still the v1 page; the v2 view lives at `#design-system`.
+  The 404 already links to the hash — reconcile at merge.
 - **Handoff bug:** §5.5 specifies `rootMargin: '0 0 -8% 0'` for the reveal
   observer. IntersectionObserver rejects negative percentages, and the throw
   takes the whole motion module with it. Implemented as -8% of the viewport in
