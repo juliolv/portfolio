@@ -46,8 +46,9 @@ After that: the devlog mirroring real GitHub issues.
    search over every section; §5.2 dialogs — theme picker (System + nine skins,
    `tui.skin`, live OS follow), keyboard, commands; §5.3/§5.4 section tracking,
    the sidebar reading meter and the EN/ES switch; §7 phones — touch chips, 44px
-   targets, the compact dock, gutters. Next: §6 motion (typed role line, reveal,
-   prompt flash, theme cross-fade) and §8 sidebar extras (agents, todo).
+   targets, the compact dock, gutters; §6 motion — typed role line, reveal,
+   prompt flash, theme cross-fade, reduced motion. Next: §8 sidebar extras
+   (agents, todo), then §10 the design-system view.
 2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
 2. Open issues #1–#4 so the devlog has something to mirror (owner approval).
@@ -74,6 +75,11 @@ After that: the devlog mirroring real GitHub issues.
 | 2026-11-13 | Per-role model tiers | `delegation.model` is global: one role per batch (build → audit → review). Builder `deepseek-v4.1-flash`, Auditor `qwen3.8-flash`, Reviewer **`glm-5.3-flash`** (mandated), Designer `gpt-6-luna` |
 
 ## Known issues
+
+- **Handoff bug:** §5.5 specifies `rootMargin: '0 0 -8% 0'` for the reveal
+  observer. IntersectionObserver rejects negative percentages, and the throw
+  takes the whole motion module with it. Implemented as -8% of the viewport in
+  pixels.
 
 Triaged from the first audit fleet (2026-11-13). Fixed items are gone from this
 table; they live in the git log.
