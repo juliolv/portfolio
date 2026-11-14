@@ -311,6 +311,14 @@ if (input && menu) {
     render(query);
   }
 
+  // "Try this" tips and chips run a command without typing it
+  document.addEventListener('click', (event) => {
+    const chip = (event.target as HTMLElement).closest<HTMLElement>('[data-run]');
+    if (!chip?.dataset.run) return;
+    event.preventDefault();
+    runCommand(chip.dataset.run);
+  });
+
   input.addEventListener('input', update);
 
   input.addEventListener('keydown', (event) => {
@@ -343,6 +351,16 @@ if (input && menu) {
       }
     } else if (event.key === 'Enter') {
       event.preventDefault();
+      // A typed command with no matching option still has to answer: otherwise
+      // `/typo` looks like the site ignored you.
+      if (mode === 'command' && !results.length) {
+        const typed = input.value.trim();
+        if (typed) history.push(typed);
+        close();
+        input.value = '';
+        runCommand(typed);
+        return;
+      }
       run(cursor);
     } else if (event.key === 'Escape') {
       if (!menu!.hidden) {

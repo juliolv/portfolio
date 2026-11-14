@@ -19,7 +19,55 @@ const blocks = [...document.querySelectorAll<HTMLElement>('.welcome, .turn')];
 const meta = JSON.parse(document.getElementById('v2-meta')?.textContent ?? '{}') as {
   title?: Record<Lang, string>;
   desc?: Record<Lang, string>;
+  hint?: Record<Lang, string>;
+  hintTouch?: Record<Lang, string>;
+  placeholder?: Record<Lang, string>;
+  placeholderPhone?: Record<Lang, string>;
 };
+
+/** Touch is a capability, not a width: a small window with a mouse is not a phone. */
+const TOUCH = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+const PHONE = () => window.matchMedia('(max-width: 640px)').matches;
+let lang: Lang = 'en';
+
+const hintEl = document.getElementById('st-msg');
+const promptInput = document.getElementById('cmd') as HTMLInputElement | null;
+const paletteButton = document.getElementById('palette-btn');
+const dock = document.querySelector<HTMLElement>('.dock');
+
+/** Text and affordances that depend on the input device, not on the language alone. */
+function paintChrome() {
+  if (TOUCH) root.classList.add('is-touch');
+
+  const tips = document.getElementById('tips');
+  if (tips) tips.classList.toggle('tips--chips', TOUCH);
+
+  if (paletteButton) {
+    const kbd = paletteButton.querySelector('.kbd');
+    if (kbd) kbd.textContent = TOUCH ? 'menu' : 'Ctrl K';
+  }
+
+  if (promptInput) {
+    promptInput.placeholder =
+      (PHONE() ? meta.placeholderPhone?.[lang] : meta.placeholder?.[lang]) ?? '';
+  }
+  if (hintEl) {
+    hintEl.textContent = hintText();
+    hintEl.classList.add('is-hint');
+  }
+}
+
+function hintText(): string {
+  return (TOUCH ? meta.hintTouch?.[lang] : meta.hint?.[lang]) ?? '';
+}
+
+// The status line is the shortcut hint until something has to be said, and the
+// reference hides it on phones unless it is saying something. Tracking the text
+// keeps that honest without every module knowing about the class.
+hintEl && new MutationObserver(() => {
+  if (!hintEl) return;
+  hintEl.classList.toggle('is-hint', hintEl.textContent === hintText());
+}).observe(hintEl, { childList: true, characterData: true, subtree: true });
 
 /* ------------------------------------------------------------------ language -- */
 
@@ -34,6 +82,7 @@ function readLang(): Lang {
 }
 
 function applyLang(next: Lang, announce = true) {
+  lang = next;
   root.dataset.lang = next;
   root.lang = next;
 
@@ -54,6 +103,7 @@ function applyLang(next: Lang, announce = true) {
   // text lengths differ per language, so the meter has to recount
   metrics = null;
   measure();
+  paintChrome();
   window.dispatchEvent(new CustomEvent('tui:lang', { detail: next }));
   if (announce && msg) msg.textContent = next.toUpperCase();
 }
@@ -208,6 +258,31 @@ document.addEventListener('click', (event) => {
   setCurrent(link.dataset.nav);
 });
 
+let lastY = window.scrollY;
+
+/** Phones: the dock drops to one line while you scroll down, and comes back when
+    you scroll up, reach either end, or touch the prompt. */
+function compactDock() {
+  if (!dock || !window.matchMedia('(max-width: 899px)').matches) {
+    dock?.classList.remove('is-compact');
+    return;
+  }
+  const y = window.scrollY;
+  const atTop = y < 12;
+  const atEnd = y + window.innerHeight >= document.documentElement.scrollHeight - 4;
+
+  if (atTop || atEnd || y < lastY - 4) dock.classList.remove('is-compact');
+  else if (y > lastY + 6) dock.classList.add('is-compact');
+
+  lastY = y;
+}
+
+promptInput?.addEventListener('focus', () => dock?.classList.remove('is-compact'));
+window.addEventListener('resize', () => {
+  paintChrome();
+  compactDock();
+});
+
 let queued = false;
 function onScroll() {
   if (queued) return;
@@ -215,11 +290,19 @@ function onScroll() {
   requestAnimationFrame(() => {
     queued = false;
     update();
+    compactDock();
   });
 }
 
 window.addEventListener('scroll', onScroll, { passive: true });
 window.addEventListener('resize', onScroll);
+
+// The page height changes under us — the dock compacts, the meter recounts,
+// Spanish reflows. Without this the end-of-document rule can be evaluated
+// against a height that no longer exists.
+if ('ResizeObserver' in window) {
+  new ResizeObserver(() => onScroll()).observe(document.body);
+}
 window.addEventListener('tui:lang', onScroll);
 window.addEventListener('tui:set-lang', (event) => {
   const next = (event as CustomEvent<string>).detail;

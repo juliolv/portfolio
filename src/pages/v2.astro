@@ -168,6 +168,10 @@ const kv: [string, string][] = [
     <script type="application/json" id="v2-meta" set:html={JSON.stringify({
       title: { en: `${SITE.name} — ${s('en', 'hero.role')}`, es: `${SITE.name} — ${s('es', 'hero.role')}` },
       desc: { en: s('en', 'hero.pitch'), es: s('es', 'hero.pitch') },
+      hint: { en: s('en', 'tui.hint'), es: s('es', 'tui.hint') },
+      hintTouch: { en: s('en', 'tui.hintTouch'), es: s('es', 'tui.hintTouch') },
+      placeholder: { en: s('en', 'tui.placeholder'), es: s('es', 'tui.placeholder') },
+      placeholderPhone: { en: s('en', 'tui.placeholderPhone'), es: s('es', 'tui.placeholderPhone') },
     })}></script>
     <div class="app">
       <header class="titlebar">
@@ -221,6 +225,20 @@ const kv: [string, string][] = [
                 <dl class="kv">
                   {kv.map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}
                 </dl>
+                <p class="side__label"><Bi en={s(L, 'tui.tipsTitle')} es={s('es', 'tui.tipsTitle')} /></p>
+                <ul class="tips" id="tips">
+                  {[
+                    ['/work', 'tui.tipWork'],
+                    ['/devlog', 'tui.tipDevlog'],
+                    ['/contact', 'tui.tipContact'],
+                    ['/theme', 'tui.tipTheme'],
+                  ].map(([cmd, key]) => (
+                    <li><button class="tip" type="button" data-run={cmd}>
+                      <span class="tip__key">{cmd}</span>
+                      <span class="tip__desc"><Bi en={s(L, key)} es={s('es', key)} /></span>
+                    </button></li>
+                  ))}
+                </ul>
               </aside>
             </section>
 
@@ -358,7 +376,7 @@ const kv: [string, string][] = [
               </div>
             </form>
             <div class="status-line">
-              <span class="status-line__msg" id="st-msg" role="status" aria-live="polite">? shortcuts · / commands · Ctrl K palette</span>
+              <span class="status-line__msg is-hint" id="st-msg" role="status" aria-live="polite">? shortcuts · / commands · Ctrl K palette</span>
               <span class="status-line__right"><span class="mode">build</span><span class="model">julio-lopez</span><span class="muted" aria-hidden="true">/</span><span class="model">senior-full-stack</span></span>
             </div>
           </div>

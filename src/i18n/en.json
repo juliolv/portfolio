@@ -179,6 +179,15 @@
     "toolBashLog": "Bash",
     "toolTree": "Bash",
     "toolRead": "Read",
-    "assistant": "Assistant"
+    "assistant": "Assistant",
+    "tipsTitle": "Try this",
+    "tipWork": "selected work",
+    "tipDevlog": "building in public",
+    "tipContact": "email and links",
+    "tipTheme": "theme picker",
+    "hint": "? shortcuts · / commands · Ctrl K palette",
+    "hintTouch": "tap ❯ to search · / commands",
+    "placeholder": "Search projects and skills, or type / for commands…",
+    "placeholderPhone": "Search, or type /…"
   }
 }
