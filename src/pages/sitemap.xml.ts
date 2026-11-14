@@ -10,10 +10,9 @@ export const GET: APIRoute = async ({ site }) => {
   const origin = site ?? new URL('https://juliolv.github.io');
   const abs = (path: string) => new URL(`${base}${path}`, origin).href;
 
-  const entries = [
-    { loc: abs('/'), changefreq: 'monthly', priority: '1.0' },
-    { loc: abs('/design-system/'), changefreq: 'monthly', priority: '0.6' },
-  ];
+  // One URL: the design system is a view inside the page (#design-system), not a
+  // route of its own.
+  const entries = [{ loc: abs('/'), changefreq: 'monthly', priority: '1.0' }];
 
   const body = entries
     .map(
