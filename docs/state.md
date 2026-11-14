@@ -45,9 +45,9 @@ After that: the devlog mirroring real GitHub issues.
    bilingual, no horizontal scroll; §5.1 prompt with 16 slash commands and live
    search over every section; §5.2 dialogs — theme picker (System + nine skins,
    `tui.skin`, live OS follow), keyboard, commands; §5.3/§5.4 section tracking,
-   the sidebar reading meter and the EN/ES switch. Next: §7 phones — touch chips,
-   44px targets, the compact dock — then §6 motion (typing, reveal, prompt flash)
-   and the design-system view.
+   the sidebar reading meter and the EN/ES switch; §7 phones — touch chips, 44px
+   targets, the compact dock, gutters. Next: §6 motion (typed role line, reveal,
+   prompt flash, theme cross-fade) and §8 sidebar extras (agents, todo).
 2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
    JSON, fall back to `src/data/devlog.json` when the API fails.
 2. Open issues #1–#4 so the devlog has something to mirror (owner approval).
