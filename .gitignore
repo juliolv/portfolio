@@ -30,6 +30,6 @@ pnpm-debug.log*
 .guard/
 
 # Design references from Claude contain real personal data until scrubbed.
-design/
-design-refs/
+/design/
+/design-refs/
 *.artifact.html
