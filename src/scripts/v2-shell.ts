@@ -65,8 +65,10 @@ function paintChrome() {
 
   if (paletteButton) {
     // A keycap inside a button is two frames; this is plain text in the button.
+    // Phones get the word too: "Ctrl K" is the longest label in a row that has
+    // to fit brand + language + theme without touching both edges.
     const key = paletteButton.querySelector('.btn__key');
-    if (key) key.textContent = TOUCH ? 'menu' : 'Ctrl K';
+    if (key) key.textContent = TOUCH || PHONE() ? 'menu' : 'Ctrl K';
   }
 
   if (promptInput) {
@@ -138,6 +140,8 @@ function applyLang(next: Lang, announce = true) {
   // text lengths differ per language, and so does the copy in the chrome, which
   // is why it repaints rather than waiting for the next scroll.
   paintChrome();
+  // Spanish labels are longer: the strip may overflow now when it did not.
+  paintStripMore();
   window.dispatchEvent(new CustomEvent('tui:lang', { detail: next }));
   if (announce && msg) msg.textContent = next.toUpperCase();
 }
@@ -177,6 +181,11 @@ function moveIndicators() {
     const s = strip.getBoundingClientRect();
     const x = a.left - s.left + strip.scrollLeft;
     stripInd.style.transform = `translateX(${x}px) scaleX(${a.width})`;
+    // Phones: the nav is a scroller, so the current tab has to be brought into
+    // view when the section changes — otherwise the highlight moves off-screen.
+    if (a.left < s.left + 8 || a.right > s.right - 28) {
+      stripLink.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
   }
 
   const fileLink = files?.querySelector<HTMLElement>('a[aria-current="true"]');
@@ -186,7 +195,21 @@ function moveIndicators() {
     const y = f.top - s.top;
     filesInd.style.transform = `translateY(${y}px) scaleY(${f.height})`;
   }
+
+  paintStripMore();
 }
+
+/* The strip's "there is more" chevron, and its honest removal. */
+const stripMore = document.querySelector<HTMLElement>('.tabstrip__more');
+
+function paintStripMore() {
+  if (!strip || !stripMore) return;
+  const end = strip.scrollWidth - strip.clientWidth;
+  stripMore.classList.toggle('is-hidden', end <= 4 || strip.scrollLeft >= end - 4);
+}
+
+strip?.addEventListener('scroll', paintStripMore, { passive: true });
+window.addEventListener('resize', paintStripMore);
 
 function update() {
   // The design-system view is a sibling of the transcript; while it is open the

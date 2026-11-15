@@ -322,10 +322,13 @@ const kv: [string, string, string][] = [
         </div>
         <nav class="tabstrip" aria-label={s(L, 'a11y.sections')} data-label-en={s('en', 'a11y.sections')} data-label-es={s('es', 'a11y.sections')}>
           {sections.map((section) => (
-            <a href={`#${section.id}`} data-nav={section.id} aria-current={section.id === 'work' ? 'true' : undefined}>{section.label}</a>
+            <a href={`#${section.id}`} data-nav={section.id} aria-current={section.id === 'work' ? 'true' : undefined}><Bi en={section.label} es={s('es', `nav.${section.id}`)} /></a>
           ))}
           <span class="tabstrip__ind" aria-hidden="true"></span>
         </nav>
+        {/* Phones only: the strip scrolls, and this says so. Removed by the
+            shell once the last tab is in view. */}
+        <span class="tabstrip__more" aria-hidden="true">›</span>
       </header>
 
       <div class="shell">

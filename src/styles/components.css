@@ -62,6 +62,7 @@
 .titlebar__spacer { flex: 1; }
 .skinbtn { gap: var(--sp-2); }
 .tabstrip { display: none; position: relative; height: 40px; overflow-x: auto; scrollbar-width: none; gap: var(--sp-1); }
+.tabstrip__more { display: none; }
 .tabstrip::-webkit-scrollbar { display: none; }
 .tabstrip a, .files a { display: inline-flex; align-items: center; gap: var(--sp-2); color: var(--muted); text-decoration: none; white-space: nowrap; transition: color var(--dur-fast); }
 .tabstrip a { padding: 0 var(--sp-2); font-size: var(--fs-2); }
@@ -370,4 +371,51 @@ html:not(.js) .row__mark { visibility: hidden; }
   .turn { margin-top: var(--sp-6); }
   .status-line__msg.is-hint { display: none; }
   .status-line { justify-content: flex-end; }
+  /* Sticky chrome, phone budget. The build bar (mode · model · variant) is a
+     desktop readout nobody needs at 360px, and an empty status line was still
+     reserving its padding. It reappears the moment it has something to say —
+     "copied", "ES" — so feedback still lands. */
+  .status-line__right { display: none; }
+  .status-line:has(.status-line__msg.is-hint) { display: none; }
+  /* The tabstrip scrolls but looked clipped rather than scrollable: a fade at
+     the cut edge says "there is more", and the trailing pad lets the last tab
+     clear it. The chevron is the explicit cue; the shell hides it at the end. */
+  .tabstrip {
+    scroll-snap-type: x proximity;
+    padding-right: var(--sp-6);
+  }
+  .tabstrip a { scroll-snap-align: start; }
+  .tabstrip__more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    width: 32px;
+    height: 40px;
+    font-size: var(--fs-4);
+    line-height: 1;
+    color: var(--accent);
+    /* A solid strip, not a fade: a fade over a fade left a half-glyph showing.
+       The gradient tail blends the cut edge, and nothing survives under it. */
+    background: var(--bg);
+    pointer-events: none;
+  }
+  .tabstrip__more::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 100%;
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(to right, transparent, var(--bg));
+  }
+  .tabstrip__more.is-hidden { display: none; }
+}
+
+/* Phones: less chrome, and the header's four controls still fit at 360. */
+@media (max-width: 480px) {
+  .titlebar__row { gap: var(--sp-2); }
 }
