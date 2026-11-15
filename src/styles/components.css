@@ -88,16 +88,9 @@
 .files__cur { width: 1ch; color: var(--accent); opacity: 0; }
 .files a[aria-current="true"] .files__cur { opacity: 1; }
 .files__ind { position: absolute; left: 0; top: 0; width: 2px; height: 1px; background: var(--accent); transform-origin: top; transform: translateY(0) scaleY(0); transition: transform var(--dur-base) var(--ease-out); pointer-events: none; }
-.mini-todo a { display: flex; gap: var(--sp-2); padding: 2px 0; font-size: var(--fs-2); color: var(--muted); text-decoration: none; }
-.mini-todo a:hover { color: var(--text); }
 /* Focus rings inside scrolling or clipped containers draw inward so they are never cut off. */
 .sidebar :focus-visible, .tabstrip :focus-visible, .tabs :focus-visible, .row__inner :focus-visible { outline-offset: -2px; }
-/* sidebar: context meter + agents */
-.ctx { display: flex; flex-direction: column; gap: 2px; font-size: var(--fs-2); }
-.ctx__bar { color: var(--accent); letter-spacing: 0.06em; white-space: nowrap; overflow: hidden; }
-.ctx__bar i { font-style: normal; color: var(--border-strong); }
-.ctx__nums, .ctx__read { font-size: var(--fs-1); color: var(--muted); font-variant-numeric: tabular-nums; }
-.ctx__read { margin-top: 2px; }
+/* sidebar: agents */
 .agents { display: flex; flex-direction: column; gap: var(--sp-2); font-size: var(--fs-2); }
 .agent { display: grid; grid-template-columns: 2ch minmax(0, 1fr); gap: 0 var(--sp-1); }
 .agent__name { color: var(--text); }

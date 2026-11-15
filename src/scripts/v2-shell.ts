@@ -1,10 +1,10 @@
 /**
- * v2 shell: section tracking, the context meter and the language toggle
- * (§3.4 sidebar, §5.3 current section, §5.4 language).
+ * v2 shell: section tracking and the language toggle (§3.4 sidebar, §5.3
+ * current section, §5.4 language).
  *
- * Tracking runs on scroll, inside a requestAnimationFrame, and writes only
- * when the current section or the read count actually changes — the meter is
- * monotonic, so scrolling back up never un-reads a section.
+ * Tracking runs on scroll, inside a requestAnimationFrame, and writes only when
+ * the current section actually changes. There is no reading meter: the sidebar
+ * reports where you are, not how much of a simulated context window you used.
  */
 
 type Lang = 'en' | 'es';
@@ -14,8 +14,6 @@ const LANG_KEY = 'tui.lang';
 const msg = document.getElementById('st-msg');
 
 const turns = [...document.querySelectorAll<HTMLElement>('.turn')];
-/** The welcome box counts as the first "section" in the meter: 7 in total. */
-const blocks = [...document.querySelectorAll<HTMLElement>('.welcome, .turn')];
 const meta = JSON.parse(document.getElementById('v2-meta')?.textContent ?? '{}') as {
   title?: Record<Lang, string>;
   desc?: Record<Lang, string>;
@@ -24,8 +22,6 @@ const meta = JSON.parse(document.getElementById('v2-meta')?.textContent ?? '{}')
   hintOff?: Record<Lang, string>;
   placeholder?: Record<Lang, string>;
   placeholderPhone?: Record<Lang, string>;
-  tokensLine?: Record<Lang, string>;
-  readLine?: Record<Lang, string>;
 };
 
 /** Touch is a capability, not a width: a small window with a mouse is not a phone. */
@@ -139,10 +135,8 @@ function applyLang(next: Lang, announce = true) {
     /* private mode */
   }
 
-  // text lengths differ per language, so the meter has to recount — and its own
-  // copy changes with the language, which is why it repaints rather than waiting
-  // for the next scroll.
-  paintMeter(maxRead);
+  // text lengths differ per language, and so does the copy in the chrome, which
+  // is why it repaints rather than waiting for the next scroll.
   paintChrome();
   window.dispatchEvent(new CustomEvent('tui:lang', { detail: next }));
   if (announce && msg) msg.textContent = next.toUpperCase();
@@ -161,71 +155,9 @@ const strip = document.querySelector<HTMLElement>('.tabstrip');
 const stripInd = document.querySelector<HTMLElement>('.tabstrip__ind');
 const files = document.querySelector<HTMLElement>('.files');
 const filesInd = document.querySelector<HTMLElement>('.files__ind');
-const ctx = document.querySelector<HTMLElement>('.ctx');
-const ctxBar = document.querySelector<HTMLElement>('.ctx__bar');
-const ctxNums = document.querySelector<HTMLElement>('.ctx__nums');
-const ctxRead = document.querySelector<HTMLElement>('.ctx__read');
-const ctxPct = document.getElementById('ctx-pct');
-
-/**
- * The window the meter reports against: 1M, what a large model's context is
- * expected to be. Usage is simulated (see simulatedUsage) so the meter fills the
- * way a session does; the page's real text is a couple of thousand tokens and
- * would never move it.
- */
-const CONTEXT_WINDOW = 1_000_000;
-
-const short = (n: number) => (n >= 1_000_000 ? `${(n / 1_000_000).toFixed(0)}M` : `${(n / 1000).toFixed(1)}k`);
-
-/**
- * Simulated usage. Reading a section stands in for a turn of an agent session:
- * each costs a block of tokens, and the cost creeps up as the work deepens. Seven
- * sections land just under the window, so the meter fills the way a real session
- * does instead of pinning at 0.2% of a million.
- */
-const SECTION_COST = 96_500;
-const SECTION_GROWTH = 0.15;
-
-function simulatedUsage(read: number): number {
-  let total = 0;
-  for (let i = 0; i < read; i += 1) total += SECTION_COST * (1 + SECTION_GROWTH * i);
-  return Math.round(total);
-}
-
 let currentId = '';
 /** Nav clicks set the section themselves; scroll updates pause briefly after. */
 let currentLock = 0;
-let maxRead = 0;
-
-/** 14 cells: filled ones are glyphs, empty ones are wrapped so they can be muted */
-function paintBar(pct: number) {
-  if (!ctxBar) return;
-  const cells = 14;
-  const filled = Math.round((pct / 100) * cells);
-  ctxBar.innerHTML = '█'.repeat(filled) + (filled < cells ? `<i>${'█'.repeat(cells - filled)}</i>` : '');
-}
-
-function paintMeter(read: number) {
-  const used = simulatedUsage(read);
-  const pct = Math.min(100, Math.round((used / CONTEXT_WINDOW) * 100));
-
-  paintBar(pct);
-  const tokensLine = (meta.tokensLine?.[lang] ?? '{used} / {total}')
-    .replace('{used}', short(used))
-    .replace('{total}', short(CONTEXT_WINDOW))
-    .replace('{pct}', String(pct));
-  const readLine = (meta.readLine?.[lang] ?? '{n}/{total}')
-    .replace('{total}', String(blocks.length))
-    .replace('{n}', String(read));
-
-  if (ctxNums) ctxNums.textContent = tokensLine;
-  if (ctxRead) ctxRead.textContent = readLine;
-  if (ctxPct) ctxPct.textContent = `${pct}%`;
-  if (ctx) {
-    ctx.setAttribute('aria-valuenow', String(pct));
-    ctx.setAttribute('aria-valuetext', `${pct}%, ${readLine}`);
-  }
-}
 
 function setCurrent(id: string) {
   if (id === currentId) return;
@@ -270,10 +202,8 @@ function update() {
   // at least that low or the section you just jumped to never becomes current.
   const margin = turns[0] ? parseFloat(getComputedStyle(turns[0]).scrollMarginTop) || 0 : 0;
   const line = bar + margin + 2;
-  const readLine = viewport * 0.85; // a section counts as read once its top passes this
 
   let index = -1;
-  let read = 0;
 
   // A prompt pinned under the bar is current, and it wins outright: that is the
   // section whose answer you are reading.
@@ -283,10 +213,6 @@ function update() {
     // the next one belongs to nobody, and the last section that merely ended is
     // not what is on screen.
     if (r.top <= line && r.bottom > line) index = i;
-  });
-
-  blocks.forEach((block) => {
-    if (block.getBoundingClientRect().top <= readLine) read += 1;
   });
 
   // Nothing pinned (short page, or scrolled to the end): the section taking up
@@ -311,11 +237,6 @@ function update() {
 
   const id = index >= 0 ? turns[index].id : '';
   if (id && Date.now() >= currentLock) setCurrent(id);
-
-  if (read > maxRead) {
-    maxRead = read;
-    paintMeter(maxRead);
-  }
 }
 
 document.addEventListener('click', (event) => {
@@ -379,7 +300,6 @@ window.addEventListener('tui:set-lang', (event) => {
 });
 
 applyLang(readLang(), false);
-paintMeter(0);
 update();
 
 export {};

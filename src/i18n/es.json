@@ -10,7 +10,6 @@
     "themeGroup": "Tema",
     "results": "Comandos y resultados",
     "prompt": "Campo de búsqueda",
-    "context": "Ventana de contexto",
     "mode": "Modo",
     "model": "Modelo",
     "variant": "Variante",
@@ -262,8 +261,6 @@
     "kUpDown": "moverse por los resultados o el historial",
     "kTab": "completar un comando",
     "kEnter": "ejecutar el resultado elegido",
-    "tokensLine": "≈ {used} / {total} tokens",
-    "readLine": "{n}/{total} secciones leídas",
     "cmds": {
       "work": "trabajo seleccionado",
       "devlog": "construyendo en público",
@@ -289,10 +286,8 @@
   },
   "side": {
     "agents": "Agentes",
-    "todo": "Pendientes",
     "keys": "atajos de teclado",
-    "files": "Archivos",
-    "context": "Contexto"
+    "files": "Archivos"
   },
   "agents": {
     "hermes": "construyendo este sitio · {issue}",

@@ -87,7 +87,6 @@ const byPhase = phaseOrder.map((phase) => ({
 }));
 /* The sidebar shows the phase in flight, not the whole history. */
 const activePhase = (inProgress ?? devlog[log.length - 1]).phase;
-const sideEntries = log.filter((entry) => entry.phase === activePhase);
 const agentDesc = (id: string, lang: 'en' | 'es') => {
   const ref = issueRef(lang);
   const text = s(lang, `agents.${id}`);
@@ -95,7 +94,6 @@ const agentDesc = (id: string, lang: 'en' | 'es') => {
   // "building this site · " with a dangling dot.
   return ref ? text.replace('{issue}', ref) : text.replace(/\s*·\s*\{issue\}/, '').trim();
 };
-const todoDone = log.filter((entry) => entry.status === 'done').length;
 
 const sections = [
   { id: 'work', label: s(L, 'nav.work'), file: 'work/' },
@@ -301,8 +299,6 @@ const kv: [string, string, string][] = [
       hintOff: { en: s('en', 'palette.keysOffHint'), es: s('es', 'palette.keysOffHint') },
       placeholder: { en: s('en', 'tui.placeholder'), es: s('es', 'tui.placeholder') },
       placeholderPhone: { en: s('en', 'tui.placeholderPhone'), es: s('es', 'tui.placeholderPhone') },
-      tokensLine: { en: s('en', 'tui.tokensLine'), es: s('es', 'tui.tokensLine') },
-      readLine: { en: s('en', 'tui.readLine'), es: s('es', 'tui.readLine') },
     })}></script>
     <div class="app">
       <header class="titlebar">
@@ -564,15 +560,6 @@ const kv: [string, string, string][] = [
             </nav>
           </div>
           <div class="side__block">
-            <p class="side__title"><span><Bi en={s(L, 'side.context')} es={s('es', 'side.context')} /></span><span id="ctx-pct">0%</span></p>
-            <div class="ctx" role="progressbar" aria-label={s(L, 'a11y.context')} data-label-en={s('en', 'a11y.context')} data-label-es={s('es', 'a11y.context')} aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-              <span class="ctx__bar" aria-hidden="true"></span>
-              <span class="ctx__nums"></span>
-              <span class="ctx__read"></span>
-            </div>
-          </div>
-
-          <div class="side__block">
             <p class="side__title"><span><Bi en={s(L, 'side.agents')} es={s('es', 'side.agents')} /></span><span>{SITE.agents.length}</span></p>
             <ul class="agents">
               {SITE.agents.map((agent) => {
@@ -595,20 +582,6 @@ const kv: [string, string, string][] = [
             </ul>
           </div>
 
-          <div class="side__block">
-            <p class="side__title"><span><Bi en={s(L, 'side.todo')} es={s('es', 'side.todo')} /></span><span>{todoDone}/{log.length}</span></p>
-            <ul class="mini-todo">
-              {sideEntries.map((entry) => (
-                <li>
-                  <a href="#devlog">
-                    <span class={`status status--${entry.status}`} aria-hidden="true">{STATUS_GLYPH[entry.status]}</span>
-                    <span class="sr-only"><Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} /> </span>
-                    <span>{issueId(entry, log.indexOf(entry))} <Bi en={entry.title} es={entry.titleEs} /></span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
           <button class="tip" type="button" data-open-dlg="keys" aria-haspopup="dialog"><span class="kbd">?</span><span class="tip__desc"><Bi en={s('en', 'side.keys')} es={s('es', 'side.keys')} /></span></button>
         </aside>
       </div>

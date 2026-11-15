@@ -10,7 +10,6 @@
     "themeGroup": "Theme",
     "results": "Commands and results",
     "prompt": "Prompt",
-    "context": "Context window",
     "mode": "Mode",
     "model": "Model",
     "variant": "Variant",
@@ -262,8 +261,6 @@
     "kUpDown": "move through results, or recall history",
     "kTab": "complete a slash command",
     "kEnter": "run the selected result",
-    "tokensLine": "≈ {used} / {total} tokens",
-    "readLine": "{n}/{total} sections read",
     "cmds": {
       "work": "selected work",
       "devlog": "building in public",
@@ -289,10 +286,8 @@
   },
   "side": {
     "agents": "Agents",
-    "todo": "Todo",
     "keys": "keyboard shortcuts",
-    "files": "Files",
-    "context": "Context"
+    "files": "Files"
   },
   "agents": {
     "hermes": "building this site · {issue}",
