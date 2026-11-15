@@ -45,9 +45,9 @@
   },
   "hero": {
     "role": "Ingeniero de software full-stack senior",
-    "pitchLead": "Ingeniero senior",
-    "pitchRest": " con más de 10 años en todo el ciclo de desarrollo. Convierto sistemas heredados en plataformas web rápidas y nativas de la nube, y construyo las herramientas internas de operación y el e-commerce con los que funcionan los negocios.",
-    "pitch": "Ingeniero senior con más de 10 años en todo el ciclo de desarrollo. Convierto sistemas heredados en plataformas web rápidas y nativas de la nube, y construyo las herramientas internas de operación y el e-commerce con los que funcionan los negocios.",
+    "pitchLead": "Convierto sistemas heredados en plataformas web rápidas y nativas de la nube",
+    "pitchRest": " — herramientas de operación y e-commerce con los que funcionan los negocios. Lo interesante nunca es reescribir: es decidir qué conservar y poner de acuerdo al negocio.",
+    "pitch": "Convierto sistemas heredados en plataformas web rápidas y nativas de la nube — herramientas de operación y e-commerce con los que funcionan los negocios. Lo interesante nunca es reescribir: es decidir qué conservar y poner de acuerdo al negocio.",
     "cv": "Descargar CV",
     "email": "Copiar email",
     "available": "Disponible",
@@ -141,7 +141,7 @@
     "title": "Sobre mí",
     "body": [
       "Soy Julio, ingeniero de software con una década entregando productos web. Me gusta el software que resulta obvio de usar y tranquilo de mantener, y cuido los pequeños detalles que hacen posibles ambas cosas.",
-      "Casi todos estos años han sido una migración larga. Lo interesante nunca fue reescribir: fue decidir qué conservar y poner de acuerdo al negocio."
+      "Casi todos estos años han sido una migración larga en una empresa de viajes, de un framework heredado a una plataforma nativa de la nube. De ahí viene mi gusto por los sistemas aburridos y mantenibles."
     ]
   },
   "contact": {

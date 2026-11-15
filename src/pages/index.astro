@@ -99,8 +99,8 @@ const todoDone = log.filter((entry) => entry.status === 'done').length;
 
 const sections = [
   { id: 'work', label: s(L, 'nav.work'), file: 'work/' },
-  { id: 'devlog', label: s(L, 'nav.devlog'), file: 'devlog/' },
   { id: 'experience', label: s(L, 'nav.experience'), file: 'experience.md' },
+  { id: 'devlog', label: s(L, 'nav.devlog'), file: 'devlog/' },
   { id: 'stack', label: s(L, 'nav.stack'), file: 'stack/' },
   { id: 'about', label: s(L, 'nav.about'), file: 'about.md' },
   { id: 'contact', label: s(L, 'nav.contact'), file: 'contact.md' },
@@ -421,6 +421,22 @@ const kv: [string, string, string][] = [
               </div>
             </section>
 
+            <section class="turn reveal" id="experience">
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qExperience')} es={s('es', 'tui.qExperience')} /><span class="turn__cmd">/experience</span></h2>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolBashLog')}</span><span class="tool__arg">(git log --graph --career)</span></p>
+              <div class="result">
+                <ul class="glog">
+                  {experience.map((row, i) => (
+                    <li class={`glog__item${i === experience.length - 1 ? ' glog__item--edu' : ''}`}>
+                      <p class="glog__role"><Bi en={row.role} es={row.roleEs} /> <span class="glog__org">· <Bi en={row.org} es={row.orgEs} /></span></p>
+                      <p class="glog__when"><Bi en={row.when} es={row.whenEs} /></p>
+                      <p class="glog__text"><Bi en={row.text} es={row.textEs} /></p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+
             <section class="turn reveal" id="devlog">
               <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qDevlog')} es={s('es', 'tui.qDevlog')} /><span class="turn__cmd">/devlog</span></h2>
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTodos')}</span><span class="tool__arg">(TODO.md{syncedOn ? ` · synced ${syncedOn}` : ''})</span></p>
@@ -456,22 +472,6 @@ const kv: [string, string, string][] = [
                     </ul>
                   </div>
                 ))}
-              </div>
-            </section>
-
-            <section class="turn reveal" id="experience">
-              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qExperience')} es={s('es', 'tui.qExperience')} /><span class="turn__cmd">/experience</span></h2>
-              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolBashLog')}</span><span class="tool__arg">(git log --graph --career)</span></p>
-              <div class="result">
-                <ul class="glog">
-                  {experience.map((row, i) => (
-                    <li class={`glog__item${i === experience.length - 1 ? ' glog__item--edu' : ''}`}>
-                      <p class="glog__role"><Bi en={row.role} es={row.roleEs} /> <span class="glog__org">· <Bi en={row.org} es={row.orgEs} /></span></p>
-                      <p class="glog__when"><Bi en={row.when} es={row.whenEs} /></p>
-                      <p class="glog__text"><Bi en={row.text} es={row.textEs} /></p>
-                    </li>
-                  ))}
-                </ul>
               </div>
             </section>
 

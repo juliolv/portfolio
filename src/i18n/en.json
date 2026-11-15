@@ -45,9 +45,9 @@
   },
   "hero": {
     "role": "Senior full-stack software engineer",
-    "pitchLead": "Senior engineer",
-    "pitchRest": " with 10+ years across the full development lifecycle. I turn legacy systems into fast, cloud-native web platforms, and I build the internal operations tools and e-commerce that businesses run on.",
-    "pitch": "Senior engineer with 10+ years across the full development lifecycle. I turn legacy systems into fast, cloud-native web platforms, and I build the internal operations tools and e-commerce that businesses run on.",
+    "pitchLead": "I turn legacy systems into fast, cloud-native web platforms",
+    "pitchRest": " — operations tooling and e-commerce that businesses run on. The interesting part is never the rewrite; it is deciding what to keep, and getting the business to agree.",
+    "pitch": "I turn legacy systems into fast, cloud-native web platforms — operations tooling and e-commerce that businesses run on. The interesting part is never the rewrite; it is deciding what to keep, and getting the business to agree.",
     "cv": "Download CV",
     "email": "Copy email",
     "available": "Available",
@@ -141,7 +141,7 @@
     "title": "About",
     "body": [
       "I am Julio, a software engineer with a decade of shipping web products. I like software that feels obvious to use and stays calm to maintain, and I care about the small details that make both true.",
-      "Most of the last few years have been one long migration. The interesting part was never the rewrite — it was deciding what to keep, and getting the business to agree."
+      "Most of the last few years have been one long migration at a travel company, from a legacy framework to a cloud-native platform. That work is where my taste for boring, maintainable systems comes from."
     ]
   },
   "contact": {
