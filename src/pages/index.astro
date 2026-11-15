@@ -7,6 +7,7 @@
 import '../styles/tokens.css';
 import '../styles/base-v2.css';
 import '../styles/components.css';
+import { existsSync } from 'node:fs';
 import { getCollection } from 'astro:content';
 import Bi from '../components/Bi.astro';
 import DesignSystemView from '../components/v2/DesignSystemView.astro';
@@ -18,6 +19,13 @@ import stack from '../data/stack.json';
 import { THEMES, DEFAULT_THEME, THEME_IDS, LEGACY_SKINS } from '../data/themes';
 
 const L = 'en' as const;
+
+/* The CV is per language. Both files are checked at build time rather than
+   guessed at runtime: until cv-en.pdf / cv-es.pdf exist, every link falls back
+   to the single cv.pdf that does, and the href still follows the language. */
+const hasCv = (lang: 'en' | 'es') => existsSync(`public/cv-${lang}.pdf`);
+const cvFor = (lang: 'en' | 'es') => url(hasCv(lang) ? `/cv-${lang}.pdf` : '/cv.pdf');
+const cvHref = { en: cvFor('en'), es: cvFor('es') } as const;
 
 const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
 const groupsEn = t('en', 'stack.groups') as string[];
@@ -337,7 +345,7 @@ const kv: [string, string, string][] = [
                     a phone where the Summary sits below the fold. */}
                 <p class="hero__pitch"><strong class="hero__lead"><Bi en={s('en', 'hero.pitchLead')} es={s('es', 'hero.pitchLead')} /></strong><Bi en={s('en', 'hero.pitchRest')} es={s('es', 'hero.pitchRest')} /></p>
                 <div class="actions">
-                  <a class="btn btn--primary" href="#contact"><span aria-hidden="true">↓</span><Bi en={s('en', 'hero.cv')} es={s('es', 'hero.cv')} /></a>
+                  <a class="btn btn--primary" href={cvHref.en} data-cv data-cv-en={cvHref.en} data-cv-es={cvHref.es} download><span aria-hidden="true">↓</span><Bi en={s('en', 'hero.cv')} es={s('es', 'hero.cv')} /></a>
                   <button class="btn" type="button"><span aria-hidden="true">@</span><Bi en={s('en', 'hero.email')} es={s('es', 'hero.email')} /></button>
                   <a class="btn" href={SITE.links.github} target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
                   <a class="btn" href={SITE.links.linkedin} target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span></a>
@@ -502,7 +510,7 @@ const kv: [string, string, string][] = [
                   <dt>linkedin</dt>
                   <dd><a class="link" href={SITE.links.linkedin} target="_blank" rel="noopener">{linkedinLabel} ↗</a></dd>
                   <dt>cv</dt>
-                  <dd><a class="link" href={url(SITE.links.cv)} target="_blank" rel="noopener"><Bi en={s(L, 'hero.cv')} es={s('es', 'hero.cv')} /> ↓</a></dd>
+                  <dd><a class="link" href={cvHref.en} data-cv data-cv-en={cvHref.en} data-cv-es={cvHref.es} download><Bi en={s(L, 'hero.cv')} es={s('es', 'hero.cv')} /> ↓</a></dd>
                 </dl>
                 <p class="colophon"><Bi en={s(L, 'contact.colophon')} es={s('es', 'contact.colophon')} />{' '}
                   <a class="link" href="#design-system"><Bi en={s(L, 'contact.colophonLink')} es={s('es', 'contact.colophonLink')} /></a></p>

@@ -126,6 +126,13 @@ function applyLang(next: Lang, announce = true) {
     button.setAttribute('aria-checked', String(button.dataset.langTo === next));
   });
 
+  // The CV follows the language too, and it is a download: the href has to be
+  // right before the click, not after a reload.
+  document.querySelectorAll<HTMLAnchorElement>('[data-cv]').forEach((link) => {
+    const href = link.getAttribute(`data-cv-${next}`);
+    if (href) link.setAttribute('href', href);
+  });
+
   try {
     localStorage.setItem(LANG_KEY, next);
   } catch {
