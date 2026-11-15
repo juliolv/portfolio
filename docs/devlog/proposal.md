@@ -1,8 +1,11 @@
 # Devlog proposal — the journey we actually had
 
-Status: **proposal, nothing created yet.** No issues exist, nothing is wired.
-This file is for review: read it, cut what you don't want to say in public, and
-we ship the rest.
+Status: **decided, drafts ready, nothing created yet.**
+
+Decided on review: cut to fourteen entries (the handoff and fleet entries went, and
+the three bug entries became one), failures stay in, one issue per entry. Shipped
+entries are created and closed immediately; the last one stays open. The drafts are
+in `docs/devlog/issues.md`, and no issue exists until they are approved.
 
 ## Why not four issues
 
