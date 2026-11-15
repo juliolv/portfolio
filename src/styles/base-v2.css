@@ -147,11 +147,10 @@ html[data-lang='es'] [data-lang-block='en'] {
 }
 
 /* ==========================================================================
-   MOTION — ported from p1-head.html. components.css references blink, rise,
-   fade and sweep; without the keyframes the caret never blinks, the welcome
-   never rises, dialogs appear instantly and the prompt flash animates nothing.
+   MOTION — ported from p1-head.html. components.css references rise, fade and
+   sweep; without the keyframes the welcome never rises, dialogs appear
+   instantly and the prompt flash animates nothing.
    ========================================================================== */
-@keyframes blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes sweep { from { box-shadow: inset 0 0 0 1px var(--accent); } to { box-shadow: inset 0 0 0 1px transparent; } }
@@ -227,21 +226,6 @@ html[data-lang='es'] [data-lang-block='en'] {
 
 .switch:focus-visible {
   outline-offset: -2px;
-}
-
-/* The prompt glyph is the accent everywhere else (❯ in the turn lines); the role
-   line was the one place it inherited body text, and at a different size. */
-.hero__role-glyph {
-  color: var(--accent);
-  /* match the ❯ glyphs in the prompt lines below, which sit at --fs-3 */
-  font-size: var(--fs-3);
-}
-
-/* The ghost reserves the width, so it must not also be selectable: selecting the
-   role line was returning the hidden copy as well as the visible one. */
-.hero__ghost {
-  user-select: none;
-  -webkit-user-select: none;
 }
 
 /* The shortcut on the palette button: monospace, muted, and part of the button

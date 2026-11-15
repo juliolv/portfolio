@@ -45,6 +45,8 @@
   },
   "hero": {
     "role": "Senior full-stack software engineer",
+    "pitchLead": "Senior engineer",
+    "pitchRest": " with 10+ years across the full development lifecycle. I turn legacy systems into fast, cloud-native web platforms, and I build the internal operations tools and e-commerce that businesses run on.",
     "pitch": "Senior engineer with 10+ years across the full development lifecycle. I turn legacy systems into fast, cloud-native web platforms, and I build the internal operations tools and e-commerce that businesses run on.",
     "cv": "Download CV",
     "email": "Copy email",

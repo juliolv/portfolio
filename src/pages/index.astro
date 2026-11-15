@@ -293,7 +293,6 @@ const kv: [string, string, string][] = [
       hintOff: { en: s('en', 'palette.keysOffHint'), es: s('es', 'palette.keysOffHint') },
       placeholder: { en: s('en', 'tui.placeholder'), es: s('es', 'tui.placeholder') },
       placeholderPhone: { en: s('en', 'tui.placeholderPhone'), es: s('es', 'tui.placeholderPhone') },
-      role: { en: s('en', 'hero.role'), es: s('es', 'hero.role') },
       tokensLine: { en: s('en', 'tui.tokensLine'), es: s('es', 'tui.tokensLine') },
       readLine: { en: s('en', 'tui.readLine'), es: s('es', 'tui.readLine') },
     })}></script>
@@ -332,14 +331,11 @@ const kv: [string, string, string][] = [
               <span class="welcome__title" aria-hidden="true">portfolio v1.0</span>
               <div class="welcome__main">
                 <h1 class="hero__name">{SITE.name}</h1>
-                {/* One text node, one accessible name. The ghost reserves the width;
-                    the visible copy is what types. There is no sr-only duplicate —
-                    that copy was reaching selection and reading twice. */}
-                <p class="hero__role" aria-label={s(L, 'hero.role')} data-label-en={s('en', 'hero.role')} data-label-es={s('es', 'hero.role')}>
-                  <span class="hero__ghost" aria-hidden="true"><span class="hero__role-glyph">›</span> <Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /><span class="caret"></span></span>
-                  <span aria-hidden="true"><span class="hero__role-glyph">›</span> <span id="typed"><Bi en={s('en', 'hero.role')} es={s('es', 'hero.role')} /></span><span class="caret"></span></span>
-                </p>
-                <p class="hero__pitch"><Bi en={s('en', 'hero.pitch')} es={s('es', 'hero.pitch')} /></p>
+                {/* No typed line here: the role already lives in the Summary
+                    pane, and the prompt bar is the page's caret. The pitch
+                    opens on the role, emphasised, so it still reads first on
+                    a phone where the Summary sits below the fold. */}
+                <p class="hero__pitch"><strong class="hero__lead"><Bi en={s('en', 'hero.pitchLead')} es={s('es', 'hero.pitchLead')} /></strong><Bi en={s('en', 'hero.pitchRest')} es={s('es', 'hero.pitchRest')} /></p>
                 <div class="actions">
                   <a class="btn btn--primary" href="#contact"><span aria-hidden="true">↓</span><Bi en={s('en', 'hero.cv')} es={s('es', 'hero.cv')} /></a>
                   <button class="btn" type="button"><span aria-hidden="true">@</span><Bi en={s('en', 'hero.email')} es={s('es', 'hero.email')} /></button>

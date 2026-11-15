@@ -1,6 +1,6 @@
 /**
- * v2 motion (§5.5 of the handoff): the typed role line, scroll reveal, the
- * prompt flash after navigation and the theme cross-fade.
+ * v2 motion: scroll reveal, the prompt flash after navigation and the theme
+ * cross-fade.
  *
  * Every effect is optional by design: with JS off, or with reduced motion, the
  * page is complete and static. Nothing here hides content waiting for an
@@ -9,48 +9,6 @@
 
 const root = document.documentElement;
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-const meta = JSON.parse(document.getElementById('v2-meta')?.textContent ?? '{}') as {
-  role?: Record<'en' | 'es', string>;
-};
-
-/* ------------------------------------------------------------- typed role -- */
-
-const typed = document.getElementById('typed');
-let typingTimer = 0;
-
-function currentLang(): 'en' | 'es' {
-  return root.dataset.lang === 'es' ? 'es' : 'en';
-}
-
-function typeRole() {
-  if (!typed) return;
-  const text = meta.role?.[currentLang()] ?? typed.textContent ?? '';
-
-  if (reduce.matches) {
-    typed.textContent = text;
-    return;
-  }
-
-  window.clearTimeout(typingTimer);
-  typed.textContent = '';
-  let i = 0;
-
-  const step = () => {
-    i += 1;
-    typed.textContent = text.slice(0, i);
-    if (i < text.length) typingTimer = window.setTimeout(step, 26 + Math.random() * 30);
-  };
-
-  typingTimer = window.setTimeout(step, 120);
-}
-
-// A language switch mid-typing shows the full string at once; it never retypes.
-window.addEventListener('tui:lang', () => {
-  window.clearTimeout(typingTimer);
-  if (typed) typed.textContent = meta.role?.[currentLang()] ?? typed.textContent ?? '';
-});
-
-typeRole();
 
 /* ---------------------------------------------------------- scroll reveal -- */
 
