@@ -40,8 +40,19 @@ const log = devlog.map((entry) => {
     status: live ? (live.state === 'closed' ? 'done' : 'progress') : entry.status,
   };
 });
-/** Shown next to the tool line: the log says when it last agreed with the repo. */
-const syncedOn = liveDevlog.syncedAt ? liveDevlog.syncedAt.slice(0, 10) : null;
+/** Shown next to the tool line: the log says when it last agreed with the repo.
+    One convention, everywhere: the dates in devlog.json are the day the work
+    happened in Mazatlán, so the build timestamp is rendered in the same zone
+    rather than sliced out of UTC — which printed tomorrow next to yesterday. */
+const SYNCED_ZONE = 'America/Mazatlan';
+const syncedOn = liveDevlog.syncedAt
+  ? new Intl.DateTimeFormat('en-CA', {
+      timeZone: SYNCED_ZONE,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date(liveDevlog.syncedAt))
+  : null;
 
 /* The sidebar reports the fleet, and the entry point is the devlog item in
    progress — so the two can never disagree. */

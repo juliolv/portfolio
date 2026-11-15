@@ -146,7 +146,7 @@
     "lede": "The fastest way to reach me is email. I usually reply within a day.",
     "copy": "Copy",
     "open": "Open in mail app",
-    "colophon": "Built in public with Hermes Agent. No frameworks, no trackers.",
+    "colophon": "Built in public with Hermes Agent. No client-side framework, no trackers.",
     "colophonLink": "See the design system"
   },
   "palette": {
