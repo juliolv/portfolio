@@ -1,6 +1,8 @@
 # Devlog proposal — the journey we actually had
 
-Status: **decided, drafts ready, nothing created yet.**
+Status: **shipped 2026-11-15.** Fourteen issues created (#1–#14, closed) and a
+fifteenth for the entry in flight (#15, open); the devlog renders all fifteen and
+links each row to its issue. The drafts below are kept as the record.
 
 Decided on review: cut to fourteen entries (the handoff and fleet entries went, and
 the three bug entries became one), failures stay in, one issue per entry. Shipped

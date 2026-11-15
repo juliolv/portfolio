@@ -462,3 +462,15 @@ body {
 .devlog__phase:first-of-type {
   margin-top: var(--sp-4);
 }
+
+/* The entry id is the issue, so it links to it: a devlog that claims to mirror the
+   repo should let a reader check the claim in one click. */
+a.todo__id {
+  color: var(--accent);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+a.todo__id:hover,
+a.todo__id:focus-visible {
+  text-decoration: underline;
+}

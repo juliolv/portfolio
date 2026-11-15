@@ -134,13 +134,15 @@ five phases, each with a date, a status, a one-sentence note and the commits it
 lives in. The section renders them under phase headings; the sidebar shows only the
 phase in flight and counts `done/total`.
 
-Ids are ordinals (`01`…`15`) until the GitHub issues exist, then the issue number
-becomes the id — `issueId(entry, index)` takes both, and the sidebar must pass the
-index or it prints `NaN`.
+Every entry is a real issue now: #1–#14 closed (history), #15 open (the fetch and
+the section's own next step). The row id links to the issue.
+
+Ids come from `issueId(entry, index)` — the ordinal while an entry has no issue, the
+issue number once it does. It takes both arguments and the sidebar must pass the
+index, or it prints `NaN`; that bug shipped once already.
 
 The proposals live next to it: `docs/devlog/proposal.md` (why not four issues) and
-`docs/devlog/issues.md` (the fourteen drafts, one per issue). Nothing has been
-created on GitHub yet.
+`docs/devlog/issues.md` (the drafts, one per issue).
 
 ## Dock compaction
 

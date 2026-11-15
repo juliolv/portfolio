@@ -1,9 +1,10 @@
 # Devlog issues — drafts for approval
 
-Fourteen issues, one per entry, label `devlog`. Nothing here has been created.
-Numbers are invented for the draft and get replaced by GitHub's on creation.
+**Created 2026-11-15.** Fourteen issues from these drafts (#1–#14, closed), plus
+#15 for the entry still in flight, which stays open. Label `devlog`. The site links
+each row to its issue, so a claim and its evidence are one click apart.
 
-**Decision on state:** 1–13 are created and **closed immediately** — they are
+**Decision on state:** 1–14 are created and **closed immediately** — they are
 history, and closing them keeps the repo's issue list honest as a to-do. Their
 bodies carry the real dates, because GitHub would otherwise stamp them all with
 today. 14 stays **open** until the next phase has something to be open about.

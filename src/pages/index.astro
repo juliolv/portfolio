@@ -385,7 +385,9 @@ const kv: [string, string, string][] = [
                     <ul class="todo">
                       {group.entries.map((entry, i) => (
                         <li class="todo__item">
-                          <span class="todo__id">{issueId(entry, devlog.indexOf(entry))}</span>
+                          {entry.issue
+                            ? <a class="todo__id" href={`${SITE.links.repo}/issues/${entry.issue}`} target="_blank" rel="noopener">{issueId(entry, 0)}</a>
+                            : <span class="todo__id">{issueId(entry, devlog.indexOf(entry))}</span>}
                           <span class={`todo__st status status--${entry.status}`}>
                             <span aria-hidden="true">{STATUS_GLYPH[entry.status]}</span>{' '}
                             <Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} />
