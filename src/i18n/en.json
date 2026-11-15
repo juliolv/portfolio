@@ -97,10 +97,11 @@
   },
   "work": {
     "title": "Selected work",
-    "note": "Summaries from my CV. Each card opens its case study.",
-    "count": "4 items",
+    "note": "Three projects from the CV, and what each one became.",
+    "count": "3 items",
     "view": "View the repo",
-    "soon": "case study in progress",
+    "open": "Open the site",
+    "private": "private · client work",
     "labels": {
       "problem": "Problem",
       "role": "Role",

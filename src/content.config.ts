@@ -15,6 +15,8 @@ const work = defineCollection({
     periodEs: z.string(),
     status: z.enum(['done', 'progress', 'planned']).default('planned'),
     stack: z.array(z.string()).default([]),
+    /** Where the card can send a reader. Client work has none: it says so. */
+    link: z.string().url().optional(),
     problem: z.string(),
     problemEs: z.string(),
     role: z.string(),

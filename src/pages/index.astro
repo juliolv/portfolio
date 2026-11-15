@@ -405,7 +405,14 @@ const kv: [string, string, string][] = [
                             <dt><Bi en={s('en', 'work.labels.outcome')} es={s('es', 'work.labels.outcome')} /></dt>
                             <dd><Bi en={data.outcome} es={data.outcomeEs} /></dd>
                           </dl>
-                          <p class="row__foot"><span class="tag tag--dashed"><Bi en={s(L, 'work.soon')} es={s('es', 'work.soon')} /></span></p>
+                          {/* Every card says where it goes or why it cannot.
+                              The old footnote promised a case study that was
+                              not coming, on a card with no destination. */}
+                          <p class="row__foot">
+                            {data.link
+                              ? <a class="link" href={data.link} target="_blank" rel="noopener"><Bi en={s(L, 'work.open')} es={s('es', 'work.open')} /> ↗</a>
+                              : <span class="tag tag--dashed"><Bi en={s(L, 'work.private')} es={s('es', 'work.private')} /></span>}
+                          </p>
                         </div>
                       </div>
                     </li>

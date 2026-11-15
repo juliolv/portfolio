@@ -97,10 +97,11 @@
   },
   "work": {
     "title": "Trabajo seleccionado",
-    "note": "Resúmenes de mi CV. Cada tarjeta abre su caso de estudio.",
-    "count": "4 elementos",
+    "note": "Tres proyectos del CV y en qué se convirtió cada uno.",
+    "count": "3 elementos",
     "view": "Ver el repositorio",
-    "soon": "caso de estudio en proceso",
+    "open": "Abrir el sitio",
+    "private": "privado · trabajo para cliente",
     "labels": {
       "problem": "Problema",
       "role": "Rol",
