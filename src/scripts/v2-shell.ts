@@ -115,6 +115,30 @@ window.addEventListener('tui:say', (event) => {
   }, 2600);
 });
 
+/* The two "Copy email" buttons were decoration: only the /copy command wrote to
+   the clipboard, and a button that does nothing is the exact lie this site is
+   not allowed to tell. One owner for the clipboard, so the command and the
+   buttons cannot drift apart. */
+const emailNode = document.getElementById('email-text');
+function copyAddress() {
+  const address = emailNode?.textContent?.trim() ?? '';
+  const say = (key: 'copied' | 'copyFailed') => {
+    const line = (meta as Record<string, Record<Lang, string>>)[key]?.[lang];
+    if (line) window.dispatchEvent(new CustomEvent('tui:say', { detail: line }));
+  };
+  if (!address || !navigator.clipboard) {
+    say('copyFailed');
+    return;
+  }
+  navigator.clipboard.writeText(address).then(() => say('copied'), () => say('copyFailed'));
+}
+
+document.addEventListener('click', (event) => {
+  if (!(event.target as HTMLElement).closest('[data-copy-email]')) return;
+  copyAddress();
+});
+window.addEventListener('tui:copy-email', () => copyAddress());
+
 /* ------------------------------------------------------------------ language -- */
 
 function readLang(): Lang {

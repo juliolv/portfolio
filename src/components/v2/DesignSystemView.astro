@@ -29,6 +29,10 @@ const specs = [
 ---
 
 <section class="transcript" id="view-system" hidden data-view="system">
+  {/* The view is routed by hash, not by an element id, so `#design-system` had
+      no target and the fragment did nothing for anyone without JavaScript.
+      This anchor gives the URL something to land on. */}
+  <span id="design-system" aria-hidden="true"></span>
   <h2 class="turn__prompt" id="ds-title" tabindex="-1">
     <span class="turn__glyph" aria-hidden="true">❯</span>
     <span class="turn__name"><Bi en={d('title').en} es={d('title').es} /></span>

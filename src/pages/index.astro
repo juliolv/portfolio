@@ -294,6 +294,8 @@ const kv: [string, string, string][] = [
       hint: { en: s('en', 'tui.hint'), es: s('es', 'tui.hint') },
       hintTouch: { en: s('en', 'tui.hintTouch'), es: s('es', 'tui.hintTouch') },
       hintOff: { en: s('en', 'palette.keysOffHint'), es: s('es', 'palette.keysOffHint') },
+      copied: { en: s('en', 'status.copied'), es: s('es', 'status.copied') },
+      copyFailed: { en: s('en', 'status.copyFailed'), es: s('es', 'status.copyFailed') },
       keysLine: { en: s('en', 'tui.keysLine'), es: s('es', 'tui.keysLine') },
       keysOn: { en: s('en', 'palette.keysOn'), es: s('es', 'palette.keysOn') },
       keysOff: { en: s('en', 'palette.keysOff'), es: s('es', 'palette.keysOff') },
@@ -345,7 +347,7 @@ const kv: [string, string, string][] = [
                 <p class="hero__pitch"><strong class="hero__lead"><Bi en={s('en', 'hero.pitchLead')} es={s('es', 'hero.pitchLead')} /></strong><Bi en={s('en', 'hero.pitchRest')} es={s('es', 'hero.pitchRest')} /></p>
                 <div class="actions">
                   <a class="btn btn--primary" href={cvHref.en} data-cv data-cv-en={cvHref.en} data-cv-es={cvHref.es} download><span aria-hidden="true">↓</span><Bi en={s('en', 'hero.cv')} es={s('es', 'hero.cv')} /></a>
-                  <button class="btn" type="button"><span aria-hidden="true">@</span><Bi en={s('en', 'hero.email')} es={s('es', 'hero.email')} /></button>
+                  <button class="btn" type="button" data-copy-email><span aria-hidden="true">@</span><Bi en={s('en', 'hero.email')} es={s('es', 'hero.email')} /></button>
                   <a class="btn" href={SITE.links.github} target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
                   <a class="btn" href={SITE.links.linkedin} target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span></a>
                 </div>
@@ -522,7 +524,7 @@ const kv: [string, string, string][] = [
                   <dt>email</dt>
                   <dd class="contact__email">
                     <span class="contact__addr" id="email-text">{SITE.email}</span>
-                    <button class="btn" type="button"><Bi en={s(L, 'contact.copy')} es={s('es', 'contact.copy')} /></button>
+                    <button class="btn" type="button" data-copy-email><Bi en={s(L, 'contact.copy')} es={s('es', 'contact.copy')} /></button>
                     <a class="btn btn--ghost" href={`mailto:${SITE.email}`}><Bi en={s(L, 'contact.open')} es={s('es', 'contact.open')} /></a>
                   </dd>
                   <dt>github</dt>

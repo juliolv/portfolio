@@ -172,13 +172,10 @@ if (input && menu) {
     a.remove();
   }
 
-  async function copyEmail() {
-    try {
-      await navigator.clipboard.writeText(data.email);
-      if (msg) msg.textContent = `✓ copied ${data.email}`;
-    } catch {
-      if (msg) msg.textContent = 'select the address to copy it';
-    }
+  function copyEmail() {
+    // The clipboard and its copy live in v2-shell, in both languages: this only
+    // asks for the copy, so the command and the buttons say the same thing.
+    window.dispatchEvent(new CustomEvent('tui:copy-email'));
   }
 
   function goHash(hash: string, focusTarget = true) {
