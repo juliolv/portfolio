@@ -396,10 +396,17 @@ const kv: [string, string, string][] = [
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTodos')}</span><span class="tool__arg">(TODO.md{syncedOn ? ` · synced ${syncedOn}` : ''})</span></p>
               <div class="result">
                 <p class="muted"><Bi en={s(L, 'devlog.intro')} es={s('es', 'devlog.intro')} /></p>
-                {byPhase.map((group) => (
-                  <>
-                    <p class="devlog__phase"><Bi en={s('en', `devlog.phase${group.phase}`)} es={s('es', `devlog.phase${group.phase}`)} /></p>
-                    <ul class="todo">
+                {byPhase.map((group, gi) => (
+                  <div class={`devlog__group${group.phase === activePhase ? ' is-open' : ''}`}>
+                    {/* Phases that are not in flight fold to their heading: fifteen
+                        rows read as a wall, and fifty would be unusable. The heading
+                        stays, so the arc is still visible at a glance. */}
+                    <button class="devlog__toggle" type="button" aria-expanded={group.phase === activePhase ? 'true' : 'false'} aria-controls={`phase-${group.phase}`}>
+                      <span class="devlog__caret" aria-hidden="true">{group.phase === activePhase ? '▾' : '▸'}</span>
+                      <span class="devlog__label"><Bi en={s('en', `devlog.phase${group.phase}`)} es={s('es', `devlog.phase${group.phase}`)} /></span>
+                      <span class="devlog__count"><Bi en={`${group.entries.length} ${group.entries.length === 1 ? 'entry' : 'entries'}`} es={`${group.entries.length} ${group.entries.length === 1 ? 'entrada' : 'entradas'}`} /></span>
+                    </button>
+                    <ul class="todo" id={`phase-${group.phase}`} hidden={group.phase !== activePhase}>
                       {group.entries.map((entry, i) => (
                         <li class="todo__item">
                           {entry.issue
@@ -417,7 +424,7 @@ const kv: [string, string, string][] = [
                         </li>
                       ))}
                     </ul>
-                  </>
+                  </div>
                 ))}
               </div>
             </section>

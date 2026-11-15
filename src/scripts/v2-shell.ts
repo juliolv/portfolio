@@ -394,3 +394,20 @@ if (dock) {
   reportDock();
   new ResizeObserver(reportDock).observe(dock);
 }
+
+/* Devlog phases fold to their heading. A plain button does the work: native
+   keyboard support, `aria-expanded` for the state, `hidden` for the panel. */
+document.addEventListener('click', (event) => {
+  const toggle = (event.target as HTMLElement).closest<HTMLElement>('.devlog__toggle');
+  if (!toggle) return;
+  const group = toggle.closest<HTMLElement>('.devlog__group');
+  const list = group?.querySelector<HTMLElement>('.todo');
+  if (!group || !list) return;
+
+  const open = toggle.getAttribute('aria-expanded') === 'true';
+  toggle.setAttribute('aria-expanded', String(!open));
+  group.classList.toggle('is-open', !open);
+  list.hidden = open;
+  const caret = toggle.querySelector('.devlog__caret');
+  if (caret) caret.textContent = open ? '▸' : '▾';
+});

@@ -441,30 +441,58 @@ body {
   margin-bottom: -8px;
 }
 
-/* The devlog is grouped by phase: fifteen flat rows read as a wall, and the
-   phases are the actual shape of the work. */
-.devlog__phase {
+/* The devlog is grouped by phase, and a phase that is not in flight folds to its
+   heading with a count. Fifteen rows read as a wall; fifty would be unusable, and
+   the arc still has to be visible at a glance. */
+.devlog__group {
+  border-top: var(--bw) solid var(--border);
+  margin-top: var(--sp-4);
+}
+.devlog__group:first-of-type {
+  border-top: 0;
+  margin-top: var(--sp-2);
+}
+.devlog__toggle {
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
-  margin: var(--sp-6) 0 var(--sp-3);
+  gap: var(--sp-2);
+  width: 100%;
+  padding: var(--sp-3) var(--sp-1) var(--sp-3) var(--sp-1);
+  min-height: 44px;
+  background: none;
+  border: 0;
+  text-align: left;
+  font: inherit;
   font-size: var(--fs-1);
   letter-spacing: var(--ls-wide);
   text-transform: uppercase;
   color: var(--text);
+  cursor: pointer;
 }
-.devlog__phase::after {
-  content: "";
+.devlog__toggle:hover,
+.devlog__toggle:focus-visible {
+  background: var(--panel);
+}
+.devlog__toggle:hover .devlog__label,
+.devlog__toggle:focus-visible .devlog__label,
+.devlog__toggle:hover .devlog__caret,
+.devlog__toggle:focus-visible .devlog__caret {
+  color: var(--accent);
+}
+.devlog__caret {
+  color: var(--muted);
+  font-size: var(--fs-2);
+  line-height: 1;
+  width: 1em;
+}
+.devlog__label {
   flex: 1;
-  height: var(--bw);
-  background: var(--border);
 }
-.devlog__phase:first-of-type {
-  margin-top: var(--sp-4);
+.devlog__count {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }
 
-/* The entry id is the issue, so it links to it: a devlog that claims to mirror the
-   repo should let a reader check the claim in one click. */
 a.todo__id {
   color: var(--accent);
   text-decoration: none;
