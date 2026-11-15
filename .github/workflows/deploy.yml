@@ -36,8 +36,12 @@ jobs:
       - name: Secret and PII scan
         run: node scripts/guard-secrets.mjs --all
 
+      # The devlog reads the repo at build time. The token is the workflow's own;
+      # the fetch exits 0 and keeps the committed file if the API is unreachable.
       - name: Build
         run: pnpm build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/configure-pages@v5
 

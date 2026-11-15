@@ -12,6 +12,7 @@ import Bi from '../components/Bi.astro';
 import DesignSystemView from '../components/v2/DesignSystemView.astro';
 import { s, t, url, SITE } from '../lib/i18n';
 import devlog from '../data/devlog.json';
+import liveDevlog from '../data/devlog-live.json';
 import experience from '../data/experience.json';
 import stack from '../data/stack.json';
 import { THEMES, DEFAULT_THEME, THEME_IDS, LEGACY_SKINS } from '../data/themes';
@@ -26,9 +27,25 @@ const aboutEs = t('es', 'about.body') as string[];
 
 const STATUS_GLYPH: Record<string, string> = { done: '●', progress: '◐', planned: '○' };
 
+/* GitHub is the source of truth for two things: whether an issue is closed, and its
+   title. Everything else — the Spanish copy, the note, the phase, and the date the
+   work happened — stays in devlog.json, because an issue cannot know when the thing
+   it records was written. Close an issue and this log follows on the next build. */
+const liveByIssue = new Map(liveDevlog.issues.map((issue) => [issue.number, issue]));
+const log = devlog.map((entry) => {
+  const live = entry.issue ? liveByIssue.get(entry.issue) : undefined;
+  return {
+    ...entry,
+    title: live?.title ?? entry.title,
+    status: live ? (live.state === 'closed' ? 'done' : 'progress') : entry.status,
+  };
+});
+/** Shown next to the tool line: the log says when it last agreed with the repo. */
+const syncedOn = liveDevlog.syncedAt ? liveDevlog.syncedAt.slice(0, 10) : null;
+
 /* The sidebar reports the fleet, and the entry point is the devlog item in
    progress — so the two can never disagree. */
-const inProgress = devlog.find((entry) => entry.status === 'progress');
+const inProgress = log.find((entry) => entry.status === 'progress');
 /** The issue reference follows the language, like the rest of the devlog. */
 const issueRef = (lang: 'en' | 'es') =>
   inProgress
@@ -41,17 +58,17 @@ const issueId = (entry: { issue: number | null }, index: number) =>
   entry.issue ? `#${entry.issue}` : String(index + 1).padStart(2, '0');
 
 /* The log is grouped by phase: fifteen flat rows would read as a wall. */
-const phaseOrder = [...new Set(devlog.map((entry) => entry.phase))];
+const phaseOrder = [...new Set(log.map((entry) => entry.phase))];
 const byPhase = phaseOrder.map((phase) => ({
   phase,
-  entries: devlog.filter((entry) => entry.phase === phase),
+  entries: log.filter((entry) => entry.phase === phase),
 }));
 /* The sidebar shows the phase in flight, not the whole history. */
-const activePhase = (inProgress ?? devlog[devlog.length - 1]).phase;
-const sideEntries = devlog.filter((entry) => entry.phase === activePhase);
+const activePhase = (inProgress ?? devlog[log.length - 1]).phase;
+const sideEntries = log.filter((entry) => entry.phase === activePhase);
 const agentDesc = (id: string, lang: 'en' | 'es') =>
   s(lang, `agents.${id}`).replace('{issue}', issueRef(lang));
-const todoDone = devlog.filter((entry) => entry.status === 'done').length;
+const todoDone = log.filter((entry) => entry.status === 'done').length;
 
 const sections = [
   { id: 'work', label: s(L, 'nav.work'), file: 'work/' },
@@ -81,7 +98,7 @@ const projectItems = work.map(({ data }, index) => ({
   index,
 }));
 
-const devlogItems = devlog.map((entry) => ({
+const devlogItems = log.map((entry) => ({
   kind: 'devlog' as const,
   label: entry.title,
   meta: `devlog/ · ${entry.issue ? `#${entry.issue} · ` : ''}${entry.date ?? 'TBD'}`,
@@ -376,7 +393,7 @@ const kv: [string, string, string][] = [
 
             <section class="turn reveal" id="devlog">
               <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qDevlog')} es={s('es', 'tui.qDevlog')} /><span class="turn__cmd">/devlog</span></h2>
-              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTodos')}</span><span class="tool__arg">(TODO.md)</span></p>
+              <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTodos')}</span><span class="tool__arg">(TODO.md{syncedOn ? ` · synced ${syncedOn}` : ''})</span></p>
               <div class="result">
                 <p class="muted"><Bi en={s(L, 'devlog.intro')} es={s('es', 'devlog.intro')} /></p>
                 {byPhase.map((group) => (
@@ -387,7 +404,7 @@ const kv: [string, string, string][] = [
                         <li class="todo__item">
                           {entry.issue
                             ? <a class="todo__id" href={`${SITE.links.repo}/issues/${entry.issue}`} target="_blank" rel="noopener">{issueId(entry, 0)}</a>
-                            : <span class="todo__id">{issueId(entry, devlog.indexOf(entry))}</span>}
+                            : <span class="todo__id">{issueId(entry, log.indexOf(entry))}</span>}
                           <span class={`todo__st status status--${entry.status}`}>
                             <span aria-hidden="true">{STATUS_GLYPH[entry.status]}</span>{' '}
                             <Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} />
@@ -542,14 +559,14 @@ const kv: [string, string, string][] = [
           </div>
 
           <div class="side__block">
-            <p class="side__title"><span><Bi en={s(L, 'side.todo')} es={s('es', 'side.todo')} /></span><span>{todoDone}/{devlog.length}</span></p>
+            <p class="side__title"><span><Bi en={s(L, 'side.todo')} es={s('es', 'side.todo')} /></span><span>{todoDone}/{log.length}</span></p>
             <ul class="mini-todo">
               {sideEntries.map((entry) => (
                 <li>
                   <a href="#devlog">
                     <span class={`status status--${entry.status}`} aria-hidden="true">{STATUS_GLYPH[entry.status]}</span>
                     <span class="sr-only"><Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} /> </span>
-                    <span>{issueId(entry, devlog.indexOf(entry))} <Bi en={entry.title} es={entry.titleEs} /></span>
+                    <span>{issueId(entry, log.indexOf(entry))} <Bi en={entry.title} es={entry.titleEs} /></span>
                   </a>
                 </li>
               ))}

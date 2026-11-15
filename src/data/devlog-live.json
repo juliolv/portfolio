@@ -1,0 +1,81 @@
+{
+  "syncedAt": "2026-11-15T05:09:32.172Z",
+  "repo": "juliolv/portfolio",
+  "issues": [
+    {
+      "number": 1,
+      "title": "Port the terminal design to Astro, and put it on Pages",
+      "state": "closed"
+    },
+    {
+      "number": 2,
+      "title": "Motion, and the bug hiding inside it",
+      "state": "closed"
+    },
+    {
+      "number": 3,
+      "title": "The first audit fleet, and what it found",
+      "state": "closed"
+    },
+    {
+      "number": 4,
+      "title": "Case studies: built, then removed",
+      "state": "closed"
+    },
+    {
+      "number": 5,
+      "title": "Tokens, nine skins, and a contrast gate",
+      "state": "closed"
+    },
+    {
+      "number": 6,
+      "title": "The shell",
+      "state": "closed"
+    },
+    {
+      "number": 7,
+      "title": "Prompt, dialogs, and a picker that had to work from the keyboard",
+      "state": "closed"
+    },
+    {
+      "number": 8,
+      "title": "Reading state: where you are, how far you've read",
+      "state": "closed"
+    },
+    {
+      "number": 9,
+      "title": "Phones",
+      "state": "closed"
+    },
+    {
+      "number": 10,
+      "title": "The design system as a view, and sharing",
+      "state": "closed"
+    },
+    {
+      "number": 11,
+      "title": "Nine skins became six themes",
+      "state": "closed"
+    },
+    {
+      "number": 12,
+      "title": "Wave, and a picker that stopped lying",
+      "state": "closed"
+    },
+    {
+      "number": 13,
+      "title": "What shipped broken: a rule, a bounce, and the tab icon",
+      "state": "closed"
+    },
+    {
+      "number": 14,
+      "title": "v2 becomes the site",
+      "state": "closed"
+    },
+    {
+      "number": 15,
+      "title": "A devlog that mirrors the repo",
+      "state": "open"
+    }
+  ]
+}

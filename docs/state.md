@@ -134,8 +134,22 @@ five phases, each with a date, a status, a one-sentence note and the commits it
 lives in. The section renders them under phase headings; the sidebar shows only the
 phase in flight and counts `done/total`.
 
-Every entry is a real issue now: #1–#14 closed (history), #15 open (the fetch and
-the section's own next step). The row id links to the issue.
+Every entry is a real issue now: #1–#14 closed (history), #15 open (what is left of
+this section). The row id links to the issue.
+
+**State comes from the repo, at build time.** `scripts/fetch-devlog.mjs` reads the
+issues labelled `devlog` and writes `src/data/devlog-live.json`: number, state and
+title. `pnpm build` runs it first, and CI passes `GITHUB_TOKEN` to the build step.
+
+The split is deliberate. GitHub owns *state* (open/closed) and the English title;
+`devlog.json` owns the Spanish copy, the note, the phase and the date the work
+happened — an issue cannot know when the thing it records was written, and the
+issues were created retroactively in one minute. Close an issue and the log follows
+on the next build.
+
+If the API is unreachable, the script exits 0 and the committed file stands. A build
+that ships yesterday's state is better than one that fails; both are better than
+invented state.
 
 Ids come from `issueId(entry, index)` — the ordinal while an entry has no issue, the
 issue number once it does. It takes both arguments and the sidebar must pass the

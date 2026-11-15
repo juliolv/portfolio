@@ -208,8 +208,8 @@
     "date": "2026-11-14",
     "title": "A devlog that mirrors the repo",
     "titleEs": "Un devlog que refleja el repositorio",
-    "note": "Four placeholder entries became fifteen real ones, each anchored to the commits it lives in. Issues and a build-time fetch next.",
-    "noteEs": "Cuatro entradas de relleno pasaron a quince reales, cada una anclada a los commits donde vive. Faltan los issues y la lectura en el build.",
+    "note": "Four placeholder entries became fifteen real ones, read from the repo at build time — close an issue and the log follows. What's left: reading more than fifteen rows without becoming a wall.",
+    "noteEs": "Cuatro entradas de relleno pasaron a quince reales, leídas del repositorio en el build: cierra un issue y el devlog le sigue. Falta que la sección aguante más de quince filas sin volverse un muro.",
     "commits": []
   }
 ]

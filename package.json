@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/fetch-devlog.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "guard": "node scripts/guard-secrets.mjs",
@@ -15,7 +15,8 @@
     "check": "astro check",
     "state": "node scripts/state.mjs",
     "fleet": "node scripts/fleet.mjs",
-    "contrast": "node scripts/check-contrast.mjs"
+    "contrast": "node scripts/check-contrast.mjs",
+    "devlog": "node scripts/fetch-devlog.mjs"
   },
   "dependencies": {
     "astro": "^7.4.11"
