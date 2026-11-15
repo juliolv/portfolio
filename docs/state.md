@@ -127,6 +127,21 @@ forward:
 5. `theme-color` on the root page still carried the old palette (#0c0f14/#fbf9f5);
    it is Wave now (#16161e/#eef0f6). `noindex` came off with the preview status.
 
+## Devlog
+
+`src/data/devlog.json` now carries the real history: fifteen entries, grouped into
+five phases, each with a date, a status, a one-sentence note and the commits it
+lives in. The section renders them under phase headings; the sidebar shows only the
+phase in flight and counts `done/total`.
+
+Ids are ordinals (`01`…`15`) until the GitHub issues exist, then the issue number
+becomes the id — `issueId(entry, index)` takes both, and the sidebar must pass the
+index or it prints `NaN`.
+
+The proposals live next to it: `docs/devlog/proposal.md` (why not four issues) and
+`docs/devlog/issues.md` (the fourteen drafts, one per issue). Nothing has been
+created on GitHub yet.
+
 ## Dock compaction
 
 The reference compacts the phone dock by shrinking its box: padding tightens, the

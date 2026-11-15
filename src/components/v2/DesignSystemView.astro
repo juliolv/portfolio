@@ -8,6 +8,7 @@
  */
 import { s } from '../../lib/i18n';
 import { THEMES } from '../../data/themes';
+import devlog from '../../data/devlog.json';
 import Bi from '../Bi.astro';
 
 const L = 'en' as const;
@@ -184,14 +185,22 @@ const specs = [
       <section class="spec">
         <div class="spec__bar"><b><Bi en={d('specTodo').en} es={d('specTodo').es} /></b><span>.todo__item</span></div>
         <div class="spec__body spec__body--col">
-          <div class="todo">
-            <div class="todo__item" style="border:0;padding:0">
-              <span class="todo__id">#2</span>
-              <span class="status status--progress todo__st"><span aria-hidden="true">◐</span> <Bi en={s(L, 'status.progress')} es={s('es', 'status.progress')} /></span>
-              <span class="todo__date">2026-11-12</span>
-              <span class="todo__title"><Bi en={d('todoSample').en} es={d('todoSample').es} /></span>
-            </div>
-          </div>
+          {/* The specimen reads the real log. It used to carry a hardcoded
+              "#2 Design system" entry that stopped existing, which makes a
+              component gallery the last place to lie about what shipped. */}
+          {(() => {
+            const sample = devlog[devlog.length - 1];
+            return (
+              <div class="todo">
+                <div class="todo__item" style="border:0;padding:0">
+                  <span class="todo__id">{String(devlog.length).padStart(2, '0')}</span>
+                  <span class="status status--progress todo__st"><span aria-hidden="true">◐</span> <Bi en={s(L, 'status.progress')} es={s('es', 'status.progress')} /></span>
+                  <span class="todo__date">{sample.date}</span>
+                  <span class="todo__title"><Bi en={sample.title} es={sample.titleEs} /></span>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </section>
 

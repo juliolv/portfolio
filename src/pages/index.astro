@@ -31,7 +31,24 @@ const STATUS_GLYPH: Record<string, string> = { done: '●', progress: '◐', pla
 const inProgress = devlog.find((entry) => entry.status === 'progress');
 /** The issue reference follows the language, like the rest of the devlog. */
 const issueRef = (lang: 'en' | 'es') =>
-  inProgress ? `#${inProgress.issue} ${lang === 'es' ? inProgress.titleEs : inProgress.title}` : '';
+  inProgress
+    ? `${inProgress.issue ? `#${inProgress.issue} ` : ''}${lang === 'es' ? inProgress.titleEs : inProgress.title}`
+    : '';
+
+/* Entries are numbered by order; the GitHub issue number is shown instead once
+   the issue exists, so the column never says "#null" and never lies. */
+const issueId = (entry: { issue: number | null }, index: number) =>
+  entry.issue ? `#${entry.issue}` : String(index + 1).padStart(2, '0');
+
+/* The log is grouped by phase: fifteen flat rows would read as a wall. */
+const phaseOrder = [...new Set(devlog.map((entry) => entry.phase))];
+const byPhase = phaseOrder.map((phase) => ({
+  phase,
+  entries: devlog.filter((entry) => entry.phase === phase),
+}));
+/* The sidebar shows the phase in flight, not the whole history. */
+const activePhase = (inProgress ?? devlog[devlog.length - 1]).phase;
+const sideEntries = devlog.filter((entry) => entry.phase === activePhase);
 const agentDesc = (id: string, lang: 'en' | 'es') =>
   s(lang, `agents.${id}`).replace('{issue}', issueRef(lang));
 const todoDone = devlog.filter((entry) => entry.status === 'done').length;
@@ -67,7 +84,7 @@ const projectItems = work.map(({ data }, index) => ({
 const devlogItems = devlog.map((entry) => ({
   kind: 'devlog' as const,
   label: entry.title,
-  meta: `devlog/ · #${entry.issue} · ${entry.date ?? 'TBD'}`,
+  meta: `devlog/ · ${entry.issue ? `#${entry.issue} · ` : ''}${entry.date ?? 'TBD'}`,
   body: entry.note,
   hash: '#devlog',
 }));
@@ -362,22 +379,27 @@ const kv: [string, string, string][] = [
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTodos')}</span><span class="tool__arg">(TODO.md)</span></p>
               <div class="result">
                 <p class="muted"><Bi en={s(L, 'devlog.intro')} es={s('es', 'devlog.intro')} /></p>
-                <ul class="todo">
-                  {devlog.map((entry) => (
-                    <li class="todo__item">
-                      <span class="todo__id">#{entry.issue}</span>
-                      <span class={`todo__st status status--${entry.status}`}>
-                        <span aria-hidden="true">{STATUS_GLYPH[entry.status]}</span>{' '}
-                        <Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} />
-                      </span>
-                      {entry.date
-                        ? <time class="todo__date" datetime={entry.date}>{entry.date}</time>
-                        : <span class="todo__date"><Bi en={s(L, 'status.tbd')} es={s('es', 'status.tbd')} /></span>}
-                      <span class="todo__title"><Bi en={entry.title} es={entry.titleEs} /></span>
-                      <p class="todo__note"><Bi en={entry.note} es={entry.noteEs} /></p>
-                    </li>
-                  ))}
-                </ul>
+                {byPhase.map((group) => (
+                  <>
+                    <p class="devlog__phase"><Bi en={s('en', `devlog.phase${group.phase}`)} es={s('es', `devlog.phase${group.phase}`)} /></p>
+                    <ul class="todo">
+                      {group.entries.map((entry, i) => (
+                        <li class="todo__item">
+                          <span class="todo__id">{issueId(entry, devlog.indexOf(entry))}</span>
+                          <span class={`todo__st status status--${entry.status}`}>
+                            <span aria-hidden="true">{STATUS_GLYPH[entry.status]}</span>{' '}
+                            <Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} />
+                          </span>
+                          {entry.date
+                            ? <time class="todo__date" datetime={entry.date}>{entry.date}</time>
+                            : <span class="todo__date"><Bi en={s(L, 'status.tbd')} es={s('es', 'status.tbd')} /></span>}
+                          <span class="todo__title"><Bi en={entry.title} es={entry.titleEs} /></span>
+                          <p class="todo__note"><Bi en={entry.note} es={entry.noteEs} /></p>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ))}
               </div>
             </section>
 
@@ -520,12 +542,12 @@ const kv: [string, string, string][] = [
           <div class="side__block">
             <p class="side__title"><span><Bi en={s(L, 'side.todo')} es={s('es', 'side.todo')} /></span><span>{todoDone}/{devlog.length}</span></p>
             <ul class="mini-todo">
-              {devlog.map((entry) => (
+              {sideEntries.map((entry) => (
                 <li>
                   <a href="#devlog">
                     <span class={`status status--${entry.status}`} aria-hidden="true">{STATUS_GLYPH[entry.status]}</span>
                     <span class="sr-only"><Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} /> </span>
-                    <span>#{entry.issue} <Bi en={entry.title} es={entry.titleEs} /></span>
+                    <span>{issueId(entry, devlog.indexOf(entry))} <Bi en={entry.title} es={entry.titleEs} /></span>
                   </a>
                 </li>
               ))}

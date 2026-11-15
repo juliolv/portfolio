@@ -110,10 +110,15 @@
   "devlog": {
     "title": "Construyendo en público",
     "note": "Entradas de ejemplo. Cada una reflejará un issue real de GitHub.",
-    "intro": "Estoy aprendiendo Hermes Agent, el agente de código abierto de Nous Research, usándolo para construir este sitio. Cada fase se registra como un issue de GitHub y esta bitácora los sigue.",
+    "intro": "Construyendo este sitio en público. Cada fase es lo que pasó de verdad: lo que funcionó, lo que se rompió y lo que costó.",
     "repo": "Repositorio público",
     "hosted": "El sitio se publica desde el repositorio con",
-    "issue": "issue"
+    "issue": "issue",
+    "phase1": "fase 01 · v1, publicado en un día",
+    "phase2": "fase 02 · la reescritura v2",
+    "phase3": "fase 03 · temas",
+    "phase4": "fase 04 · lo que salió roto",
+    "phase5": "fase 05 · publicar"
   },
   "experience": {
     "title": "Experiencia",

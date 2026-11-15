@@ -110,10 +110,15 @@
   "devlog": {
     "title": "Building in public",
     "note": "Sample entries. Each one will mirror a real GitHub issue.",
-    "intro": "I am learning Hermes Agent, the open-source agent from Nous Research, by using it to build this site. Each phase is tracked as a GitHub issue, and this log follows them.",
+    "intro": "Building this site in public. Each phase below is what actually happened — what worked, what broke, and what it cost.",
     "repo": "Public repo",
     "hosted": "The site is published from the repo with",
-    "issue": "issue"
+    "issue": "issue",
+    "phase1": "phase 01 · v1, shipped in a day",
+    "phase2": "phase 02 · the v2 rewrite",
+    "phase3": "phase 03 · themes",
+    "phase4": "phase 04 · what shipped broken",
+    "phase5": "phase 05 · ship"
   },
   "experience": {
     "title": "Experience",

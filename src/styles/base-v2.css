@@ -440,3 +440,25 @@ body {
 .main > .dock {
   margin-bottom: -8px;
 }
+
+/* The devlog is grouped by phase: fifteen flat rows read as a wall, and the
+   phases are the actual shape of the work. */
+.devlog__phase {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: var(--sp-6) 0 var(--sp-3);
+  font-size: var(--fs-1);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text);
+}
+.devlog__phase::after {
+  content: "";
+  flex: 1;
+  height: var(--bw);
+  background: var(--border);
+}
+.devlog__phase:first-of-type {
+  margin-top: var(--sp-4);
+}
