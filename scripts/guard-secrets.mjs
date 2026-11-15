@@ -19,7 +19,12 @@
 import { execSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
 
-const ALLOWED_EMAIL = /@(users\.noreply\.github\.com|example\.(com|org|net)|localhost)$/i;
+/* Addresses that are published on purpose. The owner's contact address is on the
+   site, in the README's own links and in his CV; warning about it on every commit
+   would train everyone to ignore the warning. */
+const ALLOWED_EMAIL =
+  /@(users\.noreply\.github\.com|example\.(com|org|net)|localhost)$/i;
+const PUBLISHED_EMAILS = [/^julio\.lv7@gmail\.com$/i];
 const MAX_BYTES = 2_000_000;
 
 const SECRET_RULES = [
@@ -103,7 +108,7 @@ for (const file of files) {
     for (const [rule, re] of WARN_RULES) {
       re.lastIndex = 0;
       for (const m of line.matchAll(re)) {
-        if (rule === 'personal-email' && ALLOWED_EMAIL.test(m[0])) continue;
+        if (rule === 'personal-email' && (ALLOWED_EMAIL.test(m[0]) || PUBLISHED_EMAILS.some((re) => re.test(m[0])))) continue;
         if (rule === 'phone-number' && !/[+]/.test(m[0])) continue;
         warnings.push(`${at}  ${rule}: ${redact(m[0])}`);
       }
