@@ -1,42 +1,42 @@
 [
   {
-    "when": "20XX — present",
+    "when": "2019 — present",
+    "whenEs": "2019 — actualidad",
     "role": "Senior Software Engineer",
     "roleEs": "Ingeniero de software senior",
-    "org": "Example Corp",
-    "text": "Placeholder for the real role. Describe scope, the systems you owned and one measurable outcome.",
-    "textEs": "Marcador para el puesto real. Describe alcance, los sistemas que owned y un resultado medible.",
-    "whenEs": "20XX — actualidad",
-    "orgEs": "Example Corp"
+    "org": "Terramar DMC",
+    "orgEs": "Terramar DMC",
+    "text": "Leading the platform's move off its legacy framework: bespoke management suites for proprietary workflows, cloud-native data models on AWS, and the e-commerce side of the business. Still hands-on.",
+    "textEs": "Liderando el paso de la plataforma fuera de su framework heredado: suites a medida para flujos propietarios, modelos de datos nativos de la nube en AWS y el lado de e-commerce del negocio. Sigo con las manos en el código."
   },
   {
-    "when": "20XX — 20XX",
+    "when": "2016 — 2018",
+    "whenEs": "2016 — 2018",
     "role": "Mid-Level Software Engineer",
     "roleEs": "Ingeniero de software",
-    "org": "Example Inc",
-    "text": "Placeholder for the real role. Owned features end to end and consolidated a fragmented codebase.",
-    "textEs": "Marcador para el puesto real. Funcionalidades de punta a punta y consolidación de un código fragmentado.",
-    "whenEs": "20XX — 20XX",
-    "orgEs": "Example Inc"
+    "org": "ADSI",
+    "orgEs": "ADSI",
+    "text": "Owned system-critical features end to end and consolidated fragmented modules into one maintainable codebase, under Scrum.",
+    "textEs": "Funcionalidades críticas de punta a punta y consolidación de módulos dispersos en una sola base de código mantenible, con Scrum."
   },
   {
-    "when": "20XX — 20XX",
+    "when": "2015 — 2016",
+    "whenEs": "2015 — 2016",
     "role": "Junior Software Engineer",
     "roleEs": "Ingeniero de software junior",
-    "org": "Example Ltd",
-    "text": "Placeholder for the real role. Built and maintained modules for business applications.",
-    "textEs": "Marcador para el puesto real. Desarrollo y mantenimiento de módulos para aplicaciones de negocio.",
-    "whenEs": "20XX — 20XX",
-    "orgEs": "Example Ltd"
+    "org": "Sigma",
+    "orgEs": "Sigma",
+    "text": "First professional role: core desktop and web modules of enterprise business applications, across the full delivery cycle.",
+    "textEs": "Primer puesto profesional: módulos de escritorio y web de aplicaciones empresariales, en todo el ciclo de entrega."
   },
   {
-    "when": "20XX — 20XX",
-    "role": "BSc in Computer Science",
-    "roleEs": "Lic. en Ciencias de la Computación",
-    "org": "Example University",
-    "text": "Placeholder for education. Thesis topic and any honours go here.",
-    "textEs": "Marcador para formación académica. Tema de tesis y distinciones aquí.",
-    "whenEs": "20XX — 20XX",
-    "orgEs": "Example University"
+    "when": "2010 — 2014",
+    "whenEs": "2010 — 2014",
+    "role": "BSc Computer Science",
+    "roleEs": "Licenciatura en Ciencias de la Computación",
+    "org": "Universidad de Occidente",
+    "orgEs": "Universidad de Occidente",
+    "text": "Computer science degree in Mazatlán.",
+    "textEs": "Ciencias de la Computación en Mazatlán."
   }
 ]

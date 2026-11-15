@@ -9,6 +9,7 @@
 import { s } from '../../lib/i18n';
 import { THEMES } from '../../data/themes';
 import devlog from '../../data/devlog.json';
+import experience from '../../data/experience.json';
 import Bi from '../Bi.astro';
 
 const L = 'en' as const;
@@ -208,10 +209,13 @@ const specs = [
         <div class="spec__bar"><b><Bi en={d('specTimeline').en} es={d('specTimeline').es} /></b><span>.glog__item</span></div>
         <div class="spec__body spec__body--col">
           <div class="glog">
+            {/* The specimen reads the first real role. Sample text with
+                "[Role title]" in it was the same stale-data bug as the todo
+                specimen, one component over. */}
             <div class="glog__item">
-              <p class="glog__role"><Bi en={d('roleSample').en} es={d('roleSample').es} /></p>
-              <p class="glog__org"><Bi en={d('orgSample').en} es={d('orgSample').es} /></p>
-              <p class="glog__when">20XX — 20XX</p>
+              <p class="glog__role"><Bi en={experience[0].role} es={experience[0].roleEs} /></p>
+              <p class="glog__org">· <Bi en={experience[0].org} es={experience[0].orgEs} /></p>
+              <p class="glog__when"><Bi en={experience[0].when} es={experience[0].whenEs} /></p>
             </div>
           </div>
         </div>

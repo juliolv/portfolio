@@ -24,10 +24,10 @@ export const SITE = {
   url: 'https://juliolv.github.io/portfolio/',
   brand: 'julio',
   name: 'Julio López',
-  email: 'you@example.com',
+  email: 'julio.lv7@gmail.com',
   links: {
     github: 'https://github.com/juliolv',
-    linkedin: 'https://www.linkedin.com/in/your-handle',
+    linkedin: 'https://www.linkedin.com/in/julio-lv',
     cv: '/cv.pdf',
     repo: 'https://github.com/juliolv/portfolio',
     pages: 'https://juliolv.github.io/portfolio/',

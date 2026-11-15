@@ -49,7 +49,7 @@
     "cv": "Descargar CV",
     "email": "Copiar email",
     "available": "Disponible",
-    "availableNote": "para roles full-stack senior · [Ciudad, zona horaria] · remoto",
+    "availableNote": "para roles full-stack senior · Mazatlán, México (UTC−7) · remoto",
     "cardLabel": "Resumen",
     "cardMeta": "solo lectura",
     "card": [
@@ -84,9 +84,9 @@
     ],
     "kvRole": "ingeniero de software senior",
     "kvExperience": "más de 10 años",
-    "kvFocus": "modernización · plataformas",
+    "kvFocus": "modernización · e-commerce",
     "kvStack": "TypeScript · React · Node",
-    "kvBased": "[Ciudad, país]",
+    "kvBased": "Mazatlán, México",
     "kvLabelRole": "rol",
     "kvLabelExperience": "experiencia",
     "kvLabelFocus": "enfoque",
@@ -138,7 +138,7 @@
     "title": "Sobre mí",
     "body": [
       "Soy Julio, ingeniero de software con una década entregando productos web. Me gusta el software que resulta obvio de usar y tranquilo de mantener, y cuido los pequeños detalles que hacen posibles ambas cosas.",
-      "[Añade dos o tres frases: qué valoras en un equipo y qué haces lejos del teclado.]"
+      "Casi todos estos años han sido una migración larga. Lo interesante nunca fue reescribir: fue decidir qué conservar y poner de acuerdo al negocio."
     ]
   },
   "contact": {

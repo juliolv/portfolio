@@ -54,6 +54,9 @@ const issueRef = (lang: 'en' | 'es') =>
 
 /* Entries are numbered by order; the GitHub issue number is shown instead once
    the issue exists, so the column never says "#null" and never lies. */
+/** The address without the scheme, for places that show it as text. */
+const linkedinLabel = SITE.links.linkedin.replace(/^https?:\/\/(www\.)?/, '');
+
 const issueId = (entry: { issue: number | null }, index: number) =>
   entry.issue ? `#${entry.issue}` : String(index + 1).padStart(2, '0');
 
@@ -251,8 +254,8 @@ const kv: [string, string, string][] = [
       { group: 'appearance', label: { en: 'English', es: 'Inglés' }, hint: { en: 'language', es: 'idioma' }, lang: 'en' },
       { group: 'appearance', label: { en: 'Español', es: 'Español' }, hint: { en: 'language', es: 'idioma' }, lang: 'es' },
       { group: 'links', label: { en: 'GitHub', es: 'GitHub' }, hint: { en: 'github.com/juliolv', es: 'github.com/juliolv' }, url: SITE.links.github },
-      { group: 'links', label: { en: 'LinkedIn', es: 'LinkedIn' }, hint: { en: 'linkedin.com', es: 'linkedin.com' }, url: SITE.links.linkedin },
-      { group: 'links', label: { en: 'CV', es: 'CV' }, hint: { en: 'cv.pdf', es: 'cv.pdf' }, url: SITE.links.cv },
+      { group: 'links', label: { en: 'LinkedIn', es: 'LinkedIn' }, hint: { en: linkedinLabel, es: linkedinLabel }, url: SITE.links.linkedin },
+      { group: 'links', label: { en: 'CV', es: 'CV' }, hint: { en: 'cv.pdf', es: 'cv.pdf' }, url: url(SITE.links.cv) },
       { group: 'links', label: { en: 'Repository', es: 'Repositorio' }, hint: { en: 'github.com/juliolv/portfolio', es: 'github.com/juliolv/portfolio' }, url: SITE.links.repo },
       { group: 'actions', label: { en: s('en', 'palette.copyEmail'), es: s('es', 'palette.copyEmail') }, hint: { en: 'email', es: 'email' }, action: 'copy' },
       { group: 'actions', label: { en: s('en', 'palette.shortcuts'), es: s('es', 'palette.shortcuts') }, hint: { en: '?', es: '?' }, action: 'keys' },
@@ -485,9 +488,9 @@ const kv: [string, string, string][] = [
                   <dt>github</dt>
                   <dd><a class="link" href={SITE.links.github} target="_blank" rel="noopener">github.com/juliolv ↗</a></dd>
                   <dt>linkedin</dt>
-                  <dd><a class="link" href={SITE.links.linkedin} target="_blank" rel="noopener">linkedin.com/in/your-handle ↗</a></dd>
+                  <dd><a class="link" href={SITE.links.linkedin} target="_blank" rel="noopener">{linkedinLabel} ↗</a></dd>
                   <dt>cv</dt>
-                  <dd><a class="link" href={SITE.links.cv} target="_blank" rel="noopener"><Bi en={s(L, 'hero.cv')} es={s('es', 'hero.cv')} /> ↓</a></dd>
+                  <dd><a class="link" href={url(SITE.links.cv)} target="_blank" rel="noopener"><Bi en={s(L, 'hero.cv')} es={s('es', 'hero.cv')} /> ↓</a></dd>
                 </dl>
                 <p class="colophon"><Bi en={s(L, 'contact.colophon')} es={s('es', 'contact.colophon')} />{' '}
                   <a class="link" href="#design-system"><Bi en={s(L, 'contact.colophonLink')} es={s('es', 'contact.colophonLink')} /></a></p>

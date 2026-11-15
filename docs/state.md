@@ -1,7 +1,7 @@
 ---
 updated: 2026-11-14
 milestone: 4 — v2 shipped to production
-next_action: v2 is live — open issues #1–#4 so the devlog mirrors real work
+next_action: content is real — polish passes only; no placeholders left
 owner: julio
 ---
 
@@ -126,6 +126,27 @@ forward:
    `styles/design.css`, `styles/app.css`.
 5. `theme-color` on the root page still carried the old palette (#0c0f14/#fbf9f5);
    it is Wave now (#16161e/#eef0f6). `noindex` came off with the preview status.
+
+## Content
+
+Real as of 2026-11-15, from the owner's CV (public on LinkedIn as well): Mazatlán,
+México (UTC−7); julio.lv7@gmail.com; linkedin.com/in/julio-lv; three roles
+(Terramar DMC 2019–, ADSI 2016–2018, Sigma 2015–2016), the degree at Universidad de
+Occidente, and four project cards (operations platform, clinic management, Nova Vida,
+this site). The CV PDF is committed at `public/cv.pdf`.
+
+**The privacy rule changed with it.** `AGENTS.md` used to say never commit employers,
+emails or locations — right for a public repo full of placeholders, wrong for a
+public portfolio. It now says: publish what the owner has approved, keep everything
+else out. The terms that became public left `.guard/denylist.txt`; the client
+project slug stays blocked, and credentials, other people's details and private
+documents are still refused.
+
+Two stale-value bugs surfaced while doing this, both the same shape as the devlog
+specimen: the contact section printed a hardcoded `linkedin.com/in/your-handle`, and
+the design-system timeline specimen still rendered `[Role title]` / `20XX`. Both read
+real data now. The CV link also needed `url()` — it pointed at `/cv.pdf`, which does
+not exist under the `/portfolio` subpath.
 
 ## Devlog
 

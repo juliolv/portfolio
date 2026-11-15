@@ -49,7 +49,7 @@
     "cv": "Download CV",
     "email": "Copy email",
     "available": "Available",
-    "availableNote": "for senior full-stack roles · [City, time zone] · remote friendly",
+    "availableNote": "for senior full-stack roles · Mazatlán, México (UTC−7) · remote friendly",
     "cardLabel": "Summary",
     "cardMeta": "read-only",
     "card": [
@@ -84,9 +84,9 @@
     ],
     "kvRole": "senior software engineer",
     "kvExperience": "10+ years",
-    "kvFocus": "modernization · platforms",
+    "kvFocus": "modernization · e-commerce",
     "kvStack": "TypeScript · React · Node",
-    "kvBased": "[City, country]",
+    "kvBased": "Mazatlán, México",
     "kvLabelRole": "role",
     "kvLabelExperience": "experience",
     "kvLabelFocus": "focus",
@@ -138,7 +138,7 @@
     "title": "About",
     "body": [
       "I am Julio, a software engineer with a decade of shipping web products. I like software that feels obvious to use and stays calm to maintain, and I care about the small details that make both true.",
-      "[Add two or three sentences: what you value in a team and what you do away from the keyboard.]"
+      "Most of the last few years have been one long migration. The interesting part was never the rewrite — it was deciding what to keep, and getting the business to agree."
     ]
   },
   "contact": {
