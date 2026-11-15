@@ -1,7 +1,7 @@
 ---
-updated: 2026-11-14
-milestone: 4 — v2 shipped to production
-next_action: content is real — polish passes only; no placeholders left
+updated: 2026-11-15
+milestone: 5 — the feedback pass shipped
+next_action: owner facts (CV per language, Terramar scope, card outcomes); then §21/#24 close
 owner: julio
 ---
 
@@ -25,40 +25,37 @@ closes. `pnpm state` prints it and fails if a required section is missing.
 | Stack | Astro 7 static, hand-authored CSS, ~10 KB vanilla TS, no UI framework |
 | Languages | EN / ES rendered at build time, toggled with CSS |
 | Build | `pnpm build` → `dist/` (7 pages: `/`, `/404`, three forwards, `/og`, `/icon`) |
-| Verified | 2026-11-14, live after the merge: `/` 200 in Wave with six turns, picker 12 cards, `/design-system/` lands on the view, `/v2/` lands on the root, 0 overflow at 1440 and 390 |
+| Verified | 2026-11-15, feedback pass on `main`: 360/768/1280 × dark/light × EN/ES — 0 console errors, 0 page overflow, one `h1`, 0 dead `#hash` anchors; `pnpm contrast --check` green on 12 palettes; devlog 15 rows folded to 2 + "13 earlier entries" |
 
 ## Milestone
 
 **Done:** design-system port, motion/interaction handoff, GitHub Pages deploy,
 /work/[slug] case studies with linked cards, a generated sitemap and
-per-language markdown bodies.
-**Now:** the v2 TUI rewrite, on branch `feat/tui-v2` (main stays live until the
-handoff's §9 checklist passes). Case-study routes removed from both branches. Handoff: `docs/design/v2/portfolio-tui-handoff/`.
-After that: the devlog mirroring real GitHub issues.
-**Then:** real content (blocked on the owner), then launch polish.
+per-language markdown bodies, the v2 TUI rewrite merged to `main`, real content,
+the devlog reading its own issues — and the owner's feedback pass, 15 issues
+(#16–#30), all closed except two that need his facts.
+**Now:** nothing in flight that does not need the owner. #21 (card outcomes and
+per-card links) and #24 (Terramar scope) are open by design: both wait on facts,
+not on code.
+**Then:** the owner's facts land, those two close, and the log stops having an
+open phase. After that: Lighthouse pass and a hero-density design review.
 
 ## Next actions
 
-1. v2 port, one issue at a time (`HERMES_HANDOFF.md` §8), branch `feat/tui-v2`.
-   Done: §2 tokens + six themes (dark and light each) + AA gate (`pnpm contrast`);
-   §4/§5 shell at `/v2`
-   with all six transcript turns rendering from the collections and data files,
-   bilingual, no horizontal scroll; §5.1 prompt with 16 slash commands and live
-   search over every section; §5.2 dialogs — theme picker (six themes × two
-   variants, `tui.skin` + `tui.mode`), keyboard, commands; §5.3/§5.4 section tracking,
-   the sidebar reading meter and the EN/ES switch; §7 phones — touch chips, 44px
-   targets, the compact dock, gutters; §6 motion — typed role line, reveal,
-   prompt flash, theme cross-fade, reduced motion; §8 sidebar extras — agents
-   from SITE.agents and the compact todo from the devlog; §10 the design-system
-   view at #design-system (live tokens, skins, component specimens); §12 sharing
-   — meta, generated OG card and icons, and a 404 in the v2 language. Next: §9,
-   the pre-merge checklist, run against the whole branch in one pass.
-2. Devlog from live issues: build-time fetch, `GITHUB_TOKEN` in CI, cached
-   JSON, fall back to `src/data/devlog.json` when the API fails.
-2. Open issues #1–#4 so the devlog has something to mirror (owner approval).
-3. Design pass on hero density and affordances (Designer agent, one batch).
-4. Replace placeholder content — **needs the owner**: city, contact email, CV
-   PDF, one metric per project.
+1. **Owner inputs, then close the two open issues:**
+   - `public/cv-en.pdf` and `public/cv-es.pdf`. The links already switch language
+     and already fall back to `cv.pdf`; dropping the files in is the whole task
+     (`cvFor()` checks for them at build time).
+   - Qualitative outcomes for the two client cards, and a link or an explicit
+     "keep it private" per card.
+   - Terramar facts: what was kept, what was replaced, what he owned.
+   - Screenshots/diagrams per Selected work card, if he has them.
+2. Devlog: the moment a seventh phase starts, the new entries go in
+   `devlog.json` under it. Nothing else is needed — the fold handles growth.
+3. Lighthouse pass (a11y + SEO) against the live URL, then record the scores in
+   this file.
+4. Design review of hero density (Designer agent, one batch), now that the
+   pitch leads with the claim and the typed line is gone.
 
 ## Decisions
 
@@ -77,6 +74,40 @@ After that: the devlog mirroring real GitHub issues.
 | 2026-11-13 | Browser tab title/meta follow the language switch; the URL does not fork | cheap bilingual signal without canonical/hreflang complexity; crawlers see English |
 | 2026-11-13 | No free models in the fleet | Owner ruled them out: predictable quality beats marginal savings |
 | 2026-11-13 | Per-role model tiers | `delegation.model` is global: one role per batch (build → audit → review). Builder `deepseek-v4.1-flash`, Auditor `qwen3.8-flash`, Reviewer **`glm-5.3-flash`** (mandated), Designer `gpt-6-luna` |
+| 2026-11-15 | The typed role line is gone | the role is in Summary, and the prompt bar is the page's caret; a second caret retyping the same sentence reflowed the hero on every visit |
+| 2026-11-15 | Devlog moves after Experience | it is the most recent work, and it reads as a continuation of the career timeline rather than a detour before it |
+| 2026-11-15 | Three work cards, outcomes qualitative | no invented numbers; a card says what changed, not how much it improved |
+| 2026-11-15 | A card must have a destination or a reason | "case study in progress" on a card with nowhere to go was a promise the site could not keep; private client work now says so |
+| 2026-11-15 | CV is per language, with a build-time fallback | `cvFor()` checks `public/cv-{en,es}.pdf` at build; until the owner supplies both, every link uses `cv.pdf` and still follows the language |
+| 2026-11-15 | Sidebar keeps Files and Agents only | the context meter simulated a 1M window and the todo counter repeated the devlog; both were chrome about the tooling |
+| 2026-11-15 | Prose gets its own stack (`--font-prose`) | mono is the site's voice for commands, labels and metadata, not for 60-character sentences |
+| 2026-11-15 | Headings name their section; the question sits under | a screen reader was announcing "What has Julio built? /work" as the heading of Selected work |
+| 2026-11-15 | One owner per shared control | clipboard (`tui:copy-email`), status line (`tui:say`, restores its hint after 2.6s), devlog fold (resolved through `aria-controls`) |
+| 2026-11-15 | Contrast gate asks the harder question | status colours are checked against `--element` too, the focus ring at 3:1, and both copies of each light palette must match |
+
+## Feedback pass — 2026-11-15, `main`
+
+The owner sent fifteen tasks in priority order; one GitHub issue each (#16–#30,
+label `feedback` + `devlog`), one commit each, and the devlog gained phase 06.
+Measured in Chromium over CDP at 360, 768 and 1280, dark and light, EN and ES.
+
+| Check | Result |
+|---|---|
+| Console, 16 loads | pass — 0 errors, 0 unhandled rejections |
+| Page overflow-x at 360 / 768 / 1280, both languages | pass — 0px at every combination |
+| One `h1` per page | pass — 1; the design-system view's title is an `h2` |
+| Dead `#hash` anchors | pass — 0. `#design-system` had no target at all (the view is routed by hash); it has an anchor now |
+| AA, 12 palettes | pass — `pnpm contrast --check` exit 0, including status colours on `--element` and the focus ring at 3:1; 11 pairs were nudged, none re-invented |
+| Both copies of each light palette identical | pass — the gate compares them token by token |
+| Prose vs chrome | pass — pitch, work copy, experience, devlog notes, About and the contact lede are `--font-prose`; labels, tags, metadata and code stay mono |
+| Single-key shortcuts | pass — real key events: `?` keys dialog, `t` picker, `l` → ES, `j` steps work → experience; ignored while typing; palette toggle turns them off, persists, and `Ctrl K` survives |
+| Copy email | pass — trusted click writes `julio.lv7@gmail.com`, status says "copied"; both buttons and `/copy` share one path |
+| Phone first screen (360×640) | pass — name, pitch, Download CV (bottom 427) and Copy email inside 640; dock 67px; tabstrip 454px of content in a 312px scroller with a chevron that disappears at the end |
+| Devlog growth | pass — phase 06: 15 entries render as 2 in flight + "13 earlier entries"; section 2324px → 799px, expand restores all 15 |
+| Reduced motion | pass — 0 `is-pending` reveals, no hero animation |
+
+Found by the sweep and fixed in the same pass: the hero and contact "Copy email"
+buttons had no handler at all, and `/copy` announced itself in English only.
 
 ## §9 acceptance run — 2026-11-14, branch `feat/tui-v2`
 
@@ -90,7 +121,7 @@ theme rework: six themes with two variants each, Wave, and the picker's state mo
 | No horizontal page scroll at those widths | pass — 0px at every width |
 | AA across the themes | pass — `pnpm contrast`, 12 palettes (six themes × dark/light) |
 | Sticky prompts | pass — the section prompt pins at 49px, exactly `--bar-h` |
-| Context meter | simulated — 21% → 98% of the 1M window; `aria-valuenow` agrees with the label |
+| Context meter | **removed 2026-11-15** — the owner's feedback pass took it out; the row is kept so the next session knows it was a decision, not a regression |
 | Phone dock | pass — the bar slides 27px down on scroll down and back on scroll up; its box stays 94px, so nothing reflows |
 | No layout shift while scrolling | pass — document height constant (5333 phone / 3610 desktop) and the dock stays at one y through the whole page, including the end |
 | Touch: chips, 44px targets, `menu` label | pass — 4 chips in 2 rows, no tappable under 44px |
@@ -132,8 +163,10 @@ forward:
 Real as of 2026-11-15, from the owner's CV (public on LinkedIn as well): Mazatlán,
 México (UTC−7); julio.lv7@gmail.com; linkedin.com/in/julio-lv; three roles
 (Terramar DMC 2019–, ADSI 2016–2018, Sigma 2015–2016), the degree at Universidad de
-Occidente, and four project cards (operations platform, clinic management, Nova Vida,
-this site). The CV PDF is committed at `public/cv.pdf`.
+Occidente, and three project cards (operations platform, clinic management, Nova
+Vida) — "This portfolio" came out in the feedback pass. The CV PDF is committed at
+`public/cv.pdf`; `cv-en.pdf` and `cv-es.pdf` are the owner's to supply, and the
+links already prefer them.
 
 **The privacy rule changed with it.** `AGENTS.md` used to say never commit employers,
 emails or locations — right for a public repo full of placeholders, wrong for a
@@ -150,13 +183,18 @@ not exist under the `/portfolio` subpath.
 
 ## Devlog
 
-`src/data/devlog.json` now carries the real history: fifteen entries, grouped into
-five phases, each with a date, a status, a one-sentence note and the commits it
-lives in. The section renders them under phase headings; the sidebar shows only the
-phase in flight and counts `done/total`.
+`src/data/devlog.json` carries the real history: thirty entries in six phases,
+each with a date, a status, a one-sentence note and the commits it lives in.
+Every entry is a real issue: #1–#30, all closed except #21 and #24, which wait on
+the owner's facts. The row id links to the issue.
 
-Every entry is a real issue now: #1–#14 closed (history), #15 open (what is left of
-this section). The row id links to the issue.
+**The section folds twice, on purpose.** A phase that is not in flight folds to
+its heading with a count. Inside the open phase, entries that are done fold
+behind one "N earlier entries" row, so the newest phase can record a day's fifteen
+tasks without becoming the wall the first fold was built to prevent (2324px →
+799px for phase 06). Both levels are plain buttons with `aria-expanded`, and both
+resolve their panel through `aria-controls` — a group holds two lists now, so
+`querySelector('.todo')` would find the wrong one.
 
 **State comes from the repo, at build time.** `scripts/fetch-devlog.mjs` reads the
 issues labelled `devlog` and writes `src/data/devlog-live.json`: number, state and
@@ -172,9 +210,10 @@ If the API is unreachable, the script exits 0 and the committed file stands. A b
 that ships yesterday's state is better than one that fails; both are better than
 invented state.
 
-Ids come from `issueId(entry, index)` — the ordinal while an entry has no issue, the
-issue number once it does. It takes both arguments and the sidebar must pass the
-index, or it prints `NaN`; that bug shipped once already.
+Row ids come from `DevlogRow` — the ordinal while an entry has no issue, the issue
+number once it does. It takes the entry *and* its index, so a caller without the
+index prints `NaN`; that bug shipped once already, which is why the component takes
+both props rather than reading a global.
 
 The proposals live next to it: `docs/devlog/proposal.md` (why not four issues) and
 `docs/devlog/issues.md` (the drafts, one per issue).
@@ -244,8 +283,9 @@ names in that block are the thing to check first if the layout goes strange.
 - `public/favicon.svg` is hand-written, not generated: it is the title-bar mark on
   a rounded Wave tile. It shipped as the default **Astro logo** for days because
   nothing in the build owns it — if the mark changes, this file has to change too.
-- `/design-system/` is still the v1 page; the v2 view lives at `#design-system`.
-  The 404 already links to the hash — reconcile at merge.
+- `/design-system/` and `/skins/` forward to `/#design-system`; the view is the
+  only design system now. The hash has a real anchor (`span#design-system`), so the
+  fragment resolves for anyone without JavaScript, not just through the router.
 - **Testing note:** the browser harness reports `hover: none`, so the reference's
   `@media (hover: none)` rule hides every tooltip there. Tooltips have to be
   checked with that override forced, or they look broken when they are not.
