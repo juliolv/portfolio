@@ -283,7 +283,8 @@
     "kPalette": "open the command palette",
     "keysWhich": "letters t · l · j · k · ?",
     "modeDark": "dark",
-    "modeLight": "light"
+    "modeLight": "light",
+    "keysLine": "Single-key shortcuts: {state}"
   },
   "side": {
     "agents": "Agents",

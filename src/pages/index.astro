@@ -280,6 +280,7 @@ const kv: [string, string, string][] = [
       { group: 'links', label: { en: 'CV', es: 'CV' }, hint: { en: 'cv.pdf', es: 'cv.pdf' }, url: url(SITE.links.cv) },
       { group: 'links', label: { en: 'Repository', es: 'Repositorio' }, hint: { en: 'github.com/juliolv/portfolio', es: 'github.com/juliolv/portfolio' }, url: SITE.links.repo },
       { group: 'actions', label: { en: s('en', 'palette.copyEmail'), es: s('es', 'palette.copyEmail') }, hint: { en: 'email', es: 'email' }, action: 'copy' },
+      { group: 'actions', label: { en: s('en', 'palette.keysSwitch'), es: s('es', 'palette.keysSwitch') }, hint: { en: 'on', es: 'sí' }, action: 'toggleKeys' },
       { group: 'actions', label: { en: s('en', 'palette.shortcuts'), es: s('es', 'palette.shortcuts') }, hint: { en: '?', es: '?' }, action: 'keys' },
       { group: 'actions', label: { en: s('en', 'palette.themePicker'), es: s('es', 'palette.themePicker') }, hint: { en: 't', es: 't' }, action: 'theme' },
     ])}></script>
@@ -289,6 +290,8 @@ const kv: [string, string, string][] = [
       links: { en: s('en', 'palette.links'), es: s('es', 'palette.links') },
       actions: { en: s('en', 'palette.actions'), es: s('es', 'palette.actions') },
       noResults: { en: s('en', 'palette.noResults'), es: s('es', 'palette.noResults') },
+      keysOn: { en: s('en', 'palette.keysOn'), es: s('es', 'palette.keysOn') },
+      keysOff: { en: s('en', 'palette.keysOff'), es: s('es', 'palette.keysOff') },
       placeholder: { en: s('en', 'palette.placeholder'), es: s('es', 'palette.placeholder') },
     })}></script>
     <script type="application/json" id="v2-meta" set:html={JSON.stringify({
@@ -297,6 +300,9 @@ const kv: [string, string, string][] = [
       hint: { en: s('en', 'tui.hint'), es: s('es', 'tui.hint') },
       hintTouch: { en: s('en', 'tui.hintTouch'), es: s('es', 'tui.hintTouch') },
       hintOff: { en: s('en', 'palette.keysOffHint'), es: s('es', 'palette.keysOffHint') },
+      keysLine: { en: s('en', 'tui.keysLine'), es: s('es', 'tui.keysLine') },
+      keysOn: { en: s('en', 'palette.keysOn'), es: s('es', 'palette.keysOn') },
+      keysOff: { en: s('en', 'palette.keysOff'), es: s('es', 'palette.keysOff') },
       placeholder: { en: s('en', 'tui.placeholder'), es: s('es', 'tui.placeholder') },
       placeholderPhone: { en: s('en', 'tui.placeholderPhone'), es: s('es', 'tui.placeholderPhone') },
     })}></script>

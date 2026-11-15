@@ -99,6 +99,22 @@ hintEl && new MutationObserver(() => {
   hintEl.classList.toggle('is-hint', hintEl.textContent === hintText());
 }).observe(hintEl, { childList: true, characterData: true, subtree: true });
 
+/* Transient messages ("copied", "shortcuts off") come through here: the status
+   line is this module's element, so it also owns putting the hint back. */
+let sayTimer = 0;
+window.addEventListener('tui:say', (event) => {
+  const text = (event as CustomEvent<string>).detail;
+  if (!hintEl || !text) return;
+  hintEl.textContent = text;
+  hintEl.classList.remove('is-hint');
+  window.clearTimeout(sayTimer);
+  sayTimer = window.setTimeout(() => {
+    if (!hintEl) return;
+    hintEl.textContent = hintText();
+    hintEl.classList.add('is-hint');
+  }, 2600);
+});
+
 /* ------------------------------------------------------------------ language -- */
 
 function readLang(): Lang {

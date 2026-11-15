@@ -14,7 +14,7 @@ interface Entry {
   url?: string;
   skin?: string;
   lang?: 'en' | 'es';
-  action?: 'copy' | 'keys' | 'theme';
+  action?: 'copy' | 'keys' | 'theme' | 'toggleKeys';
 }
 
 const raw = document.getElementById('v2-palette-data')?.textContent;
@@ -25,6 +25,15 @@ const dialog = document.querySelector<HTMLElement>('.dialog[data-dlg="palette"]'
 const input = document.getElementById('pal-input') as HTMLInputElement | null;
 const list = document.getElementById('pal-list');
 const lang = (): 'en' | 'es' => (document.documentElement.dataset.lang === 'es' ? 'es' : 'en');
+
+/** Mirrors tui.keys: the toggle entry reports the state it would leave. */
+function keysOn(): boolean {
+  try {
+    return localStorage.getItem('tui.keys') !== 'off';
+  } catch {
+    return true;
+  }
+}
 
 let results: Entry[] = [];
 let cursor = 0;
@@ -68,7 +77,11 @@ function render() {
       }
       const id = `pal-${i}`;
       optionIds.push(id);
-      const hint = entry.hint?.[lang()] ?? (entry.url ? entry.url.replace(/^https?:\/\//, '') : '');
+      // The single-key switch shows its state here, so turning it off does not
+      // require finding a dialog first (WCAG 2.1.4: a visible mechanism).
+      const hint = entry.action === 'toggleKeys'
+        ? (keysOn() ? titles.keysOn?.[lang()] : titles.keysOff?.[lang()]) ?? ''
+        : entry.hint?.[lang()] ?? (entry.url ? entry.url.replace(/^https?:\/\//, '') : '');
       html += `<div class="opt" role="option" id="${id}" data-i="${i}" aria-selected="${i === cursor}">
         <span class="opt__key">${esc(entry.label[lang()])}</span>
         <span class="opt__desc">${esc(hint)}</span>
@@ -128,6 +141,11 @@ function run(entry: Entry | undefined) {
   if (entry.action === 'keys') {
     close();
     window.dispatchEvent(new CustomEvent('tui:open-dialog', { detail: 'keys' }));
+    return;
+  }
+  if (entry.action === 'toggleKeys') {
+    close();
+    window.dispatchEvent(new CustomEvent('tui:toggle-keys'));
     return;
   }
   if (entry.action === 'theme') {

@@ -24,9 +24,21 @@ function setKeys(on: boolean) {
   }
   const button = document.getElementById('keys-switch');
   if (button) button.setAttribute('aria-checked', String(on));
-  // No status message: the switch shows its own state, and the hint line now
-  // says what still works instead of a one-off confirmation.
+  // One owner for the status line (v2-shell): it gets the words, and it decides
+  // when the hint comes back, so the two never fight over the element.
+  const meta = JSON.parse(document.getElementById('v2-meta')?.textContent ?? '{}') as {
+    keysLine?: Record<'en' | 'es', string>;
+    keysOn?: Record<'en' | 'es', string>;
+    keysOff?: Record<'en' | 'es', string>;
+  };
+  const lang = document.documentElement.dataset.lang === 'es' ? 'es' : 'en';
+  // Order matters: the shell repaints the chrome (and rewrites this line with
+  // the hint) on tui:keys, so the message goes afterwards.
   window.dispatchEvent(new CustomEvent('tui:keys', { detail: on }));
+  if (meta.keysLine?.[lang]) {
+    const state = (on ? meta.keysOn?.[lang] : meta.keysOff?.[lang]) ?? '';
+    window.dispatchEvent(new CustomEvent('tui:say', { detail: meta.keysLine[lang].replace('{state}', state) }));
+  }
 }
 
 const dialogOpen = () => !!document.querySelector('.dialog:not([hidden])');
@@ -89,6 +101,10 @@ document.addEventListener('click', (event) => {
   event.preventDefault();
   setKeys(button.getAttribute('aria-checked') !== 'true');
 });
+
+/* The same switch, reachable without opening the dialog: WCAG 2.1.4 wants a
+   mechanism that is visible on the page, not one behind a keyboard shortcut. */
+window.addEventListener('tui:toggle-keys', () => setKeys(!keysOn()));
 
 // restore the switch on load
 const switchButton = document.getElementById('keys-switch');

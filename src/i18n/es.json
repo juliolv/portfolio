@@ -283,7 +283,8 @@
     "kPalette": "abrir la paleta de comandos",
     "keysWhich": "las teclas t · l · j · k · ?",
     "modeDark": "oscuro",
-    "modeLight": "claro"
+    "modeLight": "claro",
+    "keysLine": "Atajos de una tecla: {state}"
   },
   "side": {
     "agents": "Agentes",
