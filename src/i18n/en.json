@@ -15,7 +15,8 @@
     "variant": "Variant",
     "tipMode": "mode",
     "tipModel": "model",
-    "tipVariant": "variant"
+    "tipVariant": "variant",
+    "footer": "Site status"
   },
   "nav": {
     "work": "work",

@@ -378,7 +378,8 @@ const kv: [string, string, string][] = [
             </section>
 
             <section class="turn reveal" id="work">
-              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qWork')} es={s('es', 'tui.qWork')} /><span class="turn__cmd">/work</span></h2>
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <span class="turn__name"><Bi en={s(L, 'work.title')} es={s('es', 'work.title')} /></span><span class="turn__cmd">/work</span></h2>
+              <p class="turn__q"><Bi en={s(L, 'tui.qWork')} es={s('es', 'tui.qWork')} /></p>
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolList')}</span><span class="tool__arg">(work/)</span></p>
               <div class="result">
                 <p class="muted"><Bi en={s(L, 'work.note')} es={s('es', 'work.note')} /></p>
@@ -418,7 +419,8 @@ const kv: [string, string, string][] = [
             </section>
 
             <section class="turn reveal" id="experience">
-              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qExperience')} es={s('es', 'tui.qExperience')} /><span class="turn__cmd">/experience</span></h2>
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <span class="turn__name"><Bi en={s(L, 'experience.title')} es={s('es', 'experience.title')} /></span><span class="turn__cmd">/experience</span></h2>
+              <p class="turn__q"><Bi en={s(L, 'tui.qExperience')} es={s('es', 'tui.qExperience')} /></p>
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolBashLog')}</span><span class="tool__arg">(git log --graph --career)</span></p>
               <div class="result">
                 <ul class="glog">
@@ -434,7 +436,8 @@ const kv: [string, string, string][] = [
             </section>
 
             <section class="turn reveal" id="devlog">
-              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qDevlog')} es={s('es', 'tui.qDevlog')} /><span class="turn__cmd">/devlog</span></h2>
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <span class="turn__name"><Bi en={s(L, 'devlog.title')} es={s('es', 'devlog.title')} /></span><span class="turn__cmd">/devlog</span></h2>
+              <p class="turn__q"><Bi en={s(L, 'tui.qDevlog')} es={s('es', 'tui.qDevlog')} /></p>
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTodos')}</span><span class="tool__arg">(TODO.md{syncedOn ? ` · synced ${syncedOn}` : ''})</span></p>
               <div class="result">
                 <p class="muted"><Bi en={s(L, 'devlog.intro')} es={s('es', 'devlog.intro')} /></p>
@@ -472,7 +475,8 @@ const kv: [string, string, string][] = [
             </section>
 
             <section class="turn reveal" id="stack">
-              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qStack')} es={s('es', 'tui.qStack')} /><span class="turn__cmd">/stack</span></h2>
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <span class="turn__name"><Bi en={s(L, 'stack.title')} es={s('es', 'stack.title')} /></span><span class="turn__cmd">/stack</span></h2>
+              <p class="turn__q"><Bi en={s(L, 'tui.qStack')} es={s('es', 'tui.qStack')} /></p>
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTree')}</span><span class="tool__arg">(tree stack/)</span></p>
               <div class="result">
                 <div class="trees">
@@ -487,7 +491,8 @@ const kv: [string, string, string][] = [
             </section>
 
             <section class="turn reveal" id="about">
-              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qAbout')} es={s('es', 'tui.qAbout')} /><span class="turn__cmd">/about</span></h2>
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <span class="turn__name"><Bi en={s(L, 'about.title')} es={s('es', 'about.title')} /></span><span class="turn__cmd">/about</span></h2>
+              <p class="turn__q"><Bi en={s(L, 'tui.qAbout')} es={s('es', 'tui.qAbout')} /></p>
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.assistant')}</span></p>
               <div class="result msg">
                 {aboutEn.map((paragraph, i) => (
@@ -497,7 +502,8 @@ const kv: [string, string, string][] = [
             </section>
 
             <section class="turn reveal" id="contact">
-              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <Bi en={s(L, 'tui.qContact')} es={s('es', 'tui.qContact')} /><span class="turn__cmd">/contact</span></h2>
+              <h2 class="turn__prompt"><span class="turn__glyph" aria-hidden="true">❯</span> <span class="turn__name"><Bi en={s(L, 'contact.title')} es={s('es', 'contact.title')} /></span><span class="turn__cmd">/contact</span></h2>
+              <p class="turn__q"><Bi en={s(L, 'tui.qContact')} es={s('es', 'tui.qContact')} /></p>
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolRead')}</span><span class="tool__arg">(contact.md)</span></p>
               <div class="result">
                 <p class="muted" style="margin-bottom:var(--sp-4)"><Bi en={s(L, 'contact.lede')} es={s('es', 'contact.lede')} /></p>
@@ -534,7 +540,7 @@ const kv: [string, string, string][] = [
                   placeholder="Search projects and skills, or type / for commands…" aria-label={s(L, 'a11y.prompt')} data-label-en={s('en', 'a11y.prompt')} data-label-es={s('es', 'a11y.prompt')} />
               </div>
             </form>
-            <div class="status-line">
+            <footer class="status-line" role="contentinfo" aria-label={s(L, 'a11y.footer')} data-label-en={s('en', 'a11y.footer')} data-label-es={s('es', 'a11y.footer')}>
               <span class="status-line__msg is-hint" id="st-msg" role="status" aria-live="polite">? shortcuts · / commands · Ctrl K palette</span>
               <span class="status-line__right">
               <span class="mode tip-up" data-tip-en={s('en', 'a11y.tipMode')} data-tip-es={s('es', 'a11y.tipMode')}
@@ -545,7 +551,7 @@ const kv: [string, string, string][] = [
               <span class="model tip-up" data-tip-en={s('en', 'a11y.tipVariant')} data-tip-es={s('es', 'a11y.tipVariant')}
                 data-label-en={`${s('en', 'a11y.variant')}: senior-full-stack`} data-label-es={`${s('es', 'a11y.variant')}: senior-full-stack`}>senior-full-stack</span>
             </span>
-            </div>
+            </footer>
           </div>
         </main>
 

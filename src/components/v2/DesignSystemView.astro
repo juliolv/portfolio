@@ -31,9 +31,10 @@ const specs = [
 <section class="transcript" id="view-system" hidden data-view="system">
   <h2 class="turn__prompt" id="ds-title" tabindex="-1">
     <span class="turn__glyph" aria-hidden="true">❯</span>
-    <span><Bi en={d('q').en} es={d('q').es} /></span>
+    <span class="turn__name"><Bi en={d('title').en} es={d('title').es} /></span>
     <span class="turn__cmd">/design</span>
   </h2>
+  <p class="turn__q"><Bi en={d('q').en} es={d('q').es} /></p>
   <p class="muted" style="margin-top:var(--sp-4);max-width:70ch"><Bi en={d('lede').en} es={d('lede').es} /></p>
 
   <div class="tabs" role="tablist" aria-label={d('title').en}>

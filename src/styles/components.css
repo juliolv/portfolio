@@ -202,6 +202,9 @@ html:not(.js) .needs-js { display: none !important; }
 /* Each prompt sticks under the title bar while its answer scrolls, then the next prompt pushes it out (like Claude Code). */
 .turn > .turn__prompt { position: sticky; top: calc(var(--bar-h) + env(safe-area-inset-top, 0px)); z-index: 5; }
 .turn__cmd { margin-left: auto; font-size: var(--fs-2); font-weight: 400; color: var(--muted); }
+/* The section name is the heading; the question it answers sits under it, so a
+   screen reader announces "Selected work", not "What has Julio built? /work". */
+.turn__q { margin-top: var(--sp-2); font-size: var(--fs-2); color: var(--muted); }
 .turn.is-current > .turn__prompt { box-shadow: inset 2px 0 0 var(--accent); }
 .turn.is-flash > .turn__prompt { animation: sweep 900ms var(--ease-out); }
 .tool { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-2); margin-top: var(--sp-4); }
