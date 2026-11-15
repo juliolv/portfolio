@@ -40,7 +40,10 @@ function blocks() {
     if (!id) continue;
     const light = sel.includes('data-mode="light"') || sel.includes(':not([data-mode])');
     const key = `${id} · ${light ? 'light' : 'dark'}`;
-    themes[key] ??= readTokens(m[2]);
+    // A theme's light palette is written twice — once for the OS default and
+    // once behind an explicit choice. Both are what a reader can see, so both
+    // are kept: taking the first one hid a drift between them.
+    (themes[key] ??= []).push(readTokens(m[2]));
   }
   return themes;
 }
@@ -66,16 +69,21 @@ const ratio = (a, b) => {
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 };
 
+/* Status colours are text and they sit on all three surfaces (a tag on a panel,
+   a status inside an element-coloured prompt line). The focus ring is
+   --accent, drawn at 2px against whatever is behind it. */
 const SURFACES = ['--bg', '--panel', '--element'];
 const PAIRS = [];
 for (const fg of ['--text', '--muted', '--accent']) {
   for (const bg of SURFACES) PAIRS.push([fg, bg, TEXT]);
 }
 for (const fg of ['--ok', '--warn', '--danger']) {
-  for (const bg of ['--bg', '--panel']) PAIRS.push([fg, bg, TEXT]);
+  for (const bg of SURFACES) PAIRS.push([fg, bg, TEXT]);
 }
 PAIRS.push(['--text', '--accent-subtle', TEXT]);
 PAIRS.push(['--accent-fg', '--accent', TEXT], ['--border-strong', '--bg', UI]);
+/* WCAG 2.4.11 (focus appearance) is a UI-component check, not a text one. */
+for (const bg of SURFACES) PAIRS.push(['--accent', bg, UI]);
 
 const skins = blocks();
 const failures = [];
@@ -84,9 +92,21 @@ const pad = (s, n) => String(s).padEnd(n);
 console.log(`contrast · ${Object.keys(skins).length} theme palettes · AA text ${TEXT}:1 · UI ${UI}:1`);
 console.log('─'.repeat(78));
 
-for (const [id, tokens] of Object.entries(skins)) {
+for (const [id, variants] of Object.entries(skins)) {
+  const tokens = variants[0];
   let worst = { name: '', value: Infinity };
   const bad = [];
+
+  // The two copies of a light palette must be the same palette.
+  if (variants.length > 1) {
+    for (const other of variants.slice(1)) {
+      for (const name of Object.keys(tokens)) {
+        if ((other[name] ?? '') !== tokens[name]) {
+          bad.push(`${name} differs between the two light blocks (${tokens[name]} vs ${other[name] ?? 'missing'})`);
+        }
+      }
+    }
+  }
 
   for (const [fg, bg, min] of PAIRS) {
     const a = hex(tokens[fg]);
