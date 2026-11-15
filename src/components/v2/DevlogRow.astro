@@ -1,0 +1,45 @@
+---
+/**
+ * One devlog row. Extracted so the same markup serves both the in-flight list
+ * and the folded "earlier entries" list without the two drifting apart.
+ */
+import Bi from '../Bi.astro';
+import { s } from '../../lib/i18n';
+import { SITE } from '../../lib/i18n';
+
+interface Entry {
+  issue: number | null;
+  status: string;
+  date: string | null;
+  title: string;
+  titleEs: string;
+  note: string;
+  noteEs: string;
+}
+
+interface Props {
+  entry: Entry;
+  /** Fallback ordinal, used when the entry has no issue to link to. */
+  index: number;
+}
+
+const { entry, index } = Astro.props;
+const L = 'en' as const;
+const STATUS_GLYPH: Record<string, string> = { done: '●', progress: '◐', planned: '○' };
+const id = entry.issue ? `#${entry.issue}` : String(index + 1).padStart(2, '0');
+---
+
+<li class="todo__item">
+  {entry.issue
+    ? <a class="todo__id" href={`${SITE.links.repo}/issues/${entry.issue}`} target="_blank" rel="noopener">{id}</a>
+    : <span class="todo__id">{id}</span>}
+  <span class={`todo__st status status--${entry.status}`}>
+    <span aria-hidden="true">{STATUS_GLYPH[entry.status]}</span>{' '}
+    <Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} />
+  </span>
+  {entry.date
+    ? <time class="todo__date" datetime={entry.date}>{entry.date}</time>
+    : <span class="todo__date"><Bi en={s(L, 'status.tbd')} es={s('es', 'status.tbd')} /></span>}
+  <span class="todo__title"><Bi en={entry.title} es={entry.titleEs} /></span>
+  <p class="todo__note"><Bi en={entry.note} es={entry.noteEs} /></p>
+</li>

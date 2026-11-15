@@ -361,19 +361,26 @@ if (dock) {
   new ResizeObserver(reportDock).observe(dock);
 }
 
-/* Devlog phases fold to their heading. A plain button does the work: native
-   keyboard support, `aria-expanded` for the state, `hidden` for the panel. */
+/* Devlog folding. A plain button does the work: native keyboard support,
+   `aria-expanded` for the state, `hidden` for the panel it names in
+   aria-controls. Two levels share this handler — the phase, and the folded
+   earlier entries inside a phase — so the panel is resolved by id rather than
+   by "the first .todo in the group", which now matches both lists. */
 document.addEventListener('click', (event) => {
   const toggle = (event.target as HTMLElement).closest<HTMLElement>('.devlog__toggle');
   if (!toggle) return;
-  const group = toggle.closest<HTMLElement>('.devlog__group');
-  const list = group?.querySelector<HTMLElement>('.todo');
-  if (!group || !list) return;
+  const id = toggle.getAttribute('aria-controls');
+  const panel = id ? document.getElementById(id) : null;
+  if (!panel) return;
 
   const open = toggle.getAttribute('aria-expanded') === 'true';
   toggle.setAttribute('aria-expanded', String(!open));
-  group.classList.toggle('is-open', !open);
-  list.hidden = open;
+  panel.hidden = open;
+  // Only the phase toggle owns the group's open state; the "earlier entries"
+  // row must not make the group think it is closed.
+  if (toggle.classList.contains('devlog__phase')) {
+    toggle.closest<HTMLElement>('.devlog__group')?.classList.toggle('is-open', !open);
+  }
   const caret = toggle.querySelector('.devlog__caret');
   if (caret) caret.textContent = open ? '▸' : '▾';
 });

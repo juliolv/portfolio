@@ -11,6 +11,7 @@ import { existsSync } from 'node:fs';
 import { getCollection } from 'astro:content';
 import Bi from '../components/Bi.astro';
 import DesignSystemView from '../components/v2/DesignSystemView.astro';
+import DevlogRow from '../components/v2/DevlogRow.astro';
 import { s, t, url, SITE } from '../lib/i18n';
 import devlog from '../data/devlog.json';
 import liveDevlog from '../data/devlog-live.json';
@@ -32,8 +33,6 @@ const groupsEn = t('en', 'stack.groups') as string[];
 const groupsEs = t('es', 'stack.groups') as string[];
 const aboutEn = t('en', 'about.body') as string[];
 const aboutEs = t('es', 'about.body') as string[];
-
-const STATUS_GLYPH: Record<string, string> = { done: '●', progress: '◐', planned: '○' };
 
 /* GitHub is the source of truth for two things: whether an issue is closed, and its
    title. Everything else — the Spanish copy, the note, the phase, and the date the
@@ -71,13 +70,8 @@ const issueRef = (lang: 'en' | 'es') =>
     ? `${inProgress.issue ? `#${inProgress.issue} ` : ''}${lang === 'es' ? inProgress.titleEs : inProgress.title}`
     : '';
 
-/* Entries are numbered by order; the GitHub issue number is shown instead once
-   the issue exists, so the column never says "#null" and never lies. */
-/** The address without the scheme, for places that show it as text. */
+/* The address without the scheme, for places that show it as text. */
 const linkedinLabel = SITE.links.linkedin.replace(/^https?:\/\/(www\.)?/, '');
-
-const issueId = (entry: { issue: number | null }, index: number) =>
-  entry.issue ? `#${entry.issue}` : String(index + 1).padStart(2, '0');
 
 /* The log is grouped by phase: fifteen flat rows would read as a wall. */
 const phaseOrder = [...new Set(log.map((entry) => entry.phase))];
@@ -450,36 +444,44 @@ const kv: [string, string, string][] = [
               <p class="tool"><span class="tool__dot" aria-hidden="true">●</span><span class="tool__name">{s(L, 'tui.toolTodos')}</span><span class="tool__arg">(TODO.md{syncedOn ? ` · synced ${syncedOn}` : ''})</span></p>
               <div class="result">
                 <p class="muted"><Bi en={s(L, 'devlog.intro')} es={s('es', 'devlog.intro')} /></p>
-                {byPhase.map((group, gi) => (
-                  <div class={`devlog__group${group.phase === activePhase ? ' is-open' : ''}`}>
+                {byPhase.map((group) => {
+                  // A phase in flight opens on what is in flight; its closed
+                  // entries fold behind one row, so the newest phase can grow
+                  // past a dozen entries without becoming the wall the fold
+                  // was built to prevent.
+                  const inFlight = group.entries.filter((entry) => entry.status !== 'done');
+                  const folded = inFlight.length ? group.entries.filter((entry) => entry.status === 'done') : [];
+                  const shown = inFlight.length ? inFlight : group.entries;
+                  const open = group.phase === activePhase;
+                  return (
+                  <div class={`devlog__group${open ? ' is-open' : ''}`}>
                     {/* Phases that are not in flight fold to their heading: fifteen
                         rows read as a wall, and fifty would be unusable. The heading
                         stays, so the arc is still visible at a glance. */}
-                    <button class="devlog__toggle" type="button" aria-expanded={group.phase === activePhase ? 'true' : 'false'} aria-controls={`phase-${group.phase}`}>
-                      <span class="devlog__caret" aria-hidden="true">{group.phase === activePhase ? '▾' : '▸'}</span>
+                    <button class="devlog__toggle devlog__phase" type="button" aria-expanded={open ? 'true' : 'false'} aria-controls={`phase-${group.phase}`}>
+                      <span class="devlog__caret" aria-hidden="true">{open ? '▾' : '▸'}</span>
                       <span class="devlog__label"><Bi en={s('en', `devlog.phase${group.phase}`)} es={s('es', `devlog.phase${group.phase}`)} /></span>
                       <span class="devlog__count"><Bi en={`${group.entries.length} ${group.entries.length === 1 ? 'entry' : 'entries'}`} es={`${group.entries.length} ${group.entries.length === 1 ? 'entrada' : 'entradas'}`} /></span>
                     </button>
-                    <ul class="todo" id={`phase-${group.phase}`} hidden={group.phase !== activePhase}>
-                      {group.entries.map((entry, i) => (
-                        <li class="todo__item">
-                          {entry.issue
-                            ? <a class="todo__id" href={`${SITE.links.repo}/issues/${entry.issue}`} target="_blank" rel="noopener">{issueId(entry, 0)}</a>
-                            : <span class="todo__id">{issueId(entry, log.indexOf(entry))}</span>}
-                          <span class={`todo__st status status--${entry.status}`}>
-                            <span aria-hidden="true">{STATUS_GLYPH[entry.status]}</span>{' '}
-                            <Bi en={s(L, `status.${entry.status}`)} es={s('es', `status.${entry.status}`)} />
-                          </span>
-                          {entry.date
-                            ? <time class="todo__date" datetime={entry.date}>{entry.date}</time>
-                            : <span class="todo__date"><Bi en={s(L, 'status.tbd')} es={s('es', 'status.tbd')} /></span>}
-                          <span class="todo__title"><Bi en={entry.title} es={entry.titleEs} /></span>
-                          <p class="todo__note"><Bi en={entry.note} es={entry.noteEs} /></p>
-                        </li>
-                      ))}
-                    </ul>
+                    <div id={`phase-${group.phase}`} hidden={!open}>
+                      <ul class="todo">
+                        {shown.map((entry) => <DevlogRow entry={entry} index={log.indexOf(entry)} />)}
+                      </ul>
+                      {folded.length > 0 && (
+                        <>
+                          <button class="devlog__toggle devlog__rest" type="button" aria-expanded="false" aria-controls={`phase-${group.phase}-done`}>
+                            <span class="devlog__caret" aria-hidden="true">▸</span>
+                            <span class="devlog__label"><Bi en={`${folded.length} earlier ${folded.length === 1 ? 'entry' : 'entries'}`} es={`${folded.length} ${folded.length === 1 ? 'entrada anterior' : 'entradas anteriores'}`} /></span>
+                          </button>
+                          <ul class="todo" id={`phase-${group.phase}-done`} hidden>
+                            {folded.map((entry) => <DevlogRow entry={entry} index={log.indexOf(entry)} />)}
+                          </ul>
+                        </>
+                      )}
+                    </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
 

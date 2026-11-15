@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-11-15T06:49:57.783Z",
+  "syncedAt": "2026-11-15T07:04:39.242Z",
   "repo": "juliolv/portfolio",
   "issues": [
     {
@@ -75,6 +75,81 @@
     {
       "number": 15,
       "title": "A devlog that mirrors the repo",
+      "state": "closed"
+    },
+    {
+      "number": 16,
+      "title": "Hero: Download CV opens the language-matching PDF",
+      "state": "closed"
+    },
+    {
+      "number": 17,
+      "title": "Hero: remove the typed role line and its caret",
+      "state": "closed"
+    },
+    {
+      "number": 18,
+      "title": "Contact note: the \"no frameworks\" claim is false",
+      "state": "closed"
+    },
+    {
+      "number": 19,
+      "title": "Contrast: AA for text, status colours and focus rings in all twelve palettes",
+      "state": "closed"
+    },
+    {
+      "number": 20,
+      "title": "Single-key shortcuts: one visible, persisted way to turn them off",
+      "state": "closed"
+    },
+    {
+      "number": 21,
+      "title": "Selected work: three cards, problem/role/stack/outcome, no dead promises",
+      "state": "open"
+    },
+    {
+      "number": 22,
+      "title": "Remove the \"This portfolio\" card from Selected work",
+      "state": "closed"
+    },
+    {
+      "number": 23,
+      "title": "Page order: Devlog after Experience, and a hero pitch that leads with the real claim",
+      "state": "closed"
+    },
+    {
+      "number": 24,
+      "title": "Terramar: scope and decisions, no metrics",
+      "state": "open"
+    },
+    {
+      "number": 25,
+      "title": "Sidebar: drop the meter and the todo counter, keep the first screen",
+      "state": "closed"
+    },
+    {
+      "number": 26,
+      "title": "Typography: proportional text for prose, mono for chrome",
+      "state": "closed"
+    },
+    {
+      "number": 27,
+      "title": "Phones: less sticky chrome, a nav that reads as scrollable",
+      "state": "closed"
+    },
+    {
+      "number": 28,
+      "title": "Semantics: one h1, section names as headings, a footer landmark",
+      "state": "closed"
+    },
+    {
+      "number": 29,
+      "title": "Dates: one timezone convention for the devlog and the synced label",
+      "state": "closed"
+    },
+    {
+      "number": 30,
+      "title": "Stack: drop Hermes Agent (learning)",
       "state": "closed"
     }
   ]

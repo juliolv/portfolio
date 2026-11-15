@@ -211,5 +211,170 @@
     "note": "Four placeholder entries became fifteen real ones, read from the repo at build time — close an issue and the log follows. What's left: reading more than fifteen rows without becoming a wall.",
     "noteEs": "Cuatro entradas de relleno pasaron a quince reales, leídas del repositorio en el build: cierra un issue y el devlog le sigue. Falta que la sección aguante más de quince filas sin volverse un muro.",
     "commits": []
+  },
+  {
+    "issue": 16,
+    "phase": 6,
+    "status": "done",
+    "date": "2026-11-15",
+    "title": "Hero: Download CV opens the language-matching PDF",
+    "titleEs": "Hero: Descargar CV abre el PDF del idioma",
+    "note": "The hero CV button jumped to the contact block, which asked for a second click. It downloads the CV for the language on screen now, and falls back to the single file until both PDFs exist.",
+    "noteEs": "El botón de CV del hero llevaba al bloque de contacto y pedía un segundo clic. Ahora descarga el CV del idioma en pantalla, y vuelve al único archivo mientras no existan los dos PDF.",
+    "commits": []
+  },
+  {
+    "issue": 17,
+    "phase": 6,
+    "status": "done",
+    "date": "2026-11-15",
+    "title": "Hero: remove the typed role line and its caret",
+    "titleEs": "Hero: fuera el rol escrito y su cursor",
+    "note": "The role was typed out under the name with its own caret, above a prompt bar that already has one. Gone with its script, CSS and keys; the pitch opens on the role instead.",
+    "noteEs": "El rol se escribía letra a letra bajo el nombre con su propio cursor, encima de un prompt que ya tiene el suyo. Fuera con su script, su CSS y sus claves; ahora el párrafo abre con el rol.",
+    "commits": []
+  },
+  {
+    "issue": 18,
+    "phase": 6,
+    "status": "done",
+    "date": "2026-11-15",
+    "title": "Contact note: the \"no frameworks\" claim is false",
+    "titleEs": "Nota de contacto: «sin frameworks» era falso",
+    "note": "The contact note claimed \"no frameworks\" on a site built with Astro. It says what is true: no client-side framework, no trackers.",
+    "noteEs": "La nota de contacto decía «sin frameworks» en un sitio hecho con Astro. Ahora dice lo que es cierto: sin framework de cliente ni rastreadores.",
+    "commits": []
+  },
+  {
+    "issue": 19,
+    "phase": 6,
+    "status": "done",
+    "date": "2026-11-15",
+    "title": "Contrast: AA for text, status colours and focus rings in all twelve palettes",
+    "titleEs": "Contraste: AA para texto, estados y anillos de foco en las doce paletas",
+    "note": "The AA check passed because it asked easier questions: status colours never met the element surface, and only one of the two copies of each light palette was read. Eleven pairs failed and were nudged, not re-invented.",
+    "noteEs": "El chequeo AA pasaba porque preguntaba menos: los colores de estado nunca tocaban la superficie element, y solo se leía una de las dos copias de cada paleta clara. Once pares fallaron y se ajustaron, no se reinventaron.",
+    "commits": []
+  },
+  {
+    "issue": 20,
+    "phase": 6,
+    "status": "done",
+    "date": "2026-11-15",
+    "title": "Single-key shortcuts: one visible, persisted way to turn them off",
+    "titleEs": "Atajos de una tecla: una forma visible y persistente de apagarlos",
+    "note": "Shortcuts already ignored typing and modifiers, and the switch already persisted. What was missing was a way to reach it without knowing the shortcut: the palette toggles it now, and announces the state.",
+    "noteEs": "Los atajos ya ignoraban la escritura y los modificadores, y el interruptor ya persistía. Faltaba llegar a él sin saberse el atajo: ahora la paleta lo apaga y anuncia el estado.",
+    "commits": []
+  },
+  {
+    "issue": 21,
+    "phase": 6,
+    "status": "progress",
+    "date": "2026-11-15",
+    "title": "Selected work: three cards, problem/role/stack/outcome, no dead promises",
+    "titleEs": "Trabajo: tres tarjetas, problema/rol/stack/resultado, sin promesas vacías",
+    "note": "Each card promised a case study and carried none. Cards now carry a link or say why they cannot; outcomes stay qualitative. The copy for the two client cards waits on Julio.",
+    "noteEs": "Cada tarjeta prometía un caso de estudio y no tenía ninguno. Ahora llevan un enlace o dicen por qué no pueden; los resultados siguen siendo cualitativos. El copy de las dos de cliente espera a Julio.",
+    "commits": []
+  },
+  {
+    "issue": 22,
+    "phase": 6,
+    "status": "done",
+    "date": "2026-11-15",
+    "title": "Remove the \"This portfolio\" card from Selected work",
+    "titleEs": "Fuera la tarjeta «Este portafolio»",
+    "note": "\"This portfolio\" was a card about the page you were reading it on. Out, with the count that said four.",
+    "noteEs": "«Este portafolio» era una tarjeta sobre la página en la que la leías. Fuera, con el conteo que decía cuatro.",
+    "commits": []
+  },
+  {
+    "issue": 23,
+    "phase": 6,
+    "status": "done",
+    "date": "2026-11-15",
+    "title": "Page order: Devlog after Experience, and a hero pitch that leads with the real claim",
+    "titleEs": "Orden: bitácora tras Experiencia, y un hero que abre con la afirmación real",
+    "note": "The devlog moved after Experience, and the hero leads with the migration work instead of a seniority preamble. About stopped repeating the hero's best sentence.",
+    "noteEs": "La bitácora pasó después de Experiencia, y el hero abre con el trabajo de migración en vez de un preámbulo de seniority. Sobre mí dejó de repetir la mejor frase del hero.",
+    "commits": []
+  },
+  {
+    "issue": 24,
+    "phase": 6,
+    "status": "progress",
+    "date": "2026-11-15",
+    "title": "Terramar: scope and decisions, no metrics",
+    "titleEs": "Terramar: alcance y decisiones, sin métricas",
+    "note": "The Terramar entry says what was replaced but not what was kept. Open: waiting on the facts.",
+    "noteEs": "La entrada de Terramar dice qué se reemplazó pero no qué se conservó. Abierta: esperando los datos.",
+    "commits": []
+  },
+  {
+    "issue": 25,
+    "phase": 6,
+    "status": "done",
+    "date": "2026-11-15",
+    "title": "Sidebar: drop the meter and the todo counter, keep the first screen",
+    "titleEs": "Barra lateral: fuera el medidor y el contador, y el primer pantallazo",
+    "note": "The context meter and the todo counter were chrome about the tooling, not about the work. Files and Agents stay, and the hero fits the first screen at 1280.",
+    "noteEs": "El medidor de contexto y el contador de pendientes eran cromo sobre la herramienta, no sobre el trabajo. Quedan Archivos y Agentes, y el hero entra en la primera pantalla a 1280.",
+    "commits": []
+  },
+  {
+    "issue": 26,
+    "phase": 6,
+    "status": "done",
+    "date": "2026-11-15",
+    "title": "Typography: proportional text for prose, mono for chrome",
+    "titleEs": "Tipografía: proporcional para la prosa, mono para el cromo",
+    "note": "Sentences were set in the monospace face meant for commands. Prose has its own stack now; labels, metadata and code keep mono.",
+    "noteEs": "Las frases iban en la monoespaciada, que es para comandos. La prosa tiene su propia pila; etiquetas, metadatos y código siguen en mono.",
+    "commits": []
+  },
+  {
+    "issue": 27,
+    "phase": 6,
+    "status": "done",
+    "date": "2026-11-15",
+    "title": "Phones: less sticky chrome, a nav that reads as scrollable",
+    "titleEs": "Móvil: menos cromo fijo y un nav que se lee como desplazable",
+    "note": "The build bar left the phone status line, the tabstrip got a chevron that says it scrolls, and the nav labels finally switch language. Download CV stays on the first screen.",
+    "noteEs": "La barra de build salió del status en el móvil, la tira de pestañas ganó un chevrón que dice que se desplaza, y las etiquetas del nav por fin cambian de idioma. Descargar CV sigue en la primera pantalla.",
+    "commits": []
+  },
+  {
+    "issue": 28,
+    "phase": 6,
+    "status": "done",
+    "date": "2026-11-15",
+    "title": "Semantics: one h1, section names as headings, a footer landmark",
+    "titleEs": "Semántica: un h1, secciones como encabezados y un landmark de pie",
+    "note": "Section headings said \"What has Julio built?\" and the command tag did the naming. Headings name their section now, and the status bar is a footer landmark.",
+    "noteEs": "Los encabezados decían «¿Qué ha construido Julio?» y la etiqueta de comando hacía de nombre. Ahora nombran su sección, y la barra de estado es un landmark de pie de página.",
+    "commits": []
+  },
+  {
+    "issue": 29,
+    "phase": 6,
+    "status": "done",
+    "date": "2026-11-15",
+    "title": "Dates: one timezone convention for the devlog and the synced label",
+    "titleEs": "Fechas: una sola zona para la bitácora y la etiqueta de sincronización",
+    "note": "The \"synced\" label sliced the UTC build stamp, so it printed tomorrow beside entries dated yesterday. It renders in the same zone as the entries.",
+    "noteEs": "La etiqueta «sincronizado» cortaba la marca UTC, así que imprimía mañana junto a entradas de ayer. Ahora se renderiza en la misma zona que las entradas.",
+    "commits": []
+  },
+  {
+    "issue": 30,
+    "phase": 6,
+    "status": "done",
+    "date": "2026-11-15",
+    "title": "Stack: drop Hermes Agent (learning)",
+    "titleEs": "Stack: fuera Hermes Agent (aprendiendo)",
+    "note": "\"Hermes Agent (learning)\" was not a tool he reaches for. Out of the infrastructure group.",
+    "noteEs": "«Hermes Agent (aprendiendo)» no era una herramienta que use a diario. Fuera del grupo de infraestructura.",
+    "commits": []
   }
 ]
