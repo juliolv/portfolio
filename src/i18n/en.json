@@ -193,7 +193,7 @@
     "skins": "Themes",
     "components": "components",
     "color": "color",
-    "type": "type (mono)",
+    "type": "type (mono + prose)",
     "space": "space (4px base)",
     "shape": "radius and border",
     "motion": "motion",

@@ -69,7 +69,14 @@ function fillSwatches() {
 function fillType() {
   const host = document.querySelector('[data-ds="type"]');
   if (!host) return;
-  host.innerHTML = TYPE.map((name) => `
+  // The two stacks first: the specimen is the page's own font tokens, so it
+  // can never describe a stack the site does not use.
+  const stacks = ['--font', '--font-prose'].map((name) => `
+    <div class="row2">
+      <code>${name}<br><span class="muted">${read(name)}</span></code>
+      <span class="row2__sample" style="font-family:var(${name});font-size:var(--fs-4)">Aa 0123</span>
+    </div>`).join('');
+  host.innerHTML = stacks + TYPE.map((name) => `
     <div class="row2">
       <code>${name}<br><span class="muted">${read(name)}</span></code>
       <span class="row2__sample" style="font-size:var(${name});line-height:1.2">Aa 0123</span>

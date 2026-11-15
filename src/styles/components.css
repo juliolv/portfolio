@@ -214,6 +214,33 @@ html:not(.js) .needs-js { display: none !important; }
 .result { position: relative; margin-top: 2px; padding: var(--sp-1) 0 0 3ch; }
 .result::before { content: ""; position: absolute; left: 0.5ch; top: 0; width: 1.5ch; height: 0.9em; border-left: var(--bw) solid var(--border-strong); border-bottom: var(--bw) solid var(--border-strong); }
 
+/* Prose is proportional; chrome, labels, metadata and code stay mono.
+   Applied here rather than per-component so a new paragraph inherits the
+   decision instead of re-deciding it. */
+.hero__pitch,
+.row__sum,
+.man dd,
+.glog__text,
+.todo__note,
+#about .result p,
+#contact .result > p {
+  font-family: var(--font-prose);
+  line-height: 1.65;
+}
+/* Tags inside a prose cell are labels, not prose. */
+.man dd .tags,
+.man dd .tag { font-family: var(--font); line-height: 1.6; }
+
+@media (max-width: 640px) {
+  .hero__pitch,
+  .row__sum,
+  .man dd,
+  .glog__text,
+  #about .result p,
+  #contact .result > p { font-size: 15px; }
+  .todo__note { font-size: 14px; }
+}
+
 /* project rows */
 .rows { display: flex; flex-direction: column; gap: var(--sp-3); }
 .row { padding-left: var(--sp-3); border-left: var(--bw-2) solid var(--border); transition: border-color var(--dur-fast); }

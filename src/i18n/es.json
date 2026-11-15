@@ -193,7 +193,7 @@
     "skins": "Temas",
     "components": "componentes",
     "color": "color",
-    "type": "tipografía (mono)",
+    "type": "tipografía (mono + prosa)",
     "space": "espacio (base 4px)",
     "shape": "radio y borde",
     "motion": "movimiento",
