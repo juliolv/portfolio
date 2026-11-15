@@ -69,8 +69,13 @@ const byPhase = phaseOrder.map((phase) => ({
 /* The sidebar shows the phase in flight, not the whole history. */
 const activePhase = (inProgress ?? devlog[log.length - 1]).phase;
 const sideEntries = log.filter((entry) => entry.phase === activePhase);
-const agentDesc = (id: string, lang: 'en' | 'es') =>
-  s(lang, `agents.${id}`).replace('{issue}', issueRef(lang));
+const agentDesc = (id: string, lang: 'en' | 'es') => {
+  const ref = issueRef(lang);
+  const text = s(lang, `agents.${id}`);
+  // Nothing in progress: drop the separator with the reference, or the line reads
+  // "building this site · " with a dangling dot.
+  return ref ? text.replace('{issue}', ref) : text.replace(/\s*·\s*\{issue\}/, '').trim();
+};
 const todoDone = log.filter((entry) => entry.status === 'done').length;
 
 const sections = [

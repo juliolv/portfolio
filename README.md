@@ -104,11 +104,24 @@ deliberate:
 
 ## Roadmap
 
-- [x] Design port, motion, both languages
-- [x] Deploy on GitHub Pages under `/portfolio`
-- [x] v2: transcript shell, prompt, palette, theme picker, design system view
-- [x] Six themes with dark and light variants, gated on contrast
-- [x] Devlog fetched from real issues at build time
-- [x] Real content: roles, projects, CV, contact
-- [ ] The row limit on the devlog section (see issue #15)
-- [ ] An optional "follow the system" reset in the theme picker
+Shipped, in the order it happened — each line is an issue in this repo, and the
+[devlog](https://juliolv.github.io/portfolio/#devlog) carries the detail:
+
+- [x] [#1](https://github.com/juliolv/portfolio/issues/1) Port the terminal design to Astro, and put it on Pages
+- [x] [#2](https://github.com/juliolv/portfolio/issues/2) Motion, and the bug hiding inside it
+- [x] [#3](https://github.com/juliolv/portfolio/issues/3) The first audit fleet, and what it found
+- [x] [#4](https://github.com/juliolv/portfolio/issues/4) Case studies: built, then removed
+- [x] [#5](https://github.com/juliolv/portfolio/issues/5) Tokens, nine skins, and a contrast gate
+- [x] [#6](https://github.com/juliolv/portfolio/issues/6) The shell
+- [x] [#7](https://github.com/juliolv/portfolio/issues/7) Prompt, dialogs, and a keyboard-first picker
+- [x] [#8](https://github.com/juliolv/portfolio/issues/8) Reading state: where you are, how far you've read
+- [x] [#9](https://github.com/juliolv/portfolio/issues/9) Phones
+- [x] [#10](https://github.com/juliolv/portfolio/issues/10) The design system as a view, and sharing
+- [x] [#11](https://github.com/juliolv/portfolio/issues/11) Nine skins became six themes
+- [x] [#12](https://github.com/juliolv/portfolio/issues/12) Wave, and a picker that stopped lying
+- [x] [#13](https://github.com/juliolv/portfolio/issues/13) What shipped broken: a rule, a bounce, and the tab icon
+- [x] [#14](https://github.com/juliolv/portfolio/issues/14) v2 becomes the site
+- [x] [#15](https://github.com/juliolv/portfolio/issues/15) A devlog that mirrors the repo — fetch, and phases that fold
+
+What is open is the issue list, not a checklist here: anything planned carries the
+`devlog` label and appears on the site the next time it builds.
